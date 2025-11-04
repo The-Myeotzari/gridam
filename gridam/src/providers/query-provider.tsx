@@ -5,19 +5,21 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PropsWithChildren, useState } from "react";
 
 const QueryProvider = ({children}: PropsWithChildren)=> {
-  const [client] = useState(
-    new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false, // 실패하면 재시도 X
-          staleTime: 60000, // 캐시 유지 시간 1분
+   const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            // With SSR, we usually want to set some default staleTime
+            // above 0 to avoid refetching immediately on the client
+            staleTime: 60 * 1000,
+          },
         },
-      },
-    }),
-  );
+      })
+  )
 
   return (
-    <QueryClientProvider client={client}>
+    <QueryClientProvider client={queryClient}>
       {children}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

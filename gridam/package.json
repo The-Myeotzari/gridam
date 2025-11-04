@@ -12,6 +12,9 @@
   "dependencies": {
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
+    "@supabase-cache-helpers/postgrest-react-query": "^1.13.6",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.78.0",
     "@tailwindcss/postcss": "^4.1.16",
     "@tanstack/react-query": "^5.90.6",
     "@tanstack/react-query-devtools": "^5.90.2",
@@ -48,6 +51,7 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.6.2",
+    "supabase": "^2.54.11",
     "ts-node": "^10.9.2",
     "typescript": "^5"
   }

@@ -19,13 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${zenSerif.variable} font-pretendard`}>
-         <QueryProvider>
-        {children}
-        </QueryProvider>
-      </body>
-    </html>
+    <QueryProvider>
+      <html lang="en">
+        <body
+          className={`${zenSerif.variable} font-pretendard`}>
+          {children}
+        </body>
+      </html>
+    </QueryProvider>
   );
 }
