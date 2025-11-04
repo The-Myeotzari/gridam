@@ -1,0 +1,37 @@
+import fs from 'fs'
+import path from 'path'
+
+const ROOT = path.join(process.cwd(), 'src')
+
+// 생성할 폴더 목록
+const folders: string[] = [
+  'app',
+  'components/ui',
+  'components/three/object',
+  'features/auth/components',
+  'features/auth/hooks',
+  'features/auth/services',
+  'font',
+  'hooks',
+  'providers',
+  'queries/auth',
+  'store',
+  'types/zod',
+  'utils',
+  'test/components/three',
+  'test/features/auth',
+  'test/features/grid',
+  'test/hooks',
+  'test/utils',
+]
+
+function ensureDir(dirPath: string) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+    console.log(`📁 생성됨: ${path.relative(process.cwd(), dirPath)}`)
+  }
+}
+
+console.log('🚀 Gridam 폴더 구조 체크/생성 중...\n')
+folders.forEach((folder) => ensureDir(path.join(ROOT, folder)))
+console.log('\n✅ 완료: 기존 항목은 유지, 누락된 폴더만 생성했습니다.')
