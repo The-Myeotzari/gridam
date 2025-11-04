@@ -1,4 +1,4 @@
-import { TypedSupabaseClient } from '@/utils/types'
+import { TypedSupabaseClient } from '@/utils/type'
 
 export function getCountryById(client: TypedSupabaseClient, countryId: number) {
   return client

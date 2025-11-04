@@ -1,7 +1,7 @@
 'use client'
 
-import useSupabaseBrowser from '@/utils/supabase/client'
 import { getCountryById } from '@/queries/get-country-by-id'
+import useSupabaseBrowser from '@/utils/supabase/client'
 import { useQuery } from '@supabase-cache-helpers/postgrest-react-query'
 
 export default function Country({ id }: { id: number }) {
