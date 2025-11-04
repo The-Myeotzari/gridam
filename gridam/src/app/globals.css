@@ -1,9 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-zen-serif: "ZEN Serif", serif;
+  --font-zen-serif: 'ZEN Serif', serif;
 }
 
 @theme inline {
