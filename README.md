@@ -1,7 +1,7 @@
 # 🌿 그리담 [Gridam]
 > 묫자리에 이름을 새기지 말고, 일기에 이름을 남기자.
 
-[👉 프로젝트 노션 보기](https://nostalgic-guppy-85d.notion.site/29c6dd0f94e680da8c7ddfebe3a91258?pvs=143)
+[👉 프로젝트 노션 보기](https://www.notion.so/2a088ff5dc04818391f8db6cd342cd00?source=copy_link)
 
 ---
 
