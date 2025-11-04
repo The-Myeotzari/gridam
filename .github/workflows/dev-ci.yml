@@ -1,0 +1,50 @@
+name: CI for dev PRs and merges
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    # 조건: PR이 열려있거나, dev로 머지되었을 때
+    if: >
+      github.event.pull_request.state == 'open' ||
+      (github.event.pull_request.merged == true && github.base_ref == 'dev')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+      CI: true
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test -- --ci
+
+      - name: Build project
+        run: npm run build
