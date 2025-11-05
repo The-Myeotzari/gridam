@@ -1,18 +1,46 @@
 import { ComponentPropsWithRef, ReactNode } from 'react'
-import { X } from 'lucide-react'
 import cn from '@/utils/cn'
+
+type Align = 'vertical' | 'horizontal'
+type IconSize = 'sm' | 'md' | 'lg'
+type IndentSize = 'none' | 'sm' | 'md' | 'lg'
+
+const ICON_BOX: Record<IconSize, string> = {
+  sm: 'size-10',
+  md: 'size-14',
+  lg: 'size-20'
+}
+
+const INDENT_VAR: Record<IndentSize, string> = {
+  none: '1rem',
+  sm: '4.5rem',
+  md: '5rem',
+  lg: '5.5rem'
+}
 
 interface CardProps extends ComponentPropsWithRef<'div'> {
   children?: ReactNode
+  hoverable?: boolean
+  align?: Align
+  indent?: IndentSize
 }
 
-export function Card({ className, children, ...props }: CardProps) {
+export function Card({
+  className,
+  children,
+  hoverable = false,
+  indent = 'none',
+  style,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
         'bg-card relative rounded-2xl border crayon-border text-card-foreground shadow-sm',
+        hoverable && 'bg-cream-white border-2 hover:bg-accent/10 transition-colors',
         className
       )}
+      style={{ ...style, ['--gutter' as any]: INDENT_VAR[indent] }}
       {...props}
     >
       {children}
@@ -21,56 +49,61 @@ export function Card({ className, children, ...props }: CardProps) {
 }
 
 interface CardHeaderProps extends ComponentPropsWithRef<'div'> {
-  children?: ReactNode
-  left?: ReactNode
+  cardTitle?: ReactNode
+  cardImage?: ReactNode
+  cardDescription?: ReactNode
   right?: ReactNode
-  closable?: boolean
-  onClose?: () => void
+  iconSize?: IconSize
+  align?: Align
 }
 
 export function CardHeader({
   className,
-  children,
-  left,
+  cardTitle,
+  cardImage,
+  cardDescription,
   right,
-  closable,
-  onClose,
+  align = 'vertical',
+  iconSize = 'md',
   ...props
 }: CardHeaderProps) {
   return (
     <div
-      className={cn('flex items-center justify-between p-6 text-card-foreground', className)}
+      className={cn('pt-4 px-4 text-card-foreground',
+        'flex justify-between items-center gap-2',
+        className
+      )}
       {...props}
     >
-      {left && <div className="mr-4 shrink-0">{left}</div>}
-      <div className="flex-1 min-w-0 hyphens-auto">
-        {children}
-      </div>
-      {(right || closable) && (
-        <div className="ml-4 flex items-center gap-4 shrink-0">
-          {right}
-          {closable && (
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full hover:bg-muted transition-colors cursor-pointer"
-              aria-label="닫기"
-            >
-              <X className="size-5" />
-            </button>
-          )}
+      <div className={align === 'vertical' ? 'flex flex-col flex-1 items-center gap-1' : 'flex gap-2 items-center'}>
+        {cardImage &&
+          <div className={cn('shrink-0 grid place-items-center overflow-hidden rounded-md', ICON_BOX[iconSize])}>
+            {cardImage}
+          </div>
+        }
+        <div className='flex flex-col gap-1'>
+          {cardTitle && cardTitle}
+          {cardDescription && <span className='text-muted-foreground'>{cardDescription}</span>}
         </div>
-      )}
+      </div>
+      {right && right}
     </div>
   )
 }
 
-interface CardContentProps extends ComponentPropsWithRef<'div'> {
+interface CardBodyProps extends ComponentPropsWithRef<'div'> {
   children?: ReactNode
 }
 
-export function CardContent({ className, children, ...props }: CardContentProps) {
+export function CardBody({ className, children, ...props }: CardBodyProps) {
   return (
-    <div className={cn('p-6 text-card-foreground', className)} {...props}>
+    <div
+      className={cn('p-4 flex-1 min-w-0 text-card-foreground',
+        'pl-(--gutter)',
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   )
@@ -82,7 +115,13 @@ interface CardFooterProps extends ComponentPropsWithRef<'div'> {
 
 export function CardFooter({ className, children, ...props }: CardFooterProps) {
   return (
-    <div className={cn('flex items-center p-6 text-card-foreground', className)} {...props}>
+    <div
+      className={cn('p-4 flex items-center text-card-foreground',
+        'pl-(--gutter)',
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   )
