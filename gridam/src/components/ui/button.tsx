@@ -52,7 +52,7 @@ export default function Button({
         onClick={onClick}
         className={cn(base, variantStyles[variant], sizeStyles[size], className)}
       >
-        {label}로그인
+        {label}
       </button>
     </>
   )
