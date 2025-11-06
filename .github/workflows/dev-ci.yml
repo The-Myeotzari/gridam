@@ -47,6 +47,10 @@ jobs:
           echo "pwd: $(pwd)"
           echo "--- files ---"
           ls -la
+          echo "--- Files in current dir ---"
+          ls -la
+          echo "--- Recursively up to 3 levels ---"
+          find . -maxdepth 3 -type f -name "package*.json"
           echo "--- lockfile check ---"
           find . -maxdepth 4 -name package-lock.json | sed 's/^/FOUND: /'
           echo "--- node/npm ---"
