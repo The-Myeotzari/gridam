@@ -11,7 +11,7 @@ type ButtonProps = {
   size?: Size
   onClick?: () => void
   className?: string
-  label: string
+  label: string | React.ReactNode
 }
 
 const VARIANT_STYLE: Record<Variant, string> = {
@@ -38,7 +38,7 @@ export default function Button({
   variant = 'basic',
   size = 'default',
   onClick,
-  className,
+  className = '',
   label,
   ...props
 }: ButtonProps) {
