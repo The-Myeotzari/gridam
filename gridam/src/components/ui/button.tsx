@@ -11,7 +11,7 @@ type ButtonProps = {
   size?: Size
   onClick?: () => void
   className?: string
-  label: string
+  label: string | React.ReactNode
 }
 
 const VARIANT_STYLE: Record<Variant, string> = {
