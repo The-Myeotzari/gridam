@@ -18,13 +18,13 @@ type ButtonProps = {
 const VARIANT_STYLE: Record<Variant, string> = {
   basic:
     'bg-[var(--color-background)] rounded-md text-[var(--color-navy-gray)] border-[var(--color-accent)] hover:bg-[var(--color-accent)]',
-  blue: 'bg-[var(--color-primary)] rounded-md text-[var(--color-foreground)] border-[var(--color-primary)] hover:brightness-105 active:shadow-inner active:shadow-black/50',
+  blue: 'bg-[var(--color-primary)] rounded-md text-[var(--color-foreground)] border-[var(--color-primary)] hover:brightness-105',
   roundedBasic:
-    'bg-[var(--color-background)] rounded-full text-[var(--color-navy-gray)] border-[var(--color-accent)] hover:bg-[var(--color-accent)] active:shadow-inner active:shadow-black/50',
+    'bg-[var(--color-background)] rounded-full text-[var(--color-navy-gray)] border-[var(--color-accent)] hover:bg-[var(--color-accent)]',
   roundedRed:
-    'bg-[var(--color-background)] rounded-full text-[var(--color-destructive)] border-[var(--color-destructive)] hover:bg-[var(--color-destructive)] hover:text-[var(--color-destructive-foreground)] active:shadow-inner active:shadow-black/50',
+    'bg-[var(--color-background)] rounded-full text-[var(--color-destructive)] border-[var(--color-destructive)] hover:bg-[var(--color-destructive)] hover:text-[var(--color-destructive-foreground)]',
   gradient:
-    'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-coral-pink)] rounded-full text-[var(--color-foreground)] border-0 hover:opacity-90 active:shadow-inner active:shadow-black/50',
+    'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-coral-pink)] rounded-full text-[var(--color-foreground)] border-0 hover:opacity-90',
 }
 
 const VARIANT_ACTIVE_STYLE: Record<Variant, string> = {
