@@ -19,7 +19,7 @@ jobs:
       (github.event.pull_request.merged == true && github.base_ref == 'dev')
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
+    
     env:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
@@ -28,46 +28,71 @@ jobs:
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout code (with submodules just in case)
         uses: actions/checkout@v4
+        with:
+          submodules: recursive 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: gridam/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            gridam/package-lock.json
 
-      # 🔎 잠깐 확인: gridam 폴더/락파일/패키지존재 & 락버전
-      - name: Debug lockfiles & versions
+      - name: Debug paths & lockfiles
         run: |
           echo "pwd=$(pwd)"
+          echo "== tree =="
           ls -la
-          echo "== gridam =="
+          echo "== gridam listing =="
           ls -la gridam || true
-          test -f gridam/package.json || (echo "MISSING gridam/package.json" && exit 1)
-          test -f gridam/package-lock.json || (echo "MISSING gridam/package-lock.json" && exit 1)
-          echo "lockfileVersion:"
-          node -e "console.log(JSON.parse(require('fs').readFileSync('gridam/package-lock.json','utf8')).lockfileVersion)"
-          echo "node/npm versions:"
-          node -v; npm -v
+          echo "== git submodule status =="
+          git submodule status || true
+          echo "== workspaces (root) =="
+          node -e "try{console.log(require('./package.json').workspaces||'NO_WORKSPACES')}catch(e){console.log('NO_ROOT_PACKAGE_JSON')}"
+          echo "== found lockfiles =="
+          find . -maxdepth 3 -name package-lock.json -o -name pnpm-lock.yaml -o -name yarn.lock | sed 's/^/FOUND: /'
+          echo "== node/npm versions =="
+          node -v && npm -v
 
-      - name: Install dependencies
+      - name: Install (auto-detect lockfile)
         run: |
-          cd gridam
-          npm ci
+          set -e
+          if [ -f gridam/package-lock.json ]; then
+            echo "[install] using gridam/package-lock.json"
+            cd gridam
+            npm ci
+          elif [ -f package-lock.json ]; then
+            echo "[install] using root package-lock.json (workspace)"
+            npm ci
+          else
+            echo "::error::No package-lock.json found in gridam or root"
+            exit 1
+          fi
 
       - name: Lint
         run: |
-          cd gridam
-          npm run lint
+          if [ -f gridam/package-lock.json ]; then
+            (cd gridam && npm run lint)
+          else
+            npm run lint -w gridam
+          fi
 
-      - name: Run tests
+      - name: Test
         run: |
-          cd gridam
-          npm test -- --ci
+          if [ -f gridam/package-lock.json ]; then
+            (cd gridam && npm test -- --ci)
+          else
+            npm test -- --ci -w gridam
+          fi
 
-      - name: Build project
+      - name: Build
         run: |
-          cd gridam
-          npm run build
+          if [ -f gridam/package-lock.json ]; then
+            (cd gridam && npm run build)
+          else
+            npm run build -w gridam
+          fi
