@@ -54,15 +54,14 @@ jobs:
           echo "== gridam/.bin =="; ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
 
       - name: Lint
-        env:
-          NODE_ENV: ""          
+        shell: bash
         run: |
-          if [ -x "$GITHUB_WORKSPACE/gridam/node_modules/.bin/eslint" ]; then
-            npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
-          else
-            echo "::error::eslint not found under gridam/node_modules/.bin. devDeps가 설치되지 않았거나 PATH 문제가 있습니다."
-            exit 127
-          fi
+          echo "NODE_ENV before: $NODE_ENV"
+          export NODE_ENV=""
+          echo "NODE_ENV after reset: $NODE_ENV"
+          npx eslint --version || echo "eslint not found yet"
+          npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
+
 
       - name: Run tests
         env:
