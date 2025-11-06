@@ -1,7 +1,5 @@
-title: "🗓️ ${name} Daily Log - YYYY-MM-DD"
+title: "🗓️ Daily Log - YYYY-MM-DD"
 labels: ["daily-log", "update"]
-description: "팀/개인의 일일 로그를 기록합니다."
-
 body:
   - type: markdown
     attributes:
