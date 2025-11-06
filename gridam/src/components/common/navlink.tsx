@@ -9,22 +9,21 @@ type NavLinkProps = {
   activeColor: 'primary' | 'accent' // 명시적으로 지정
 }
 
+// 색상 매핑
+const colorMap = {
+  primary: {
+    active: 'bg-primary text-primary-foreground',
+    hover: 'hover:bg-primary text-foreground',
+  },
+  accent: {
+    active: 'bg-accent text-accent-foreground',
+    hover: 'hover:bg-accent text-foreground',
+  },
+} as const
+
 export default function NavLink({ href, label, activeColor }: NavLinkProps) {
   const pathname = usePathname()
   const isActive = pathname === href
-
-  // 색상 매핑
-  const colorMap = {
-    primary: {
-      active: 'bg-primary text-primary-foreground',
-      hover: 'hover:bg-primary text-foreground',
-    },
-    accent: {
-      active: 'bg-accent text-accent-foreground',
-      hover: 'hover:bg-accent text-foreground',
-    },
-  }
-
   const color = colorMap[activeColor]
 
   return (
