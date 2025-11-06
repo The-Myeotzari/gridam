@@ -48,7 +48,7 @@ export default function DropBox({
 
   return (
     <div ref={rootRef} className={`relative inline-block ${className}`}>
-      {/* 메뉴 열기 버튼 (아이콘 전용 → 공통 Button X) */}
+      {/* 메뉴 열기 버튼 */}
       <Button
         onClick={() => setOpen((v) => !v)}
         isActive={false}
