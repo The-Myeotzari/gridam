@@ -1,8 +1,8 @@
 'use client'
 
+import { CanvasToolbar } from '@/components/ui/canvas-toolbar'
+import { CanvasView } from '@/components/ui/canvas-view'
 import { useCanvasDrawing } from '@/hooks/useCanvasDrawing'
-import { CanvasToolbar } from './canvas-toolbar'
-import { CanvasView } from './canvas-view'
 
 export default function CanvasContainer() {
   const {
