@@ -38,7 +38,7 @@ export default function Button({
   variant = 'basic',
   size = 'default',
   onClick,
-  className,
+  className = '',
   label,
   ...props
 }: ButtonProps) {
