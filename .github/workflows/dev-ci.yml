@@ -21,99 +21,57 @@ jobs:
     timeout-minutes: 15
 
     env:
-      NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
     steps:
-      - name: Checkout code (submodules just in case)
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: |
-            package-lock.json
-            gridam/package-lock.json
+          cache-dependency-path: gridam/package-lock.json
 
-      - name: Debug paths & lockfiles
-        shell: bash
+      - name: Debug (paths & lock)
         run: |
-          set -e
           echo "pwd=$(pwd)"
-          echo "== ls root =="
           ls -la
-          echo "== ls gridam =="
-          ls -la gridam || true
-          echo "== git submodule status =="
-          git submodule status || true
-          echo "== node/npm =="
-          node -v && npm -v
-          echo "== workspaces (root) =="
-          node -e "try{console.log(require('./package.json').workspaces||'NO_WORKSPACES')}catch(e){console.log('NO_ROOT_PACKAGE_JSON')}"
-          echo "== found lockfiles =="
-          find . -maxdepth 3 -name package-lock.json -o -name pnpm-lock.yaml -o -name yarn.lock | sed 's/^/FOUND: /'
+          echo "== gridam =="; ls -la gridam || true
+          echo "== lockfiles =="; find . -maxdepth 3 -name package-lock.json | sed 's/^/FOUND: /'
+          echo "node/npm:"; node -v && npm -v
 
-      - name: Assert lockfile & show lockfileVersion
-        shell: bash
+      - name: Install dependencies
+        env:
+          NODE_ENV: ""             
+          NPM_CONFIG_PRODUCTION: "false"
         run: |
-          set -e
-          if [ -f "$GITHUB_WORKSPACE/gridam/package-lock.json" ]; then
-            echo "FOUND: gridam/package-lock.json"
-            node -e "console.log('lockfileVersion(gridam)=', JSON.parse(require('fs').readFileSync(process.env.GITHUB_WORKSPACE + '/gridam/package-lock.json','utf8')).lockfileVersion)"
-          elif [ -f "$GITHUB_WORKSPACE/package-lock.json" ]; then
-            echo "FOUND: package-lock.json (root)"
-            node -e "console.log('lockfileVersion(root)=', JSON.parse(require('fs').readFileSync(process.env.GITHUB_WORKSPACE + '/package-lock.json','utf8')).lockfileVersion)"
-          else
-            echo "::error::No package-lock.json found in gridam or root. Ensure it's committed."
-            exit 1
-          fi
-
-      # 🔧 락 위치 자동 감지: gridam 우선, 없으면 루트(워크스페이스)
-      - name: Install dependencies (auto-detect)
-        shell: bash
-        run: |
-          set -e
-          if [ -f "$GITHUB_WORKSPACE/gridam/package-lock.json" ]; then
-            echo "[install] using gridam/package-lock.json"
-            npm ci --prefix "$GITHUB_WORKSPACE/gridam"
-          else
-            echo "[install] using root package-lock.json (workspace)"
-            npm ci
-          fi
+          npm ci --include=dev --prefix "$GITHUB_WORKSPACE/gridam"
+          echo "== gridam/.bin =="; ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
 
       - name: Lint
-        shell: bash
+        env:
+          NODE_ENV: ""          
         run: |
-          set -e
-          if [ -f "$GITHUB_WORKSPACE/gridam/package-lock.json" ]; then
+          if [ -x "$GITHUB_WORKSPACE/gridam/node_modules/.bin/eslint" ]; then
             npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
           else
-            npm run lint -w gridam
+            echo "::error::eslint not found under gridam/node_modules/.bin. devDeps가 설치되지 않았거나 PATH 문제가 있습니다."
+            exit 127
           fi
 
       - name: Run tests
-        shell: bash
+        env:
+          NODE_ENV: ""      
         run: |
-          set -e
-          if [ -f "$GITHUB_WORKSPACE/gridam/package-lock.json" ]; then
-            npm test -- --ci --prefix "$GITHUB_WORKSPACE/gridam"
-          else
-            npm test -- --ci -w gridam
-          fi
+          npm test -- --ci --prefix "$GITHUB_WORKSPACE/gridam"
 
       - name: Build project
-        shell: bash
+        env:
+          NODE_ENV: production
         run: |
-          set -e
-          if [ -f "$GITHUB_WORKSPACE/gridam/package-lock.json" ]; then
-            npm run build --prefix "$GITHUB_WORKSPACE/gridam"
-          else
-            npm run build -w gridam
-          fi
+          npm run build --prefix "$GITHUB_WORKSPACE/gridam"
