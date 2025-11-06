@@ -20,6 +20,10 @@ jobs:
       (github.event.pull_request.merged == true && github.base_ref == 'dev')
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    
+    defaults:
+      run:
+        working-directory: gridam
 
     env:
       NODE_ENV: production
