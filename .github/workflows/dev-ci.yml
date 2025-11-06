@@ -30,37 +30,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug structure
+        run: |
+          echo "PWD=$(pwd)"
+          ls -R gridam || true
+          find gridam -maxdepth 2 -name "package*.json"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
           cache-dependency-path: gridam/package-lock.json
 
-      - name: Debug (paths & lock)
-        run: |
-          echo "pwd=$(pwd)"
-          ls -la
-          echo "== gridam =="; ls -la gridam || true
-          echo "== lockfiles =="; find . -maxdepth 3 -name package-lock.json | sed 's/^/FOUND: /'
-          echo "node/npm:"; node -v && npm -v
-
       - name: Install dependencies
-        env:
-          NODE_ENV: ""             
-          NPM_CONFIG_PRODUCTION: "false"
-        run: |
-          npm ci --include=dev --prefix "$GITHUB_WORKSPACE/gridam"
-          echo "== gridam/.bin =="; ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
+        working-directory: gridam
+        run: npm ci --include=dev
 
       - name: Run tests
-        env:
-          NODE_ENV: ""      
-        run: |
-          npm test -- --ci --prefix "$GITHUB_WORKSPACE/gridam"
+        working-directory: gridam
+        run: npm test -- --ci
 
       - name: Build project
+        working-directory: gridam
         env:
           NODE_ENV: production
-        run: |
-          npm run build --prefix "$GITHUB_WORKSPACE/gridam"
+        run: npm run build
