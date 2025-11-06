@@ -12,10 +12,12 @@ const SIZE_STYLE: Record<SizeStyle, string> = {
 
 interface InputType extends React.ComponentProps<'input'> {
   sizeStyle?: SizeStyle
+  type?: React.HTMLInputTypeAttribute
+  className?: string
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputType>(
-  ({ sizeStyle = 'default', type = 'text', className = 'string', ...props }, ref) => {
+  ({ sizeStyle = 'default', type = 'text', className = '', ...props }, ref) => {
     return (
       <input
         type={type}
