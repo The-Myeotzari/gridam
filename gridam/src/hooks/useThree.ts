@@ -63,5 +63,5 @@ export const useThree = (
     }
 
     return () => stopRef.current?.()
-  }, [])
+  }, [mountRef, opts])
 }

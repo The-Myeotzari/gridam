@@ -1,6 +1,6 @@
 'use client'
-import * as React from 'react'
 import cn from '@/utils/cn'
+import * as React from 'react'
 
 type SizeStyle = 'default' | 'sm' | 'md' | 'lg'
 const SIZE_STYLE: Record<SizeStyle, string> = {
@@ -32,5 +32,6 @@ const Input = React.forwardRef<HTMLInputElement, InputType>(
     )
   }
 )
+Input.displayName = 'Input'
 
 export default Input

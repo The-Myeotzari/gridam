@@ -1,5 +1,5 @@
-import { ComponentPropsWithRef, ReactNode } from 'react'
 import cn from '@/utils/cn'
+import { ComponentPropsWithRef, ReactNode } from 'react'
 
 type Align = 'vertical' | 'horizontal'
 type IconSize = 'sm' | 'md' | 'lg'
@@ -8,14 +8,14 @@ type IndentSize = 'none' | 'sm' | 'md' | 'lg'
 const ICON_BOX: Record<IconSize, string> = {
   sm: 'size-10',
   md: 'size-14',
-  lg: 'size-20'
+  lg: 'size-20',
 }
 
 const INDENT_VAR: Record<IndentSize, string> = {
   none: '1rem',
   sm: '4.5rem',
   md: '5rem',
-  lg: '5.5rem'
+  lg: '5.5rem',
 }
 
 interface CardProps extends ComponentPropsWithRef<'div'> {
@@ -40,7 +40,7 @@ export function Card({
         hoverable && 'bg-cream-white border-2 hover:bg-accent/10 transition-colors',
         className
       )}
-      style={{ ...style, ['--gutter' as any]: INDENT_VAR[indent] }}
+      style={{ ...style, ['--gutter' as string]: INDENT_VAR[indent] }}
       {...props}
     >
       {children}
@@ -69,21 +69,33 @@ export function CardHeader({
 }: CardHeaderProps) {
   return (
     <div
-      className={cn('pt-4 px-4 text-card-foreground',
+      className={cn(
+        'pt-4 px-4 text-card-foreground',
         'flex justify-between items-center gap-2',
         className
       )}
       {...props}
     >
-      <div className={align === 'vertical' ? 'flex flex-col flex-1 items-center gap-1' : 'flex gap-2 items-center'}>
-        {cardImage &&
-          <div className={cn('shrink-0 grid place-items-center overflow-hidden rounded-md', ICON_BOX[iconSize])}>
+      <div
+        className={
+          align === 'vertical'
+            ? 'flex flex-col flex-1 items-center gap-1'
+            : 'flex gap-2 items-center'
+        }
+      >
+        {cardImage && (
+          <div
+            className={cn(
+              'shrink-0 grid place-items-center overflow-hidden rounded-md',
+              ICON_BOX[iconSize]
+            )}
+          >
             {cardImage}
           </div>
-        }
-        <div className='flex flex-col gap-1'>
+        )}
+        <div className="flex flex-col gap-1">
           {cardTitle && cardTitle}
-          {cardDescription && <span className='text-muted-foreground'>{cardDescription}</span>}
+          {cardDescription && <span className="text-muted-foreground">{cardDescription}</span>}
         </div>
       </div>
       {right && right}
@@ -98,10 +110,7 @@ interface CardBodyProps extends ComponentPropsWithRef<'div'> {
 export function CardBody({ className, children, ...props }: CardBodyProps) {
   return (
     <div
-      className={cn('p-4 flex-1 min-w-0 text-card-foreground',
-        'pl-(--gutter)',
-        className
-      )}
+      className={cn('p-4 flex-1 min-w-0 text-card-foreground', 'pl-(--gutter)', className)}
       {...props}
     >
       {children}
@@ -116,10 +125,7 @@ interface CardFooterProps extends ComponentPropsWithRef<'div'> {
 export function CardFooter({ className, children, ...props }: CardFooterProps) {
   return (
     <div
-      className={cn('p-4 flex items-center text-card-foreground',
-        'pl-(--gutter)',
-        className
-      )}
+      className={cn('p-4 flex items-center text-card-foreground', 'pl-(--gutter)', className)}
       {...props}
     >
       {children}
