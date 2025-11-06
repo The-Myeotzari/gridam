@@ -1,24 +1,18 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
-
 import js from '@eslint/js'
-import { defineConfig } from 'eslint/config'
-import prettierOff from 'eslint-config-prettier/flat'
+import next from 'eslint-config-next'
+import prettier from 'eslint-config-prettier/flat'
+import globals from 'globals'
+
 import importPlugin from 'eslint-plugin-import'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import unusedImports from 'eslint-plugin-unused-imports'
-import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+export default [
+  js.configs.recommended,
+  ...next,
 
-const compat = new FlatCompat({ baseDirectory: __dirname })
-
-export default defineConfig([
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     ignores: [
       'node_modules/**',
@@ -32,28 +26,25 @@ export default defineConfig([
       'next-env.d.ts',
     ],
   },
+
   {
-    settings: {
-      react: { version: 'detect' },
-      'import/resolver': {
-        typescript: { project: true, alwaysTryTypes: true },
-      },
-    },
-  },
-  {
-    files: ['**/*.{js,jsx}', 'src/**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       react,
-      import: importPlugin,
       'react-hooks': reactHooks,
+      import: importPlugin,
       'unused-imports': unusedImports,
+      '@typescript-eslint': tseslint.plugin,
     },
-    extends: [js.configs.recommended, react.configs.flat.recommended, prettierOff],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: globals.browser,
-      parserOptions: { ecmaFeatures: { jsx: true } },
+      parser: tseslint.parser,
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
+      globals: { ...globals.browser },
     },
     rules: {
       'no-var': 'error',
@@ -64,13 +55,7 @@ export default defineConfig([
       curly: ['error', 'all'],
       'no-debugger': 'error',
       'no-console': ['off', { allow: ['warn', 'error'] }],
-      'no-unreachable-loop': 'error',
-      'no-constructor-return': 'error',
-      'no-constant-binary-expression': 'error',
-      'default-param-last': 'warn',
-      'arrow-body-style': ['warn', 'as-needed'],
-      'no-useless-return': 'warn',
-      yoda: ['error', 'never'],
+
       'import/no-duplicates': 'error',
       'import/newline-after-import': ['warn', { count: 1 }],
       'import/order': [
@@ -81,70 +66,11 @@ export default defineConfig([
           groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index'], 'type'],
         },
       ],
-      'no-unused-vars': 'off',
-      'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': ['off', { args: 'after-used', ignoreRestSiblings: true }],
-      'react/prop-types': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/jsx-uses-react': 'off',
-      'react/display-name': 'off',
-      'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true }],
-      'react/no-unknown-property': 'error',
-      'react/jsx-no-useless-fragment': ['warn', { allowExpressions: true }],
-      'react/jsx-curly-brace-presence': ['warn', { props: 'never', children: 'never' }],
-      'react/jsx-no-bind': ['warn', { allowArrowFunctions: true }],
-      'react/jsx-no-duplicate-props': ['error', { ignoreCase: true }],
-      'react/self-closing-comp': ['warn', { component: true, html: true }],
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-    },
-  },
-  {
-    files: ['**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
-    plugins: {
-      '@typescript-eslint': tseslint.plugin,
-      react,
-      import: importPlugin,
-      'react-hooks': reactHooks,
-      'unused-imports': unusedImports,
-    },
-    extends: [
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-      prettierOff,
-    ],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        project: ['./tsconfig.json'],
-        tsconfigRootDir: __dirname,
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        ecmaFeatures: { jsx: true },
-      },
-      globals: globals.browser,
-    },
-    rules: {
-      'no-undef': 'off',
+
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
-      'import/no-duplicates': 'error',
-      'import/newline-after-import': ['warn', { count: 1 }],
-      'import/order': [
-        'warn',
-        {
-          'newlines-between': 'always',
-          alphabetize: { order: 'asc', caseInsensitive: true },
-          groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index'], 'type'],
-        },
-      ],
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/await-thenable': 'warn',
-      '@typescript-eslint/no-misused-promises': [
-        'warn',
-        { checksVoidReturn: { attributes: false } },
-      ],
+      'unused-imports/no-unused-vars': ['off', { args: 'after-used', ignoreRestSiblings: true }],
 
       ...react.configs.flat.recommended.rules,
       ...reactHooks.configs.recommended.rules,
@@ -152,12 +78,12 @@ export default defineConfig([
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
       'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true }],
-      'react/no-unknown-property': 'error',
       'react/self-closing-comp': ['warn', { component: true, html: true }],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
     },
   },
+
   {
     files: [
       'eslint.config.*',
@@ -171,6 +97,7 @@ export default defineConfig([
       globals: globals.node,
     },
   },
+
   {
     files: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
     languageOptions: {
@@ -180,4 +107,6 @@ export default defineConfig([
       },
     },
   },
-])
+
+  prettier,
+]
