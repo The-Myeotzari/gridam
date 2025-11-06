@@ -37,28 +37,41 @@ jobs:
           cache: 'npm'
           cache-dependency-path: gridam/package-lock.json
 
-      - name: Install dependencies (include dev)
+      - name: Debug (paths & lock)
+        run: |
+          echo "pwd=$(pwd)"
+          ls -la
+          echo "== gridam =="; ls -la gridam || true
+          echo "== lockfiles =="; find . -maxdepth 3 -name package-lock.json | sed 's/^/FOUND: /'
+          echo "node/npm:"; node -v && npm -v
+
+      - name: Install dependencies
         env:
-          NODE_ENV: ""               
+          NODE_ENV: ""             
           NPM_CONFIG_PRODUCTION: "false"
         run: |
           npm ci --include=dev --prefix "$GITHUB_WORKSPACE/gridam"
-          ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
+          echo "== gridam/.bin =="; ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
 
       - name: Lint
         env:
-          NODE_ENV: ""               
+          NODE_ENV: ""          
         run: |
-          npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
+          if [ -x "$GITHUB_WORKSPACE/gridam/node_modules/.bin/eslint" ]; then
+            npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
+          else
+            echo "::error::eslint not found under gridam/node_modules/.bin. devDeps가 설치되지 않았거나 PATH 문제가 있습니다."
+            exit 127
+          fi
 
       - name: Run tests
         env:
-          NODE_ENV: ""                
+          NODE_ENV: ""      
         run: |
           npm test -- --ci --prefix "$GITHUB_WORKSPACE/gridam"
 
       - name: Build project
         env:
-          NODE_ENV: production         
+          NODE_ENV: production
         run: |
           npm run build --prefix "$GITHUB_WORKSPACE/gridam"
