@@ -53,16 +53,45 @@ jobs:
           npm ci --include=dev --prefix "$GITHUB_WORKSPACE/gridam"
           echo "== gridam/.bin =="; ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
 
-      - name: Lint
-        env:
-          NODE_ENV: ""          
+      - name: Lint (hard override)
+        shell: bash
         run: |
-          if [ -x "$GITHUB_WORKSPACE/gridam/node_modules/.bin/eslint" ]; then
-            npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
-          else
-            echo "::error::eslint not found under gridam/node_modules/.bin. devDeps가 설치되지 않았거나 PATH 문제가 있습니다."
-            exit 127
+          set -e
+
+          echo "NODE_ENV(before)=$NODE_ENV"
+          # ✅ 어떤 전역 주입값이 있어도 이 스텝에서는 무효화
+          export NODE_ENV=""
+          export NPM_CONFIG_PRODUCTION=false
+          echo "NODE_ENV(after)=$NODE_ENV"
+
+          APP_DIR="$GITHUB_WORKSPACE/gridam"
+          ESLINT_LOCAL="$APP_DIR/node_modules/.bin/eslint"
+          ESLINT_ROOT="$GITHUB_WORKSPACE/node_modules/.bin/eslint"
+
+          echo "== check eslint bins =="
+          [ -x "$ESLINT_LOCAL" ] && echo "FOUND local eslint: $ESLINT_LOCAL" || echo "MISS local eslint"
+          [ -x "$ESLINT_ROOT" ] && echo "FOUND root eslint:  $ESLINT_ROOT"  || echo "MISS root eslint"
+
+          # 1) gridam/node_modules에 있으면 그걸로 실행
+          if [ -x "$ESLINT_LOCAL" ]; then
+            echo "[lint] use local eslint"
+            "$ESLINT_LOCAL" --version
+            npm run lint --prefix "$APP_DIR"
+            exit 0
           fi
+
+          # 2) 루트에 있으면 그걸로 gridam 소스 린트
+          if [ -x "$ESLINT_ROOT" ]; then
+            echo "[lint] use root eslint to lint gridam"
+            "$ESLINT_ROOT" --version
+            "$ESLINT_ROOT" "$APP_DIR/**/*.{js,cjs,mjs,jsx,ts,tsx}"
+            exit 0
+          fi
+
+          # 3) 둘 다 없으면 npx로 임시 실행 (레포에 eslint 선언돼 있으니 lock 기준으로 내려옴)
+          echo "[lint] eslint not found in node_modules; fallback to npx"
+          npx --yes --prefix "$APP_DIR" eslint --version
+          npx --yes --prefix "$APP_DIR" eslint "$APP_DIR/**/*.{js,cjs,mjs,jsx,ts,tsx}"
 
       - name: Run tests
         env:
