@@ -22,8 +22,8 @@ jobs:
 
     defaults:
       run:
-        working-directory: gridam/gridam
-
+        working-directory: gridam/gridam 
+        
     env:
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
@@ -43,19 +43,31 @@ jobs:
 
       - name: Debug (paths & lock)
         run: |
-          echo "pwd=$(pwd)"
+          echo "== Debug Info =="
+          echo "pwd: $(pwd)"
+          echo "--- files ---"
           ls -la
-          echo "== lockfiles =="; find . -maxdepth 4 -name package-lock.json | sed 's/^/FOUND: /'
-          echo "node/npm:"; node -v && npm -v
+          echo "--- lockfile check ---"
+          find . -maxdepth 4 -name package-lock.json | sed 's/^/FOUND: /'
+          echo "--- node/npm ---"
+          node -v && npm -v
 
       - name: Install dependencies
         env:
           NODE_ENV: ""
           NPM_CONFIG_PRODUCTION: "false"
-        run: npm ci --include=dev   # ✅ prefix 제거 (working-directory 덕분에 자동 인식됨)
+        run: |
+          npm ci --include=dev
+          echo "--- bin ---"
+          ls -la node_modules/.bin | head -n 10
 
       - name: Lint
-        run: npm run lint
+        env:
+          NODE_ENV: ""
+        run: |
+          echo "--- ESLint Version ---"
+          npx eslint --version
+          npm run lint
 
       - name: Run tests
         env:
