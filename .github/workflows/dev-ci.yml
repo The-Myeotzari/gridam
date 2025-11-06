@@ -21,7 +21,6 @@ jobs:
     timeout-minutes: 15
 
     env:
-      NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
