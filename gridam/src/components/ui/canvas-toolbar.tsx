@@ -32,6 +32,7 @@ export function CanvasToolbar({
     <div className="flex items-center gap-3">
       {palette.map((c) => (
         <button
+          key={`toolbal-${c}`}
           type="button"
           aria-label={`pick ${c}`}
           onClick={() => {

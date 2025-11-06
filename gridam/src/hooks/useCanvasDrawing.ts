@@ -7,12 +7,6 @@ type Options = {
   historyLimit?: number
 }
 
-function resolveColor(input: string): string {
-  if (!input.startsWith('var(')) return input
-  const name = input.slice(4, -1).trim()
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#000'
-}
-
 export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
@@ -21,6 +15,12 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
 
   const [color, setColor] = useState('var(--color-canva-red)')
   const [isEraser, setIsEraser] = useState(false)
+
+  const resolveColor = useCallback((input: string): string => {
+    if (!input.startsWith('var(')) return input
+    const name = input.slice(4, -1).trim()
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#000'
+  }, [])
 
   const pushSnapshot = useCallback(() => {
     const c = canvasRef.current
@@ -139,7 +139,7 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
 
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
-  }, [])
+  }, [setupCanvas, pushSnapshot])
 
   return {
     // refs
