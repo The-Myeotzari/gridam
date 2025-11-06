@@ -30,39 +30,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug repo structure
+      - name: Debug structure
         run: |
-          echo "PWD: $(pwd)"
-          echo "--- 1 depth ---"
-          ls -la
-          echo "--- 2 depth ---"
-          ls -la gridam || true
-          echo "--- 3 depth ---"
-          ls -la gridam/gridam || true
-          echo "--- Find package*.json ---"
-          find . -maxdepth 3 -name "package*.json"
+          echo "PWD=$(pwd)"
+          ls -R gridam || true
+          find gridam -maxdepth 2 -name "package*.json"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm # ⚠️ 캐시만 활성화
-          # ❌ cache-dependency-path는 제거 (lockfile이 없기 때문)
+          cache: npm
+          cache-dependency-path: gridam/package-lock.json
 
       - name: Install dependencies
-        working-directory: gridam/gridam
-        run: npm install --include=dev
+        working-directory: gridam
+        run: npm ci --include=dev
 
       - name: Lint
-        working-directory: gridam/gridam
+        working-directory: gridam
         run: npm run lint
 
       - name: Run tests
-        working-directory: gridam/gridam
+        working-directory: gridam
         run: npm test -- --ci
 
       - name: Build project
-        working-directory: gridam/gridam
+        working-directory: gridam
         env:
           NODE_ENV: production
         run: npm run build
