@@ -11,19 +11,28 @@ type ButtonProps = {
   size?: Size
   onClick?: () => void
   className?: string
-  label: string
+  label: string | React.ReactNode
+  isActive: boolean
 }
 
 const VARIANT_STYLE: Record<Variant, string> = {
   basic:
-    'bg-[var(--color-background)] rounded-md text-[var(--color-navy-gray)] border-[var(--color-soft-yellow)] hover:bg-[var(--color-soft-yellow)]',
+    'bg-[var(--color-background)] rounded-md text-[var(--color-navy-gray)] border-[var(--color-accent)] hover:bg-[var(--color-accent)]',
   blue: 'bg-[var(--color-primary)] rounded-md text-[var(--color-foreground)] border-[var(--color-primary)] hover:brightness-105',
   roundedBasic:
-    'bg-[var(--color-background)] rounded-full text-[var(--color-navy-gray)] border-[var(--color-soft-yellow)] hover:bg-[var(--color-soft-yellow)]',
+    'bg-[var(--color-background)] rounded-full text-[var(--color-navy-gray)] border-[var(--color-accent)] hover:bg-[var(--color-accent)]',
   roundedRed:
-    'bg-[var(--color-background)] rounded-full text-[var(--color-destructive)] border-[var(--color-destructive)] hover:bg-[var(--color-destructive)] hover:text-[var(--color-destructive-foreground)] ',
+    'bg-[var(--color-background)] rounded-full text-[var(--color-destructive)] border-[var(--color-destructive)] hover:bg-[var(--color-destructive)] hover:text-[var(--color-destructive-foreground)]',
   gradient:
     'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-coral-pink)] rounded-full text-[var(--color-foreground)] border-0 hover:opacity-90',
+}
+
+const VARIANT_ACTIVE_STYLE: Record<Variant, string> = {
+  basic: 'bg-[var(--color-accent)]',
+  blue: 'bg-[var(--color-primary)]',
+  roundedBasic: 'bg-[var(--color-accent)]',
+  roundedRed: 'bg-[var(--color-destructive)] text-[var(--color-popover)]',
+  gradient: 'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-coral-pink)]',
 }
 
 const SIZE_STYLE: Record<Size, string> = {
@@ -38,8 +47,9 @@ export default function Button({
   variant = 'basic',
   size = 'default',
   onClick,
-  className,
+  className = '',
   label,
+  isActive = true,
   ...props
 }: ButtonProps) {
   // 기본 스타일
@@ -52,7 +62,13 @@ export default function Button({
       <button
         type={type}
         onClick={onClick}
-        className={cn(base, VARIANT_STYLE[variant], SIZE_STYLE[size], className)}
+        className={cn(
+          base,
+          VARIANT_STYLE[variant],
+          SIZE_STYLE[size],
+          isActive ? VARIANT_ACTIVE_STYLE[variant] : '',
+          className
+        )}
         {...props}
       >
         {label}
