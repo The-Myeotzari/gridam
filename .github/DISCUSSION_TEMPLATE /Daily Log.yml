@@ -2,6 +2,7 @@ name: "Daily Log"
 description: "팀/개인의 일일 로그를 기록합니다."
 title: "🗓️ ${name} Daily Log - YYYY-MM-DD"
 labels: ["daily-log", "update"]
+category: "Daily Log"
 
 body:
   - type: markdown
