@@ -1,4 +1,3 @@
-# .github/workflows/dev-ci.yml
 name: CI for dev PRs and merges
 
 on:
@@ -21,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    # ⚠️ 전역 NODE_ENV=production 두지 마세요 (devDeps 설치가 스킵됨)
     env:
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
@@ -39,48 +37,28 @@ jobs:
           cache: 'npm'
           cache-dependency-path: gridam/package-lock.json
 
-      - name: Debug (paths & lock)
-        run: |
-          echo "pwd=$(pwd)"
-          ls -la
-          echo "== gridam =="
-          ls -la gridam || true
-          echo "== found lockfiles =="
-          find . -maxdepth 3 -name package-lock.json | sed 's/^/FOUND: /'
-          echo "node/npm:"
-          node -v && npm -v
-
-      # ⬇️ devDependencies 설치 보장 (NODE_ENV 비우고 --include=dev)
-      - name: Install dependencies
+      - name: Install dependencies (include dev)
         env:
-          NODE_ENV: ""                 # 중요
+          NODE_ENV: ""               
           NPM_CONFIG_PRODUCTION: "false"
         run: |
           npm ci --include=dev --prefix "$GITHUB_WORKSPACE/gridam"
-          echo "== bins in gridam =="
           ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
 
-      # ⬇️ eslint 바이너리 존재 검증 + 린트 실행
       - name: Lint
         env:
-          NODE_ENV: ""                 # 중요
+          NODE_ENV: ""               
         run: |
-          if [ -x "$GITHUB_WORKSPACE/gridam/node_modules/.bin/eslint" ]; then
-            npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
-          else
-            echo "::error::eslint not found. devDependencies가 설치되지 않았거나 path가 잘못되었습니다."
-            exit 127
-          fi
+          npm run lint --prefix "$GITHUB_WORKSPACE/gridam"
 
       - name: Run tests
         env:
-          NODE_ENV: ""                 # 중요
+          NODE_ENV: ""                
         run: |
           npm test -- --ci --prefix "$GITHUB_WORKSPACE/gridam"
 
-      # ✅ 빌드에서만 production
       - name: Build project
         env:
-          NODE_ENV: production
+          NODE_ENV: production         
         run: |
           npm run build --prefix "$GITHUB_WORKSPACE/gridam"
