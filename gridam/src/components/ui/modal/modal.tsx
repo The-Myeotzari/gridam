@@ -16,6 +16,14 @@ interface ModalProps extends ComponentPropsWithRef<'div'> {
   closeOnEscape?: boolean
 }
 
+const sizeClasses: Record<ModalSize, string> = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+  '2xl': 'max-w-2xl',
+}
+
 export function Modal({
   open,
   onClose,
@@ -67,13 +75,19 @@ export function Modal({
 
   // 모달 열릴 때 첫 번째 포커스 가능한 요소로 포커스
   useEffect(() => {
-    if (!open) return
+    const modal = modalRef.current
+    if (!modal || !open) return
 
     const focusableElements = modalRef.current?.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
     const firstElement = focusableElements?.[0] as HTMLElement
-    firstElement?.focus()
+    if (firstElement) {
+      firstElement?.focus()
+    } else {
+      modal.tabIndex = -1
+      modal.focus()
+    }
   }, [open])
 
   if (!open) return null
@@ -82,14 +96,6 @@ export function Modal({
     if (closeOnBackdrop && e.target === e.currentTarget) {
       onClose()
     }
-  }
-
-  const sizeClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
-    '2xl': 'max-w-2xl',
   }
 
   const modalContent = (
