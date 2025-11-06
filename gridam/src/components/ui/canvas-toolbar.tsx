@@ -1,7 +1,7 @@
 'use client'
 
+import Button from '@/components/ui/button'
 import { Trash2, Undo2 } from 'lucide-react'
-import Button from '../ui/button'
 
 type Props = {
   isEraser: boolean
