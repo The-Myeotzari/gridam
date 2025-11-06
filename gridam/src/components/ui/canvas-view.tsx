@@ -1,5 +1,6 @@
 'use client'
 
+import cn from '@/utils/cn'
 import React from 'react'
 
 type Props = {
@@ -8,7 +9,6 @@ type Props = {
   onPointerMove: (e: React.PointerEvent<HTMLCanvasElement>) => void
   onPointerUpOrLeave: (e: React.PointerEvent<HTMLCanvasElement>) => void
   className?: string
-  width?: number
   height?: number
 }
 
@@ -18,16 +18,16 @@ export function CanvasView({
   onPointerMove,
   onPointerUpOrLeave,
   className,
-  width = 600,
-  height = 300,
+  height = 600,
 }: Props) {
-  if (!canvasRef) return
+  if (!canvasRef) return null
+
   return (
-    <div className="border border-gray-200 rounded-xl bg-white shadow-sm">
+    <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm">
       <canvas
         ref={canvasRef}
-        className={className ?? 'cursor-crosshair rounded-xl'}
-        style={{ width, height }}
+        className={cn('block w-full rounded-xl cursor-crosshair', className)}
+        style={{ height }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUpOrLeave}
