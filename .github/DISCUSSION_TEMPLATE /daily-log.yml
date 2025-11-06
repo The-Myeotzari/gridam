@@ -1,5 +1,6 @@
 title: "🗓️ Daily Log - YYYY-MM-DD"
 labels: ["daily-log", "update"]
+
 body:
   - type: markdown
     attributes:
