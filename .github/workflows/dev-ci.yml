@@ -22,8 +22,8 @@ jobs:
 
     defaults:
       run:
-        working-directory: gridam/gridam 
-        
+        working-directory: gridam/gridam   # ✅ gridam/gridam 기준으로 실행
+
     env:
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
@@ -39,9 +39,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: gridam/gridam/package-lock.json
+          cache-dependency-path: gridam/gridam/package-lock.json   # ✅ lock 파일 경로 명확히 지정
 
-      - name: Debug (paths & lock)
+      - name: Debug project structure
         run: |
           echo "== Debug Info =="
           echo "pwd: $(pwd)"
@@ -59,7 +59,7 @@ jobs:
         run: |
           npm ci --include=dev
           echo "--- bin ---"
-          ls -la node_modules/.bin | head -n 10
+          ls -la node_modules/.bin | head -n 20
 
       - name: Lint
         env:
