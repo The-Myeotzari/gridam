@@ -14,16 +14,11 @@ concurrency:
 
 jobs:
   build-and-test:
-    # 조건: PR이 열려있거나, dev로 머지되었을 때
     if: >
       github.event.pull_request.state == 'open' ||
       (github.event.pull_request.merged == true && github.base_ref == 'dev')
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
-    defaults:
-      run:
-        working-directory: gridam
 
     env:
       NODE_ENV: production
@@ -40,17 +35,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'   
+          cache: 'npm'
           cache-dependency-path: gridam/package-lock.json
 
+      # 🔎 잠깐 확인: gridam 폴더/락파일/패키지존재 & 락버전
+      - name: Debug lockfiles & versions
+        run: |
+          echo "pwd=$(pwd)"
+          ls -la
+          echo "== gridam =="
+          ls -la gridam || true
+          test -f gridam/package.json || (echo "MISSING gridam/package.json" && exit 1)
+          test -f gridam/package-lock.json || (echo "MISSING gridam/package-lock.json" && exit 1)
+          echo "lockfileVersion:"
+          node -e "console.log(JSON.parse(require('fs').readFileSync('gridam/package-lock.json','utf8')).lockfileVersion)"
+          echo "node/npm versions:"
+          node -v; npm -v
+
       - name: Install dependencies
-        run: npm ci
+        run: |
+          cd gridam
+          npm ci
 
       - name: Lint
-        run: npm run lint
+        run: |
+          cd gridam
+          npm run lint
 
       - name: Run tests
-        run: npm test -- --ci
+        run: |
+          cd gridam
+          npm test -- --ci
 
       - name: Build project
-        run: npm run build
+        run: |
+          cd gridam
+          npm run build
