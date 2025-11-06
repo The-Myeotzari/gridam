@@ -20,10 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    defaults:
-      run:
-        working-directory: gridam/gridam   # ✅ gridam/gridam 기준으로 실행
-
     env:
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
@@ -34,51 +30,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug repo structure
+        run: |
+          echo "PWD: $(pwd)"
+          echo "--- 1 depth ---"
+          ls -la
+          echo "--- 2 depth ---"
+          ls -la gridam || true
+          echo "--- 3 depth ---"
+          ls -la gridam/gridam || true
+          echo "--- Find package*.json ---"
+          find . -maxdepth 3 -name "package*.json"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: gridam/gridam/package-lock.json   # ✅ lock 파일 경로 명확히 지정
-
-      - name: Debug project structure
-        run: |
-          echo "== Debug Info =="
-          echo "pwd: $(pwd)"
-          echo "--- files ---"
-          ls -la
-          echo "--- Files in current dir ---"
-          ls -la
-          echo "--- Recursively up to 3 levels ---"
-          find . -maxdepth 3 -type f -name "package*.json"
-          echo "--- lockfile check ---"
-          find . -maxdepth 4 -name package-lock.json | sed 's/^/FOUND: /'
-          echo "--- node/npm ---"
-          node -v && npm -v
+          node-version: 20
+          cache: npm # ⚠️ 캐시만 활성화
+          # ❌ cache-dependency-path는 제거 (lockfile이 없기 때문)
 
       - name: Install dependencies
-        env:
-          NODE_ENV: ""
-          NPM_CONFIG_PRODUCTION: "false"
-        run: |
-          npm ci --include=dev
-          echo "--- bin ---"
-          ls -la node_modules/.bin | head -n 20
+        working-directory: gridam/gridam
+        run: npm install --include=dev
 
       - name: Lint
-        env:
-          NODE_ENV: ""
-        run: |
-          echo "--- ESLint Version ---"
-          npx eslint --version
-          npm run lint
+        working-directory: gridam/gridam
+        run: npm run lint
 
       - name: Run tests
-        env:
-          NODE_ENV: ""
+        working-directory: gridam/gridam
         run: npm test -- --ci
 
       - name: Build project
+        working-directory: gridam/gridam
         env:
           NODE_ENV: production
         run: npm run build
