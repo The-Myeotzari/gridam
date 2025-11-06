@@ -20,6 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    defaults:
+      run:
+        working-directory: gridam/gridam
+
     env:
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
@@ -35,32 +39,30 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: gridam/package-lock.json
+          cache-dependency-path: gridam/gridam/package-lock.json
 
       - name: Debug (paths & lock)
         run: |
           echo "pwd=$(pwd)"
           ls -la
-          echo "== gridam =="; ls -la gridam || true
-          echo "== lockfiles =="; find . -maxdepth 3 -name package-lock.json | sed 's/^/FOUND: /'
+          echo "== lockfiles =="; find . -maxdepth 4 -name package-lock.json | sed 's/^/FOUND: /'
           echo "node/npm:"; node -v && npm -v
 
       - name: Install dependencies
         env:
-          NODE_ENV: ""             
+          NODE_ENV: ""
           NPM_CONFIG_PRODUCTION: "false"
-        run: |
-          npm ci --include=dev --prefix "$GITHUB_WORKSPACE/gridam"
-          echo "== gridam/.bin =="; ls -la "$GITHUB_WORKSPACE/gridam/node_modules/.bin" || true
+        run: npm ci --include=dev   # ✅ prefix 제거 (working-directory 덕분에 자동 인식됨)
+
+      - name: Lint
+        run: npm run lint
 
       - name: Run tests
         env:
-          NODE_ENV: ""      
-        run: |
-          npm test -- --ci --prefix "$GITHUB_WORKSPACE/gridam"
+          NODE_ENV: ""
+        run: npm test -- --ci
 
       - name: Build project
         env:
           NODE_ENV: production
-        run: |
-          npm run build --prefix "$GITHUB_WORKSPACE/gridam"
+        run: npm run build
