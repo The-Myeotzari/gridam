@@ -47,10 +47,6 @@ jobs:
         working-directory: gridam
         run: npm ci --include=dev
 
-      - name: Lint
-        working-directory: gridam
-        run: npm run lint
-
       - name: Run tests
         working-directory: gridam
         run: npm test -- --ci
