@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 type NavLinkProps = {
   href: string
   label: string
-  activeColor: 'primary' | 'accent' // 명시적으로 지정
+  activeColor: ActiveColor // colorMap의 Key 타입과 동일
 }
 
 // 색상 매핑
@@ -20,6 +20,9 @@ const colorMap = {
     hover: 'hover:bg-accent text-foreground',
   },
 } as const
+
+// colorMap의 Key를 자동으로 추출
+type ActiveColor = keyof typeof colorMap
 
 export default function NavLink({ href, label, activeColor }: NavLinkProps) {
   const pathname = usePathname()
