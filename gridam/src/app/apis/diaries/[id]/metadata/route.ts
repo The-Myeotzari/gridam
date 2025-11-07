@@ -8,7 +8,7 @@ const schema = z.object({
   weather: z.any().nullable().optional(),
 })
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await getSupabaseServer()
   const {
     data: { user },
@@ -18,9 +18,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   const body = await req.json()
   const parsed = schema.safeParse(body)
   if (!parsed.success) return fail(parsed.error.message, 422)
-
+  const { id } = await params
   const { error } = await supabase.from('metadata').upsert({
-    diary_id: params.id,
+    diary_id: id,
     date: parsed.data.date,
     timezone: parsed.data.timezone,
     weather: parsed.data.weather ?? null,
