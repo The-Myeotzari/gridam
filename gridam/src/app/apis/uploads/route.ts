@@ -1,8 +1,8 @@
 import { fail, ok } from '@/app/apis/_lib/http'
-import useSupabaseServer from '@/utils/supabase/server'
+import getSupabaseServer from '@/utils/supabase/server'
 
 export async function POST(req: Request) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
