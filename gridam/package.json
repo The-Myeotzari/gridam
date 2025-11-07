@@ -27,6 +27,8 @@
     "postcss": "^8.5.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "swagger-ui": "^5.30.2",
+    "swagger-ui-react": "^5.30.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.16",
     "three": "^0.181.0",
@@ -56,6 +58,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.6.2",
     "supabase": "^2.54.11",
+    "swagger-jsdoc": "^6.2.8",
     "ts-node": "^10.9.2",
     "typescript": "^5",
     "typescript-eslint": "^8.46.3"
