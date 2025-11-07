@@ -48,6 +48,16 @@
   /* Shadows (HSL with alpha) */
   --shadow-soft: 0 4px 20px hsl(208 100% 84% / 0.2);
   --shadow-card: 0 2px 10px hsl(235 21% 22% / 0.08);
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Canvas */
+  --color-canva-red: hsl(0, 100%, 70%);
+  --color-canva-blue: hsl(174, 64%, 55%);
+  --color-canva-green: hsl(168, 54%, 73%);
+  --color-canva-yellow: hsl(52, 100%, 71%);
+  --color-canva-black: hsl(235, 22%, 21%);
 }
 
 * {
@@ -78,6 +88,7 @@ body {
 .hover-float {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .hover-float:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-soft);
@@ -87,9 +98,11 @@ body {
 .glow-sunny {
   box-shadow: 0 0 20px hsl(50 100% 81% / 0.4);
 }
+
 .glow-rainy {
   box-shadow: 0 0 20px hsl(208 100% 84% / 0.4);
 }
+
 .glow-snowy {
   box-shadow: 0 0 20px hsl(0 0% 100% / 0.6);
 }
@@ -98,6 +111,7 @@ body {
 .diary-table {
   border: 3px solid var(--color-foreground);
 }
+
 .diary-table th,
 .diary-table td {
   border: 2px solid var(--color-foreground);
@@ -110,6 +124,7 @@ body {
   grid-template-columns: repeat(10, 1fr);
   gap: 0;
 }
+
 .diary-grid-cell {
   border: 1px solid var(--color-foreground);
   aspect-ratio: 1;
@@ -123,9 +138,11 @@ body {
   background: hsl(0 0% 100%);
   transition: background-color 0.2s;
 }
+
 .diary-grid-cell:hover {
   background: var(--color-muted);
 }
+
 .diary-grid-cell:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
