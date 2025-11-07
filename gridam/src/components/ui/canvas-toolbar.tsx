@@ -1,16 +1,8 @@
 'use client'
 
 import Button from '@/components/ui/button'
+import { useCanvasStore } from '@/store/useCanvas'
 import { Trash2, Undo2 } from 'lucide-react'
-
-type Props = {
-  isEraser: boolean
-  setIsEraser: (value: boolean) => void
-  setColor: (c: string) => void
-  toggleEraser: () => void
-  handleUndo: () => void
-  clearCanvas: () => void
-}
 
 const palette = [
   'var(--color-canva-red)',
@@ -20,33 +12,42 @@ const palette = [
   'var(--color-canva-black)',
 ]
 
-export function CanvasToolbar({
-  isEraser,
-  setIsEraser,
-  setColor,
-  toggleEraser,
-  handleUndo,
-  clearCanvas,
-}: Props) {
-  return (
-    <div className="flex items-center gap-3">
-      {palette.map((c) => (
-        <button
-          key={`toolbal-${c}`}
-          type="button"
-          aria-label={`pick ${c}`}
-          onClick={() => {
-            setIsEraser(false)
-            setColor(c)
-          }}
-          className="w-6 h-6 rounded-full border border-black/5 shadow-sm"
-          style={{ backgroundColor: c }}
-        />
-      ))}
+type Props = {
+  handleUndo: () => void
+  clearCanvas: () => void
+}
 
-      <Button onClick={toggleEraser} label={isEraser ? '✏️ 펜으로' : '🧽 지우개'} />
-      <Button onClick={handleUndo} label={<Undo2 size={18} />} />
-      <Button onClick={clearCanvas} label={<Trash2 size={18} />} />
+export function CanvasToolbar({ handleUndo, clearCanvas }: Props) {
+  const { color, isEraser, toggleEraser, setColor } = useCanvasStore()
+
+  return (
+    <div className="w-full flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        {palette.map((c) => {
+          const active = color === c
+          return (
+            <Button
+              key={c}
+              type="button"
+              size="icon"
+              variant="roundedBasic"
+              onClick={() => {
+                if (isEraser) toggleEraser()
+                setColor(c)
+              }}
+              aria-pressed={active}
+              label={<span className="block w-5 h-5 rounded-full" style={{ backgroundColor: c }} />}
+              isActive={active}
+            />
+          )
+        })}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button type="button" onClick={toggleEraser} label={isEraser ? '✏️ 펜으로' : '🧽 지우개'} />
+        <Button type="button" onClick={handleUndo} label={<Undo2 size={18} />} />
+        <Button type="button" onClick={clearCanvas} label={<Trash2 size={18} />} />
+      </div>
     </div>
   )
 }
