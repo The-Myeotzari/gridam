@@ -1,13 +1,11 @@
 title: "🗓️ Daily Log - YYYY-MM-DD"
 labels: ["daily-log", "update"]
-
 body:
   - type: markdown
     attributes:
       value: |
         ## 🌅 오늘의 로그
         아래 양식을 채워주세요.
-
   - type: input
     id: date
     attributes:
@@ -16,7 +14,6 @@ body:
       placeholder: "YYYY-MM-DD"
     validations:
       required: true
-
   - type: textarea
     id: today_work
     attributes:
@@ -28,7 +25,6 @@ body:
         - 회의 C 참석
     validations:
       required: true
-
   - type: textarea
     id: blockers
     attributes:
@@ -39,7 +35,6 @@ body:
         - 디자인 시안 미수령
     validations:
       required: false
-
   - type: textarea
     id: tomorrow_plan
     attributes:
@@ -50,7 +45,6 @@ body:
         - QA 테스트 준비
     validations:
       required: false
-
   - type: textarea
     id: notes
     attributes:
