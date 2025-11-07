@@ -1,5 +1,5 @@
 import { fail, ok } from '@/app/apis/_lib/http'
-import useSupabaseServer from '@/utils/supabase/server'
+import getSupabaseServer from '@/utils/supabase/server'
 import { z } from 'zod'
 
 const createSchema = z.object({
@@ -37,7 +37,7 @@ const querySchema = z.object({
  *                   example: 객체..
  */
 export async function GET(req: Request) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -61,7 +61,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()

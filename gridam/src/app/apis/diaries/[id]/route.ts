@@ -1,6 +1,14 @@
 import { fail, ok } from '@/app/apis/_lib/http'
-import useSupabaseServer from '@/utils/supabase/server'
+import getSupabaseServer from '@/utils/supabase/server'
 import { z } from 'zod'
+
+type DiaryPatch = {
+  content?: string;
+  emoji?: string;
+  image_url?: string | null;
+  status?: 'draft' | 'published';
+  published_at?: string | null;
+}
 
 const updateSchema = z.object({
   content: z.string().min(1).max(200).optional(),
@@ -10,7 +18,7 @@ const updateSchema = z.object({
 })
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -22,7 +30,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -32,7 +40,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const parsed = updateSchema.safeParse(body)
   if (!parsed.success) return fail(parsed.error.message, 422)
 
-  const patch: any = {}
+  const patch: DiaryPatch = {}
   if (parsed.data.content !== undefined) patch.content = parsed.data.content
   if (parsed.data.emoji !== undefined) patch.emoji = parsed.data.emoji
   if (parsed.data.imageUrl !== undefined) patch.image_url = parsed.data.imageUrl
@@ -50,7 +58,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()

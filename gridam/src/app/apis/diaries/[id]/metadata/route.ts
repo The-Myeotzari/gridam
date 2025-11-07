@@ -1,5 +1,5 @@
 import { fail, ok } from '@/app/apis/_lib/http'
-import useSupabaseServer from '@/utils/supabase/server'
+import getSupabaseServer from '@/utils/supabase/server'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -9,7 +9,7 @@ const schema = z.object({
 })
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
