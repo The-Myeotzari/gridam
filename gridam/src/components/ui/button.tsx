@@ -12,7 +12,7 @@ type ButtonProps = {
   onClick?: () => void
   className?: string
   label: string | React.ReactNode
-  isActive: boolean
+  isActive?: boolean
 }
 
 const VARIANT_STYLE: Record<Variant, string> = {

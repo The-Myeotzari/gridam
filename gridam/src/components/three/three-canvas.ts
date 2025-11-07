@@ -35,6 +35,7 @@ export default function ThreeCanvas(props: ThreeCanvasProps) {
     ...(props.style ?? {}),
   }
 
+  // eslint-disable-next-line react-hooks/refs
   return React.createElement('div', {
     ref: mountRef,
     className: props.className,
