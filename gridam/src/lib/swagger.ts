@@ -10,7 +10,7 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [{ url: process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:3000' }],
   },
-  apis: ['src/app/api/**/*.ts'],
+  apis: ['src/app/apis/**/*.ts'],
 }
 
 export const swaggerSpec = swaggerJSDoc(options)

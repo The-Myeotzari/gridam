@@ -19,6 +19,23 @@ const querySchema = z.object({
   status: z.enum(['draft', 'published']).optional(),
 })
 
+/**
+ * @openapi
+ * /api/diaries:
+ *   get:
+ *     summary: diaries get
+ *     responses:
+ *       200:
+ *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 객체..
+ */
 export async function GET(req: Request) {
   const supabase = await useSupabaseServer()
   const {

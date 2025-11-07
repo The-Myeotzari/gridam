@@ -43,6 +43,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-react": "^5.18.0",
     "@vitejs/plugin-react": "^5.1.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.2.0",
