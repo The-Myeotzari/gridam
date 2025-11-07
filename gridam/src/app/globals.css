@@ -1,25 +1,162 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --font-zen-serif: 'ZEN Serif', serif;
+/* -------------------------------
+   GRIDAM Pastel Design System (v4)
+   - All colors in HSL
+   - Uses @theme tokens (--color-*, --radius-*)
+-------------------------------- */
+@theme {
+  /* Base colors */
+  --color-background: hsl(30 100% 99%);
+  --color-foreground: hsl(235 21% 22%);
+
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(235 21% 22%);
+
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(235 21% 22%);
+
+  --color-primary: hsl(208 100% 84%);
+  --color-primary-foreground: hsl(235 21% 22%);
+
+  --color-secondary: hsl(0 100% 91%);
+  --color-secondary-foreground: hsl(235 21% 22%);
+
+  --color-muted: hsl(30 50% 96%);
+  --color-muted-foreground: hsl(235 15% 50%);
+
+  --color-accent: hsl(50 100% 81%);
+  --color-accent-foreground: hsl(235 21% 22%);
+
+  --color-destructive: hsl(0 70% 65%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+
+  --color-border: hsl(30 30% 90%);
+  --color-input: hsl(30 30% 90%);
+  --color-ring: hsl(208 100% 84%);
+
+  /* Radius */
+  --radius: 1rem;
+
+  /* Custom tokens */
+  --color-sky-blue: hsl(208 100% 84%);
+  --color-coral-pink: hsl(0 100% 91%);
+  --color-soft-yellow: hsl(50 100% 81%);
+  --color-cream-white: hsl(30 100% 99%);
+  --color-navy-gray: hsl(235 21% 22%);
+
+  /* Shadows (HSL with alpha) */
+  --shadow-soft: 0 4px 20px hsl(208 100% 84% / 0.2);
+  --shadow-card: 0 2px 10px hsl(235 21% 22% / 0.08);
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Canvas */
+  --color-canva-red: hsl(0, 100%, 70%);
+  --color-canva-blue: hsl(174, 64%, 55%);
+  --color-canva-green: hsl(168, 54%, 73%);
+  --color-canva-yellow: hsl(52, 100%, 71%);
+  --color-canva-black: hsl(235, 22%, 21%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  /* v4: tokens automatically map to utilities like border-border */
+  border-color: var(--color-border);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-zen-serif);
+  background-image:
+    radial-gradient(circle at 20% 30%, hsl(208 100% 95%) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, hsl(0 100% 95%) 0%, transparent 50%);
+}
+
+.paper-texture {
+  background-color: hsl(0 0% 100%);
+}
+
+/* Hand-drawn card edge */
+.crayon-border {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* Hover float */
+.hover-float {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-float:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Diary card glow effects */
+.glow-sunny {
+  box-shadow: 0 0 20px hsl(50 100% 81% / 0.4);
+}
+
+.glow-rainy {
+  box-shadow: 0 0 20px hsl(208 100% 84% / 0.4);
+}
+
+.glow-snowy {
+  box-shadow: 0 0 20px hsl(0 0% 100% / 0.6);
+}
+
+/* Diary table styles */
+.diary-table {
+  border: 3px solid var(--color-foreground);
+}
+
+.diary-table th,
+.diary-table td {
+  border: 2px solid var(--color-foreground);
+  padding: 0.75rem;
+}
+
+/* Diary grid */
+.diary-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0;
+}
+
+.diary-grid-cell {
+  border: 1px solid var(--color-foreground);
+  aspect-ratio: 1;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'TheJamsil5Bold', 'Nanum Pen Script', 'Comic Sans MS', cursive;
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: hsl(0 0% 100%);
+  transition: background-color 0.2s;
+}
+
+.diary-grid-cell:hover {
+  background: var(--color-muted);
+}
+
+.diary-grid-cell:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  background: hsl(208 100% 84% / 0.1);
+}
+
+:root {
+  --font-zen-serif: 'ZEN Serif', serif;
+  --gradient-rainbow: linear-gradient(
+    90deg,
+    hsl(0 100% 91%) 0%,
+    hsl(50 100% 81%) 25%,
+    hsl(208 100% 84%) 50%,
+    hsl(270 60% 80%) 75%,
+    hsl(208 100% 84%) 100%
+  );
 }

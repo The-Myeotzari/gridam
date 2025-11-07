@@ -14,18 +14,118 @@ export type Database = {
   }
   public: {
     Tables: {
-      countries: {
+      diaries: {
         Row: {
-          id: number
-          name: string | null
+          content: string
+          created_at: string
+          date: string
+          deleted_at: string | null
+          emoji: string | null
+          id: string
+          image_url: string | null
+          published_at: string | null
+          status: Database["public"]["Enums"]["diary_status"]
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          id?: number
-          name?: string | null
+          content: string
+          created_at?: string
+          date: string
+          deleted_at?: string | null
+          emoji?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["diary_status"]
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          id?: number
-          name?: string | null
+          content?: string
+          created_at?: string
+          date?: string
+          deleted_at?: string | null
+          emoji?: string | null
+          id?: string
+          image_url?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["diary_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diaries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      metadata: {
+        Row: {
+          date: string
+          diary_id: string
+          timezone: string
+          weather: Json | null
+        }
+        Insert: {
+          date: string
+          diary_id: string
+          timezone: string
+          weather?: Json | null
+        }
+        Update: {
+          date?: string
+          diary_id?: string
+          timezone?: string
+          weather?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metadata_diary_id_fkey"
+            columns: ["diary_id"]
+            isOneToOne: true
+            referencedRelation: "diaries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          jwt_access_token: string | null
+          jwt_expires_at: string | null
+          jwt_refresh_token: string | null
+          nickname: string
+          password_hash: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          jwt_access_token?: string | null
+          jwt_expires_at?: string | null
+          jwt_refresh_token?: string | null
+          nickname: string
+          password_hash: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          jwt_access_token?: string | null
+          jwt_expires_at?: string | null
+          jwt_refresh_token?: string | null
+          nickname?: string
+          password_hash?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -37,7 +137,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      diary_status: "draft" | "published"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -164,6 +264,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      diary_status: ["draft", "published"],
+    },
   },
 } as const
