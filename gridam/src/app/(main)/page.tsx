@@ -4,10 +4,15 @@ import useSupabaseBrowser from '@/utils/supabase/client'
 import axios from 'axios'
 import { useState } from 'react'
 
+interface Diary {
+  content: string
+  date: string
+}
+
 export default function Home() {
   const supabase = useSupabaseBrowser()
   const [error, setError] = useState<string | null>(null)
-  const [diaries, setDiaries] = useState<any[]>([])
+  const [diaries, setDiaries] = useState<Diary[]>([])
   const [loading, setLoading] = useState(false)
 
   async function handleLogin() {
@@ -19,15 +24,17 @@ export default function Home() {
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) {
+    if (error instanceof Error) {
       console.error('[signIn error]', {
         name: error.name,
-        status: (error as any).status,
+        status: error.status,
         message: error.message,
       })
       setError(error.message)
       setLoading(false)
       return
+    } else {
+      setError('알 수 없는 오류가 발생했습니다.')
     }
 
     const token = data.session?.access_token
@@ -47,9 +54,11 @@ export default function Home() {
 
       console.log('📔 diaries', res.data)
       setDiaries(res.data)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('게시글 불러오기 오류', err)
-      setError(err.message)
+      if (err instanceof Error) {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -72,11 +81,11 @@ export default function Home() {
       <div className="mt-5 text-left">
         {diaries.length > 0
           ? diaries.map((d, i) => (
-              <div key={i} className="border p-3 rounded mb-2">
-                <p>{d.content}</p>
-                <p className="text-xs text-gray-500">{d.date}</p>
-              </div>
-            ))
+            <div key={i} className="border p-3 rounded mb-2">
+              <p>{d.content}</p>
+              <p className="text-xs text-gray-500">{d.date}</p>
+            </div>
+          ))
           : !loading && <p className="text-gray-500">게시글이 없습니다.</p>}
       </div>
     </div>
