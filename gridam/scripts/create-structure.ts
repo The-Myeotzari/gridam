@@ -6,6 +6,7 @@ const ROOT = path.join(process.cwd(), 'src')
 // 생성할 폴더 목록
 const folders: string[] = [
   'app',
+  'components/common',
   'components/ui',
   'components/three/object',
   'features/auth/components',
@@ -18,6 +19,7 @@ const folders: string[] = [
   'store',
   'types/zod',
   'utils',
+  'lib',
   'test/components/three',
   'test/features/auth',
   'test/features/grid',

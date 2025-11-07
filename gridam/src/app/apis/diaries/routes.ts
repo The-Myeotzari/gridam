@@ -1,5 +1,5 @@
 import { fail, ok } from '@/app/apis/_lib/http'
-import useSupabaseServer from '@/utils/supabase/server'
+import getSupabaseServer from '@/utils/supabase/server'
 import { z } from 'zod'
 
 const createSchema = z.object({
@@ -19,8 +19,25 @@ const querySchema = z.object({
   status: z.enum(['draft', 'published']).optional(),
 })
 
+/**
+ * @openapi
+ * /api/diaries:
+ *   get:
+ *     summary: diaries get
+ *     responses:
+ *       200:
+ *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 객체..
+ */
 export async function GET(req: Request) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -44,7 +61,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = await useSupabaseServer()
+  const supabase = await getSupabaseServer()
   const {
     data: { user },
   } = await supabase.auth.getUser()
