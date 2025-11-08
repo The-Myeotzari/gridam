@@ -74,4 +74,30 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
   }
 }
 
+export async function DELETE(_req: NextRequest, { params }: Ctx) {
+  try {
+    const { id } = await params
+    const supabase = await getSupabaseServer()
+
+    const {
+      data: { user },
+      error: authErr,
+    } = await supabase.auth.getUser()
+    if (authErr || !user) return withCORS(fail('UNAUTHORIZED', 401))
+
+    const { error } = await supabase
+      .from('diaries')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .eq('status', 'draft')
+
+    if (error?.code === 'PGRST116') return withCORS(fail('Draft not found', 404))
+    if (error) return withCORS(fail('Soft delete failed', 500))
+    return withCORS(ok(null, 204))
+  } catch {
+    return withCORS(fail('Unexpected error', 500))
+  }
+}
+
 export { OPTIONS } from '@/app/apis/_lib/http'
