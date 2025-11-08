@@ -1,9 +1,9 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { Ctx } from '@/types/apis'
+import { Params } from '@/types/params'
 import getSupabaseServer from '@/utils/supabase/server'
 import { NextRequest } from 'next/server'
 
-export async function POST(_req: NextRequest, { params }: Ctx) {
+export async function POST(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const supabase = await getSupabaseServer()
