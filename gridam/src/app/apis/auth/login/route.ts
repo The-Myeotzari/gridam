@@ -34,8 +34,7 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: true
+ *                   example: true
  *                 user:
  *                   type: object
  *                   example:
@@ -84,8 +83,7 @@ import { MESSAGES } from '@/constants/messages'
  *                       example: 3600
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "로그인 되었습니다."
+ *                   example: "로그인 되었습니다."
  *       '401':
  *         description: 인증 실패
  *         content:
@@ -95,12 +93,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "이메일 또는 비밀번호가 올바르지 않습니다."
+ *                   example: "이메일 또는 비밀번호가 올바르지 않습니다."
  */
 
 export async function POST(req: NextRequest) {

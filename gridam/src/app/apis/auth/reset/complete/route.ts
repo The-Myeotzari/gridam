@@ -33,8 +33,7 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: true
+ *                   example: true
  *                 user:
  *                   type: object
  *                   example:
@@ -71,8 +70,7 @@ import { MESSAGES } from '@/constants/messages'
  *                     is_anonymous: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "비밀번호 재설정이 완료되었습니다."
+ *                   example: "비밀번호 재설정이 완료되었습니다."
  *       '401':
  *         description: 토큰/세션 없음 또는 만료됨
  *         content:
@@ -82,12 +80,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "세션이 만료되었습니다. 다시 비밀번호 재설정을 요청해 주세요."
+ *                   example: "세션이 만료되었습니다. 다시 비밀번호 재설정을 요청해 주세요."
  *       '400':
  *         description: 비밀번호 정책 위반 등 유효성 검증 실패
  *         content:
@@ -97,12 +93,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "비밀번호는 8자 이상, 대문자와 특수문자를 포함해야 합니다."
+ *                   example: "비밀번호는 8자 이상, 대문자와 특수문자를 포함해야 합니다."
  *       '500':
  *         description: 서버 오류
  *         content:
@@ -112,12 +106,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "비밀번호 변경 중 오류가 발생했습니다."
+ *                   example: "비밀번호 변경 중 오류가 발생했습니다."
  */
 
 export async function POST(req: NextRequest) {

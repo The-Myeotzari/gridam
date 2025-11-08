@@ -39,11 +39,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: true
+ *                   example: true
  *                 user:
  *                   type: object
- *                   example:                  
+ *                   example:
  *                     id: "fcc2asfasfd-6301-45ba-a8cc-0asf502a93"
  *                     aud: "authenticated"
  *                     role: "authenticated"
@@ -58,9 +57,9 @@ import { MESSAGES } from '@/constants/messages'
  *                       phone_verified: false
  *                       sub: "fasfasfd-6301-45asfcc-0asfasf93"
  *                     identities:
- *                         identity_id: "14asfasfe9-8fasf-4cae-8asf-a36004"
- *                           id: "fcc27asfasf6301-45ba-a8cc-09dc21502asf"
- *                           user_id: "fccasfasfd-6301-45ba-a8cc-09dasfa93"
+ *                       - identity_id: "14asfasfe9-8fasf-4cae-8asf-a36004"
+ *                         id: "fcc27asfasf6301-45ba-a8cc-09dc21502asf"
+ *                         user_id: "fccasfasfd-6301-45ba-a8cc-09dasfa93"
  *                         identity_data:
  *                           email: "asd123@gmail.com"
  *                           email_verified: false
@@ -77,8 +76,7 @@ import { MESSAGES } from '@/constants/messages'
  *                     is_anonymous: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "이메일 인증 이메일이 발송되었습니다."
+ *                   example: "이메일 인증 이메일이 발송되었습니다."
  */
 export async function POST(req: NextRequest) {
   try {
@@ -101,13 +99,15 @@ export async function POST(req: NextRequest) {
       return fail(MESSAGES.AUTH.ERROR.REGISTER, error.status)
     }
 
-    return withCORS(ok(
-      {
-        user: data.user,
-        message: MESSAGES.AUTH.SUCCESS.REGISTER_EMAIL,
-      },
-      201
-    ))
+    return withCORS(
+      ok(
+        {
+          user: data.user,
+          message: MESSAGES.AUTH.SUCCESS.REGISTER_EMAIL,
+        },
+        201
+      )
+    )
   } catch (err) {
     const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.REGISTER
     return fail(message, 400)

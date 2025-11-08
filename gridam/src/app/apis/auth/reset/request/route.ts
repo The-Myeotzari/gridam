@@ -33,12 +33,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: true
+ *                   example: true
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "비밀번호 재설정 이메일이 발송되었습니다."
+ *                   example: "비밀번호 재설정 이메일이 발송되었습니다."
  *       '500':
  *         description: 서버 오류
  *         content:
@@ -48,12 +46,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "메일 발송 중 오류가 발생했습니다."
+ *                   example: "메일 발송 중 오류가 발생했습니다."
  */
 
 export async function POST(req: NextRequest) {

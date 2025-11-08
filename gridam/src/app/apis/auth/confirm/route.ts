@@ -29,12 +29,10 @@ import { redirect } from 'next/navigation'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: true
+ *                   example: true
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "회원가입이 완료되었습니다. 곧 다음 페이지로 이동합니다."
+ *                   example: "회원가입이 완료되었습니다. 곧 다음 페이지로 이동합니다."
  *       '400':
  *         description: 잘못된 접근(필수 정보 누락 등)
  *         content:
@@ -44,12 +42,10 @@ import { redirect } from 'next/navigation'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "유효하지 않은 접근입니다. 인증 링크를 다시 확인해 주세요."
+ *                   example: "유효하지 않은 접근입니다. 인증 링크를 다시 확인해 주세요."
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

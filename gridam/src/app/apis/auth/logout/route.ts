@@ -20,12 +20,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: true
+ *                   example: true
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "로그아웃 되었습니다."
+ *                   example: "로그아웃 되었습니다."
  *       '401':
  *         description: 세션 없음
  *         content:
@@ -35,12 +33,10 @@ import { MESSAGES } from '@/constants/messages'
  *               properties:
  *                 ok:
  *                   type: boolean
- *                   example:
- *                     ok: false
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example:
- *                     message: "로그인된 세션이 없습니다."
+ *                   example: "로그인된 세션이 없습니다."
  */
 export async function POST(_req: NextRequest){
   const supabase = await getSupabaseServer()
