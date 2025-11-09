@@ -24,7 +24,7 @@ const colorMap = {
 // colorMap의 Key를 자동으로 추출
 type ActiveColor = keyof typeof colorMap
 
-export default function NavLink({ href, label, activeColor }: NavLinkProps) {
+export default function HeaderNavLink({ href, label, activeColor }: NavLinkProps) {
   const pathname = usePathname()
   const isActive = pathname === href
   const color = colorMap[activeColor]
