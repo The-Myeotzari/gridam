@@ -1,5 +1,5 @@
 import { createMainLight } from '@/components/three/object/light'
-import { getCSSColor } from '@/utils/getCSSColor'
+import { getCSSColor } from '@/utils/get-css-color'
 import * as THREE from 'three'
 
 export type HeartOptions = {
