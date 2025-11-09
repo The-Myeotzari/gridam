@@ -1,6 +1,8 @@
-import { fail, ok } from '@/app/apis/_lib/http'
-import getSupabaseServer from '@/utils/supabase/server'
-import { z } from 'zod'
+import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { Params } from '@/types/params'
+import { updateSchema } from '@/types/zod/apis/diaries'
+import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { NextRequest } from 'next/server'
 
 type DiaryPatch = {
   content?: string
@@ -10,64 +12,66 @@ type DiaryPatch = {
   published_at?: string | null
 }
 
-const updateSchema = z.object({
-  content: z.string().min(1).max(200).optional(),
-  emoji: z.string().optional(),
-  imageUrl: z.string().url().nullable().optional(),
-  status: z.enum(['draft', 'published']).optional(),
-})
+export async function GET(_req: NextRequest, { params }: Params) {
+  try {
+    const { id } = await params
+    const { supabase } = await getAuthenticatedUser()
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await getSupabaseServer()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('Unauthorized', 401)
-  const { id } = await params
-  const { data, error } = await supabase.from('diaries').select('*').eq('id', id).single()
-  if (error) return fail(error.message, 404)
-  return ok(data)
-}
+    const { data, error } = await supabase.from('diaries').select('*').eq('id', id).single()
+    if (error) throw fail(error.message, 404)
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await getSupabaseServer()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('Unauthorized', 401)
-
-  const body = await req.json()
-  const parsed = updateSchema.safeParse(body)
-  if (!parsed.success) return fail(parsed.error.message, 422)
-
-  const patch: DiaryPatch = {}
-  if (parsed.data.content !== undefined) patch.content = parsed.data.content
-  if (parsed.data.emoji !== undefined) patch.emoji = parsed.data.emoji
-  if (parsed.data.imageUrl !== undefined) patch.image_url = parsed.data.imageUrl
-  if (parsed.data.status === 'published') {
-    patch.status = 'published'
-    patch.published_at = new Date().toISOString()
-  } else if (parsed.data.status === 'draft') {
-    patch.status = 'draft'
-    patch.published_at = null
+    return withCORS(ok(data))
+  } catch (err: any) {
+    return withCORS(err instanceof Response ? err : fail(err.message, 500))
   }
-  const { id } = await params
-  const { error } = await supabase.from('diaries').update(patch).eq('id', id)
-  if (error) return fail(error.message, 500)
-  return ok(null)
 }
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await getSupabaseServer()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('Unauthorized', 401)
-  const { id } = await params
-  // 소프트 삭제를 원하면 update로 바꾸세요.
-  const { error } = await supabase.from('diaries').delete().eq('id', id)
-  if (error) return fail(error.message, 500)
-  return ok(null, 204)
+export async function PATCH(req: NextRequest, { params }: Params) {
+  try {
+    const { supabase } = await getAuthenticatedUser()
+    const { id } = await params
+    const body = await req.json()
+
+    const parsed = updateSchema.safeParse(body)
+    if (!parsed.success) throw fail(parsed.error.message, 422)
+
+    const { content, emoji, imageUrl, status } = parsed.data
+    const patch: DiaryPatch = {
+      ...(content !== undefined && { content }),
+      ...(emoji !== undefined && { emoji }),
+      ...(imageUrl !== undefined && { image_url: imageUrl }),
+    }
+
+    if (status) {
+      patch.status = status
+      patch.published_at = status === 'published' ? new Date().toISOString() : null
+    }
+
+    const { error } = await supabase.from('diaries').update(patch).eq('id', id)
+    if (error) throw fail(error.message, 500)
+
+    return withCORS(ok(null))
+  } catch (err: any) {
+    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  }
+}
+
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  try {
+    const { supabase } = await getAuthenticatedUser()
+    const { id } = await params
+
+    const { error } = await supabase
+      .from('diaries')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+      .is('deleted_at', null)
+
+    if (error) throw fail(error.message, 500)
+    return withCORS(ok(null, 204))
+  } catch (err: any) {
+    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  }
 }
 
 export { OPTIONS } from '@/app/apis/_lib/http'
