@@ -1,4 +1,4 @@
-import { swaggerSpec } from '@/lib/swagger'
+import swaggerSpec from '@/app/api-docs/swagger.json'
 import { NextResponse } from 'next/server'
 
 export function GET() {
