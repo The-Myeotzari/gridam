@@ -1,16 +1,18 @@
 import { NextRequest } from 'next/server'
-import { LoginSchema } from '@/types/zod/apis/auth'
-import { ok, fail } from '@/app/apis/_lib/http'
-import getSupabaseServer from '@/utils/supabase/server'
+import { SignUpSchema } from '@/types/zod/apis/auth'
+import { ok, fail, withCORS } from '@/app/apis/_lib/http'
+import getSupabaseServer, { getOrigin } from '@/utils/supabase/server'
 import { MESSAGES } from '@/constants/messages'
 
 /**
  * @openapi
- * /apis/auth/login:
+ * /apis/auth/register:
  *   post:
  *     tags: [Auth]
- *     summary: 이메일/비밀번호 로그인
- *     description: 성공 시 Supabase 세션 쿠키가 설정됩니다.
+ *     summary: 이메일/비밀번호 회원가입 (인증 메일 발송)
+ *     description: |
+ *       회원가입 시 이메일 인증 링크를 전송합니다.
+ *       이미 존재하는 이메일이어도 같은 안내 문구를 반환합니다. (Supabase 보안 설정 조정 불가)
  *     requestBody:
  *       required: true
  *       content:
@@ -24,9 +26,12 @@ import { MESSAGES } from '@/constants/messages'
  *               password:
  *                 type: string
  *                 example: "R!chPassw0rd"
+ *               nickname:
+ *                 type: string
+ *                 example: "jane"
  *     responses:
  *       '200':
- *         description: 로그인 성공
+ *         description: 안내 문구
  *         content:
  *           application/json:
  *             schema:
@@ -69,54 +74,42 @@ import { MESSAGES } from '@/constants/messages'
  *                     created_at: "2025-11-08T08:47:30.738882Z"
  *                     updated_at: "2025-11-08T08:47:31.822949Z"
  *                     is_anonymous: false
- *                 session:
- *                   type: object
- *                   properties:
- *                     access_token:
- *                       type: string
- *                       example: "eyJhbGciOiJIUzI1NiIsInR5..."
- *                     refresh_token:
- *                       type: string
- *                       example: "v0Odt6eyqX8..."
- *                     expires_in:
- *                       type: integer
- *                       example: 3600
  *                 message:
  *                   type: string
- *                   example: "로그인 되었습니다."
- *       '401':
- *         description: 인증 실패
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 ok:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "이메일 또는 비밀번호가 올바르지 않습니다."
+ *                   example: "이메일 인증 이메일이 발송되었습니다."
  */
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, password } = LoginSchema.parse(body)
+    const { email, password, nickname } = SignUpSchema.parse(body)
 
     const supabase = await getSupabaseServer()
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const origin = await getOrigin()
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${origin}/auth/login`,
+        data: nickname ? { nickname } : undefined, // user_metadata
+      },
     })
 
     if (error) {
-      return fail(MESSAGES.AUTH.ERROR.ACCOUNT_NOT_EXIST, 401)
+      return fail(MESSAGES.AUTH.ERROR.REGISTER, error.status)
     }
 
-    return ok({ user: data.user, session: data.session, message: MESSAGES.AUTH.SUCCESS.LOGIN }, 200)
+    return withCORS(
+      ok(
+        {
+          user: data.user,
+          message: MESSAGES.AUTH.SUCCESS.REGISTER_EMAIL,
+        },
+        201
+      )
+    )
   } catch (err) {
-    const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.LOGIN
+    const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.REGISTER
     return fail(message, 400)
   }
 }

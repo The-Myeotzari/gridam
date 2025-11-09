@@ -1,16 +1,18 @@
 import { NextRequest } from 'next/server'
-import { LoginSchema } from '@/types/zod/apis/auth'
+import { ResetCompleteSchema } from '@/types/zod/apis/auth'
 import { ok, fail } from '@/app/apis/_lib/http'
 import getSupabaseServer from '@/utils/supabase/server'
 import { MESSAGES } from '@/constants/messages'
 
 /**
  * @openapi
- * /apis/auth/login:
+ * /apis/auth/reset/complete:
  *   post:
  *     tags: [Auth]
- *     summary: 이메일/비밀번호 로그인
- *     description: 성공 시 Supabase 세션 쿠키가 설정됩니다.
+ *     summary: 비밀번호 재설정 완료 (새 비밀번호 저장)
+ *     description: |
+ *       사용자가 메일로 전달받은 링크를 통해 진입한 뒤 새 비밀번호를 입력합니다.
+ *       링크의 토큰을 Supabase가 자동 검증한 후 세션이 활성화된 상태에서 요청해야 합니다.
  *     requestBody:
  *       required: true
  *       content:
@@ -18,15 +20,12 @@ import { MESSAGES } from '@/constants/messages'
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               newPassword:
  *                 type: string
- *                 example: "jane.doe@example.com"
- *               password:
- *                 type: string
- *                 example: "R!chPassw0rd"
+ *                 example: "N3wR!chPassw0rd"
  *     responses:
  *       '200':
- *         description: 로그인 성공
+ *         description: 비밀번호 변경 성공
  *         content:
  *           application/json:
  *             schema:
@@ -69,23 +68,11 @@ import { MESSAGES } from '@/constants/messages'
  *                     created_at: "2025-11-08T08:47:30.738882Z"
  *                     updated_at: "2025-11-08T08:47:31.822949Z"
  *                     is_anonymous: false
- *                 session:
- *                   type: object
- *                   properties:
- *                     access_token:
- *                       type: string
- *                       example: "eyJhbGciOiJIUzI1NiIsInR5..."
- *                     refresh_token:
- *                       type: string
- *                       example: "v0Odt6eyqX8..."
- *                     expires_in:
- *                       type: integer
- *                       example: 3600
  *                 message:
  *                   type: string
- *                   example: "로그인 되었습니다."
+ *                   example: "비밀번호 재설정이 완료되었습니다."
  *       '401':
- *         description: 인증 실패
+ *         description: 토큰/세션 없음 또는 만료됨
  *         content:
  *           application/json:
  *             schema:
@@ -96,27 +83,55 @@ import { MESSAGES } from '@/constants/messages'
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "이메일 또는 비밀번호가 올바르지 않습니다."
+ *                   example: "세션이 만료되었습니다. 다시 비밀번호 재설정을 요청해 주세요."
+ *       '400':
+ *         description: 비밀번호 정책 위반 등 유효성 검증 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "비밀번호는 8자 이상, 대문자와 특수문자를 포함해야 합니다."
+ *       '500':
+ *         description: 서버 오류
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "비밀번호 변경 중 오류가 발생했습니다."
  */
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, password } = LoginSchema.parse(body)
+    const { newPassword } = ResetCompleteSchema.parse(body)
 
     const supabase = await getSupabaseServer()
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
 
-    if (error) {
-      return fail(MESSAGES.AUTH.ERROR.ACCOUNT_NOT_EXIST, 401)
+    const { data: userData, error: userErr } = await supabase.auth.getUser()
+    if (userErr || !userData?.user) {
+      return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
     }
 
-    return ok({ user: data.user, session: data.session, message: MESSAGES.AUTH.SUCCESS.LOGIN }, 200)
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) {
+      return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, error.status)
+    }
+
+    return ok({ user: data.user, message: MESSAGES.AUTH.SUCCESS.PASSWORD_RESET }, 200)
   } catch (err) {
-    const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.LOGIN
+    const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.PASSWORD_RESET
     return fail(message, 400)
   }
 }
