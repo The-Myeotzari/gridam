@@ -32,7 +32,7 @@ export default function HeaderNavLink({ href, label, activeColor }: NavLinkProps
   return (
     <Link
       href={href}
-      className={`text-lg px-4 py-2 rounded-full transition-all ${
+      className={`text-sm sm:text-base md:text-lg px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${
         isActive ? color.active : color.hover
       }`}
     >
