@@ -5,6 +5,8 @@ import Button from '@/components/ui/button'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from '@/store/useToast'
+import { MESSAGES } from '@/constants/messages'
+import Image from 'next/image'
 
 export default function Register() {
   const [nickname, setNickname] = useState('')
@@ -12,50 +14,49 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  const handleSignUpClick = () => {
-    //"모든 항목을 입력해 주세요."
-    const fields = {
-      닉네임: nickname,
-      이메일: email,
-      비밀번호: password,
-      '비밀번호 확인': confirmPassword,
-    }
-
-    const emptyField = Object.entries(fields).find(([key, value]) => value.trim() === '')
-    if (emptyField) {
-      toast.error(`${emptyField[0]}을(를) 입력해 주세요.`)
+  const handleSignUpClick = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    //모든 항목을 입력해주세요.
+    if (!nickname || !email || !password || !confirmPassword) {
+      toast.error(MESSAGES.AUTH.ERROR.EMPTY_FORM)
       return
     }
     //이메일 형식이 올바르지 않습니다.
     const emailRegex =
-      /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i
+      /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+
     if (!emailRegex.test(email)) {
-      toast.error('이메일 형식이 올바르지 않습니다.')
+      toast.error(MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT)
       return
     }
-    //비밀번호 8자 이상
+    //비밀번호는 8자 이상이어야 합니다.
     if (password.length < 8) {
-      toast.error('비밀번호는 8자 이상이어야 합니다.')
+      toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
       return
     }
-    //비밀번호 대소문자, 특수문자 포함
+    //비밀번호에는 대소문자와 특수문자가 포함되어야 합니다.
     //(?=.*\d)?
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
     if (!passwordRegex.test(password)) {
-      toast.error('비밀번호에는 대소문자와 특수문자가 포함되어야 합니다.')
+      toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT)
       return
     }
-    //비밀번호가 일치하지 않습니다.
+    //현재 비밀번호와 일치하지 않습니다.
     if (password !== confirmPassword) {
-      toast.error('비밀번호가 일치하지 않습니다.')
+      toast.error(MESSAGES.AUTH.ERROR.WRONG_PASSWORD)
+      return
     }
+    //회원가입이 완료되었습니다.
+    toast.success(MESSAGES.AUTH.SUCCESS.REGISTER)
   }
 
   return (
     <Card indent="none">
       <CardHeader
         align="vertical"
-        cardImage={<img src="/favicon.ico" alt="그리담로고"></img>}
+        cardImage={
+          <Image src="/favicon.ico" width={56} height={56} alt="그리담로고" className=" mx-auto " />
+        }
         cardTitle={<h1 className="text-4xl mb-2 text-navy-gray">회원가입</h1>}
         cardDescription={<p className="text-lg">그리담과 함께 시작해요</p>}
       />
@@ -75,7 +76,6 @@ export default function Register() {
               id="nickname"
               className="w-full"
               placeholder="귀여운 닉네임"
-              required
             />
           </div>
           <div className="flex flex-col gap-2 ">
@@ -91,7 +91,6 @@ export default function Register() {
               id="email"
               className="w-full"
               placeholder="your@email.com"
-              required
             />
           </div>
           <div className="flex flex-col gap-2 ">
@@ -99,7 +98,7 @@ export default function Register() {
               비밀번호
             </label>
             <Input
-              type="text"
+              type="password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value)
@@ -107,39 +106,35 @@ export default function Register() {
               id="password"
               className="w-full"
               placeholder="• • • • • • • •"
-              required
             />
           </div>
           <div className="flex flex-col gap-2 ">
-            <label htmlFor="comfirmPassword" className="text-lg text-left font-semibold">
+            <label htmlFor="confirmPassword" className="text-lg text-left font-semibold">
               비밀번호 확인
             </label>
             <Input
-              type="text"
+              type="password"
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value)
               }}
-              id="comfirmPassword"
+              id="confirmPassword"
               className="w-full"
               placeholder="• • • • • • • •"
-              required
             />
           </div>
+          <Button
+            type="submit"
+            variant="gradient"
+            size="lg"
+            className="w-full text-xl"
+            label={'가입하기'}
+          />
         </form>
       </CardBody>
 
       <CardFooter className="flex-col">
-        <Button
-          type="submit"
-          onClick={handleSignUpClick}
-          variant="gradient"
-          size="lg"
-          className="w-full text-xl"
-          label={'가입하기'}
-        />
-
-        <div className="mt-6 text-center flex gap-1">
+        <div className="text-center flex gap-1">
           <div className="font-handwritten text-base text-muted-foreground">
             이미 계정이 있으신가요?
           </div>
