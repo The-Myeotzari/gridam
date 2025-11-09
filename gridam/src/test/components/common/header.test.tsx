@@ -15,7 +15,7 @@ jest.mock('next/link', () => {
   )
 })
 
-jest.mock('@/components/common/navlink', () => {
+jest.mock('@/components/common/header-navlink', () => {
   return function MockNavLink({ href, label }: { href: string; label: string }) {
     return (
       <a href={href} data-testid={`nav-${label}`}>

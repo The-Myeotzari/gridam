@@ -4,9 +4,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 jest.mock('@/components/ui/button', () => ({
   __esModule: true,
-  default: ({ onClick, label, ...rest }: any) => (
-    <button type="button" onClick={onClick} {...rest}>
-      {label}
+  default: ({ onClick, label, children, isActive }: any) => (
+    <button type="button" onClick={onClick} aria-pressed={!!isActive}>
+      {label ?? children}
     </button>
   ),
 }))
@@ -16,7 +16,7 @@ const setColor = jest.fn()
 let isEraser = false
 let color = 'var(--color-canva-red)'
 
-jest.mock('@/store/useCanvas', () => ({
+jest.mock('@/features/write/store/useCanvas', () => ({
   useCanvasStore: () => ({
     color,
     isEraser,
@@ -34,8 +34,7 @@ describe('CanvasToolbar', () => {
 
   it('팔레트 5개가 렌더링된다', () => {
     render(<CanvasToolbar handleUndo={jest.fn()} clearCanvas={jest.fn()} />)
-    const groups = screen.getAllByRole('group', { hidden: true })
-    const swatches = document.querySelectorAll('span[style*="background-color"]')
+    const swatches = document.querySelectorAll('span.block.w-5.h-5.rounded-full')
     expect(swatches.length).toBe(5)
   })
 

@@ -1,6 +1,6 @@
 import { CanvasView } from '@/features/write/components/canvas/canvas-view'
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 describe('CanvasView', () => {
   it('ref가 있으면 canvas를 렌더링한다 (기본 height=600)', () => {
@@ -18,12 +18,9 @@ describe('CanvasView', () => {
       />
     )
 
-    const canvas = screen.getByRole('img', { hidden: true }) as HTMLCanvasElement | null
-    // JSDOM에선 canvas가 role을 노출하지 않을 수 있어, 쿼리 실패하면 class로 fallback
-    const canvasByClass = document.querySelector('canvas.block.w-full.rounded-xl.cursor-crosshair')
-
-    expect(canvas || canvasByClass).toBeTruthy()
-    const el = (canvas || canvasByClass) as HTMLCanvasElement
+    const el = document.querySelector(
+      'canvas.block.w-full.rounded-xl.cursor-crosshair'
+    ) as HTMLCanvasElement
     expect(el).toBeInTheDocument()
     // inline style height 확인
     expect(el).toHaveStyle({ height: '600px' })

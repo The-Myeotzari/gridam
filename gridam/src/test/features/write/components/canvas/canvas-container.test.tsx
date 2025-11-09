@@ -9,7 +9,7 @@ const onPointerMove = jest.fn()
 const onPointerUpOrLeave = jest.fn()
 const canvasRef = { current: null } as React.RefObject<HTMLCanvasElement | null>
 
-jest.mock('@/hooks/useCanvasDrawing', () => ({
+jest.mock('@/features/write/hooks/useCanvasDrawing', () => ({
   useCanvasDrawing: () => ({
     canvasRef,
     handleUndo,
@@ -20,7 +20,7 @@ jest.mock('@/hooks/useCanvasDrawing', () => ({
   }),
 }))
 
-jest.mock('@/components/canvas/canvas-toolbar', () => ({
+jest.mock('@/features/write/components/canvas/canvas-toolbar', () => ({
   CanvasToolbar: ({ handleUndo, clearCanvas }: any) => (
     <div data-testid="toolbar">
       <button onClick={handleUndo}>undo</button>
@@ -29,7 +29,7 @@ jest.mock('@/components/canvas/canvas-toolbar', () => ({
   ),
 }))
 
-jest.mock('@/components/canvas/canvas-view', () => ({
+jest.mock('@/features/write/components/canvas/canvas-view', () => ({
   CanvasView: ({ canvasRef, onPointerDown, onPointerMove, onPointerUpOrLeave, height }: any) => (
     <div data-testid="view">
       <div data-testid="has-ref">{canvasRef ? 'yes' : 'no'}</div>
