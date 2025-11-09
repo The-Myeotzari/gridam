@@ -3,12 +3,7 @@
 import { useCanvasStore } from '@/store/useCanvas'
 import { useCallback, useEffect, useRef } from 'react'
 
-type Snapshot = ImageData
-type Options = {
-  historyLimit?: number
-}
-
-export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
+export function useCanvasDrawing() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const isDrawingRef = useRef(false)
@@ -112,7 +107,6 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
 
   useEffect(() => {
     setupCanvas()
-    setupCanvas()
     {
       const c = canvasRef.current
       const ctx = ctxRef.current
@@ -138,7 +132,7 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
 
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
-  }, [pushSnapshot])
+  }, [pushSnapshot, setupCanvas])
 
   return {
     canvasRef,
