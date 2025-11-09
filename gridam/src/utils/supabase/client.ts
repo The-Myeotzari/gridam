@@ -1,6 +1,6 @@
+import type { Database } from '@/types/database.types'
 import type { TypedSupabaseClient } from '@/utils/type'
 import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from 'database.types'
 import { useMemo } from 'react'
 
 let client: TypedSupabaseClient | undefined
@@ -19,7 +19,7 @@ function getSupabaseBrowserClient() {
 }
 
 function useSupabaseBrowser() {
-  return useMemo(getSupabaseBrowserClient, [])
+  return useMemo(() => getSupabaseBrowserClient(), [])
 }
 
 export default useSupabaseBrowser
