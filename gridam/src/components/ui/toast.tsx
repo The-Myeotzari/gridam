@@ -1,6 +1,6 @@
 'use client'
 
-import { useToast } from '@/store/useToast'
+import { useToast } from '@/store/toast-store'
 import type { Toast } from '@/utils/type'
 import { AlertCircleIcon, CheckCircle2Icon } from 'lucide-react'
 import { Card, CardBody } from './card'
