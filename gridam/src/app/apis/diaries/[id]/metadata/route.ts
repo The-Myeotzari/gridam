@@ -2,7 +2,7 @@ import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { Params } from '@/types/params'
 import { putSchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(req: NextRequest, { params }: Params) {
   try {
@@ -24,8 +24,14 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     if (error) throw fail(error.message, 500)
     return withCORS(ok(null))
-  } catch (err: any) {
-    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  } catch (err: unknown) {
+    if (err instanceof NextResponse) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
   }
 }
 

@@ -1,7 +1,7 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { createSchema, querySchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,8 +23,14 @@ export async function GET(req: NextRequest) {
     if (error) throw fail(error.message, 500)
 
     return withCORS(ok(data))
-  } catch (err: any) {
-    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  } catch (err: unknown) {
+    if (err instanceof NextResponse) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
   }
 }
 
@@ -66,8 +72,14 @@ export async function POST(req: NextRequest) {
     }
 
     return withCORS(ok({ id: diary.id }, 201))
-  } catch (err: any) {
-    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  } catch (err: unknown) {
+    if (err instanceof NextResponse) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
   }
 }
 

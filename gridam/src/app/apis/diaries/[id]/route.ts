@@ -2,7 +2,7 @@ import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { Params } from '@/types/params'
 import { updateSchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 type DiaryPatch = {
   content?: string
@@ -21,8 +21,14 @@ export async function GET(_req: NextRequest, { params }: Params) {
     if (error) throw fail(error.message, 404)
 
     return withCORS(ok(data))
-  } catch (err: any) {
-    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  } catch (err: unknown) {
+    if (err instanceof Response) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
   }
 }
 
@@ -51,8 +57,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (error) throw fail(error.message, 500)
 
     return withCORS(ok(null))
-  } catch (err: any) {
-    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  } catch (err: unknown) {
+    if (err instanceof NextResponse) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
   }
 }
 
@@ -69,8 +81,14 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
     if (error) throw fail(error.message, 500)
     return withCORS(ok(null, 204))
-  } catch (err: any) {
-    return withCORS(err instanceof Response ? err : fail(err.message, 500))
+  } catch (err: unknown) {
+    if (err instanceof NextResponse) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
   }
 }
 
