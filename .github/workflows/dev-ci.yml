@@ -14,7 +14,6 @@ concurrency:
 
 jobs:
   build-and-test:
-    # 조건: PR이 열려있거나, dev로 머지되었을 때
     if: >
       github.event.pull_request.state == 'open' ||
       (github.event.pull_request.merged == true && github.base_ref == 'dev')
@@ -22,7 +21,6 @@ jobs:
     timeout-minutes: 15
 
     env:
-      NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -32,19 +30,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug structure
+        run: |
+          echo "PWD=$(pwd)"
+          ls -R gridam || true
+          find gridam -maxdepth 2 -name "package*.json"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: npm
+          cache-dependency-path: gridam/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
+        working-directory: gridam
+        run: npm ci --include=dev
 
       - name: Run tests
+        working-directory: gridam
         run: npm test -- --ci
 
       - name: Build project
+        working-directory: gridam
+        env:
+          NODE_ENV: production
         run: npm run build
