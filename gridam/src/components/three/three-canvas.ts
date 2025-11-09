@@ -1,7 +1,7 @@
 'use client'
 
 import type { CameraConfig, RendererConfig, SceneConfig } from '@/components/three/core/types'
-import { useThree } from '@/hooks/useThree'
+import { useThree } from '@/hooks/use-three'
 import React, { useRef } from 'react'
 
 // 3D를 리액트 앱에 띄우기 위한 용도

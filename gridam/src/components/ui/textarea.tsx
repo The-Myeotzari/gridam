@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useCaretAutoScroll } from '@/hooks/use-caret-auto-scroll'
 import { clamp, sanitize, splitGraphemes } from '@/utils/text'
-import { useCaretAutoScroll } from '@/hooks/useCaretAutoScroll'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 /**
  * Props
