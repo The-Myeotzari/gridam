@@ -1,5 +1,5 @@
-import type { RefObject, MutableRefObject } from 'react'
-import { graphemeFromUtf16Index, splitGraphemes } from '../utils/text'
+import type { MutableRefObject, RefObject } from 'react'
+import { graphemeFromUtf16Index, splitGraphemes } from '../utils/text-utils'
 
 /**
  * useCaretAutoScroll
