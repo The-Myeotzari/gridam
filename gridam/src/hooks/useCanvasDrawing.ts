@@ -1,20 +1,15 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCanvasStore } from '@/store/useCanvas'
+import { useCallback, useEffect, useRef } from 'react'
 
-type Snapshot = ImageData
-type Options = {
-  historyLimit?: number
-}
-
-export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
+export function useCanvasDrawing() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const isDrawingRef = useRef(false)
-  const historyRef = useRef<Snapshot[]>([])
 
-  const [color, setColor] = useState('var(--color-canva-red)')
-  const [isEraser, setIsEraser] = useState(false)
+  const { color, isEraser, toggleEraser, setColor, pushSnapshot, undo, clearHistory } =
+    useCanvasStore()
 
   const resolveColor = useCallback((input: string): string => {
     if (!input.startsWith('var(')) return input
@@ -22,25 +17,7 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#000'
   }, [])
 
-  const pushSnapshot = useCallback(() => {
-    const c = canvasRef.current
-    const ctx = ctxRef.current
-    if (!c || !ctx) return
-    const snap = ctx.getImageData(0, 0, c.width, c.height)
-    const next = [...historyRef.current, snap]
-    if (next.length > historyLimit) next.shift()
-    historyRef.current = next
-  }, [historyLimit])
-
-  const clearCanvas = useCallback(() => {
-    const c = canvasRef.current
-    const ctx = ctxRef.current
-    if (!c || !ctx) return
-    ctx.clearRect(0, 0, c.width, c.height)
-    historyRef.current = []
-    pushSnapshot()
-  }, [pushSnapshot])
-
+  // 그림 그리기
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLCanvasElement>) => {
       const ctx = ctxRef.current
@@ -75,15 +52,36 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
 
   const onPointerUpOrLeave = useCallback(
     (e?: React.PointerEvent<HTMLCanvasElement>) => {
+      const c = canvasRef.current
       const ctx = ctxRef.current
-      if (!ctx || !isDrawingRef.current) return
+      if (!c || !ctx || !isDrawingRef.current) return
       if (e) (e.target as HTMLElement).releasePointerCapture(e.pointerId)
       isDrawingRef.current = false
       ctx.closePath()
-      pushSnapshot()
+      const snap = ctx.getImageData(0, 0, c.width, c.height)
+      pushSnapshot(snap)
     },
     [pushSnapshot]
   )
+
+  // undo/clear
+  const handleUndo = useCallback(() => {
+    const ctx = ctxRef.current
+    const c = canvasRef.current
+    if (!c || !ctx) return
+    const last = undo()
+    if (last) ctx.putImageData(last, 0, 0)
+  }, [undo])
+
+  const clearCanvas = useCallback(() => {
+    const c = canvasRef.current
+    const ctx = ctxRef.current
+    if (!c || !ctx) return
+    ctx.clearRect(0, 0, c.width, c.height)
+    clearHistory()
+    const blank = ctx.getImageData(0, 0, c.width, c.height)
+    pushSnapshot(blank)
+  }, [clearHistory, pushSnapshot])
 
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current
@@ -107,53 +105,43 @@ export function useCanvasDrawing({ historyLimit = 50 }: Options = {}) {
     ctxRef.current = ctx
   }, [])
 
-  const handleUndo = useCallback(() => {
-    const c = canvasRef.current
-    const ctx = ctxRef.current
-    if (!c || !ctx) return
-    const stack = historyRef.current
-    if (stack.length <= 1) return
-    stack.pop()
-    const last = stack[stack.length - 1]
-    ctx.putImageData(last, 0, 0)
-  }, [])
-
   useEffect(() => {
     setupCanvas()
-    pushSnapshot()
+    {
+      const c = canvasRef.current
+      const ctx = ctxRef.current
+      if (c && ctx) {
+        const snap = ctx.getImageData(0, 0, c.width, c.height)
+        pushSnapshot(snap)
+      }
+    }
 
     const onResize = () => {
       const c = canvasRef.current
       const ctx = ctxRef.current
       if (!c || !ctx) return
-
       const prev = ctx.getImageData(0, 0, c.width, c.height)
-
       setupCanvas()
       try {
         ctxRef.current?.putImageData(prev, 0, 0)
       } catch {
-        pushSnapshot()
+        const blank = ctx.getImageData(0, 0, c.width, c.height)
+        pushSnapshot(blank)
       }
     }
 
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
-  }, [setupCanvas, pushSnapshot])
+  }, [pushSnapshot, setupCanvas])
 
   return {
-    // refs
     canvasRef,
-    // state
-    isEraser,
     color,
-    // actions
+    isEraser,
     setColor,
-    setIsEraser,
-    toggleEraser: () => setIsEraser((v) => !v),
+    toggleEraser,
     handleUndo,
     clearCanvas,
-    // event handlers
     onPointerDown,
     onPointerMove,
     onPointerUpOrLeave,
