@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { ResetRequestSchema } from '@/types/apis/auth'
+import { ResetRequestSchema } from '@/types/zod/apis/auth'
 import { ok, fail } from '@/app/apis/_lib/http'
 import getSupabaseServer, { getOrigin } from '@/utils/supabase/server'
 import { MESSAGES } from '@/constants/messages'

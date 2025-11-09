@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { LoginSchema } from '@/types/apis/auth'
+import { LoginSchema } from '@/types/zod/apis/auth'
 import { ok, fail } from '@/app/apis/_lib/http'
 import getSupabaseServer from '@/utils/supabase/server'
 import { MESSAGES } from '@/constants/messages'

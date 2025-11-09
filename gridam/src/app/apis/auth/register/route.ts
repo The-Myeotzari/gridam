@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { SignUpSchema } from '@/types/apis/auth'
+import { SignUpSchema } from '@/types/zod/apis/auth'
 import { ok, fail, withCORS } from '@/app/apis/_lib/http'
 import getSupabaseServer, { getOrigin } from '@/utils/supabase/server'
 import { MESSAGES } from '@/constants/messages'
