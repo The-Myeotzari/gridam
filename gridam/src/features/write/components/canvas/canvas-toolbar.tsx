@@ -1,7 +1,7 @@
 'use client'
 
 import Button from '@/components/ui/button'
-import { useCanvasStore } from '@/features/write/stores/useCanvas'
+import { useCanvasStore } from '@/features/write/store/useCanvas'
 import { Trash2, Undo2 } from 'lucide-react'
 
 const palette = [
