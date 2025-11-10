@@ -1,8 +1,8 @@
 'use client'
 
-import { useCanvasDrawing } from '@/hooks/useCanvasDrawing'
-import { CanvasToolbar } from './canvas-toolbar'
-import { CanvasView } from './canvas-view'
+import { CanvasToolbar } from '@/features/write/components/canvas/canvas-toolbar'
+import { CanvasView } from '@/features/write/components/canvas/canvas-view'
+import { useCanvasDrawing } from '@/features/write/hooks/useCanvasDrawing'
 
 export default function CanvasContainer() {
   const { canvasRef, handleUndo, clearCanvas, onPointerDown, onPointerMove, onPointerUpOrLeave } =
