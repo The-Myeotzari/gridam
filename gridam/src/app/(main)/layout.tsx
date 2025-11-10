@@ -11,6 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/signup') ||
     pathname.startsWith('/forgot') ||
+    pathname.startsWith('/reset') ||
     pathname.includes('/auth')
 
   return (
