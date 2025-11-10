@@ -16,14 +16,15 @@ interface RegisterFormData {
   confirmPassword: string
 }
 export default function RegisterForm() {
-  const { register, handleSubmit, watch, formState } = useForm<RegisterFormData>({
+  //입력할 때마다 유효성 검증
+  const { register, handleSubmit, watch, formState, reset } = useForm<RegisterFormData>({
     mode: 'onChange',
   })
 
   //버튼 상태 관리
   const { isValid, isSubmitting } = formState
 
-  const onSubmit: SubmitHandler<RegisterFormData> = (data) => {
+  const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
     const { nickname, email, password, confirmPassword } = data
 
     //모든 항목을 입력해주세요.
@@ -54,8 +55,26 @@ export default function RegisterForm() {
       toast.error(MESSAGES.AUTH.ERROR.WRONG_PASSWORD)
       return
     }
+    // 유효성 검증 후 API 호출
+    try {
+      const res = await fetch('/apis/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname, email, password }),
+      })
+
+      const result = await res.json()
+
+      if (!res.ok) {
+        toast.error(result.message || MESSAGES.AUTH.ERROR.REGISTER)
+        return
+      }
+      toast.success(MESSAGES.AUTH.SUCCESS.REGISTER)
+      reset() // 폼초기화
+    } catch (err) {
+      toast.error(MESSAGES.AUTH.ERROR.REGISTER)
+    }
     //회원가입이 완료되었습니다.
-    toast.success(MESSAGES.AUTH.SUCCESS.REGISTER)
   }
 
   return (
