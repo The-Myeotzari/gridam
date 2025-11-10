@@ -86,7 +86,119 @@ export async function POST(req: NextRequest) {
       201
     )
   } catch (err) {
-    const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.PASSWORD_RESET
+    const message = err instanceof Error ? err.message : '이미지 업로드에 실패하였습니다.'
+    return fail(message, 500)
+  }
+}
+
+/**
+ * @openapi
+ * /apis/uploads:
+ *  delete:
+ *  tags: [Storage]
+ *  summary: 프라이빗 버킷 객체 삭제
+ *  description: |
+ *    - RLS: own-folder 정책(`path_tokens[1] = auth.uid()`)을 통과해야 함
+ *    - 요청 주체는 **인증 사용자**여야 하며, 라우트는 **사용자 세션 컨텍스트**로 동작
+ *    - 단일 객체 삭제만 지원(필요 시 배열 삭제로 확장 가능)
+ *  security:
+ *    - cookieAuth: []
+ *    - bearerAuth: []
+ *  parameters:
+ *    - in: query
+ *    name: path
+ *      required: true
+ *      schema:
+ *        type: string
+ *        description: 버킷 내부 객체 경로 (예: `userId/1731123456789.webp`)
+ *  responses:
+ *    '200':
+ *      description: 삭제 성공
+ *      content:
+ *        application/json:
+ *      schema:
+ *        type: object
+ *      properties:
+ *        ok:
+ *          type: boolean
+ *          example: true
+ *        message:
+ *          type: string
+ *          example: '삭제되었습니다.'
+ *      '400':
+ *        description: 잘못된 요청(파일 누락 등)
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *            properties:
+ *              ok:
+ *                type: boolean
+ *                example: false
+ *              message:
+ *                type: string
+ *                example: "file 필드가 필요합니다."
+ *      '401':
+ *        description: 인증 필요(세션/토큰 없음)
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *            properties:
+ *              ok:
+ *                type: boolean
+ *                example: false
+ *                message:
+ *                  type: string
+ *                  example: "유효하지 않은 접근입니다."
+ *      '403':
+ *        description: RLS 위반(own-folder 불일치 등)
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *            properties:
+ *              ok:
+ *                type: boolean
+ *                example: false
+ *                message:
+ *                  type: string
+ *                  example: "new row violates row-level security policy"
+ *      '500':
+ *        description: 서버 에러
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *            properties:
+ *              ok:
+ *                type: boolean
+ *                example: false
+ *                message:
+ *                  type: string
+ *                  example: "유효하지 않은 접근입니다."
+*/
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const path = searchParams.get('path')
+    if (!path) return fail('path 파라미터가 필요합니다.', 400)
+
+    const supabase = await getSupabaseServer()
+    const { data: userRes } = await supabase.auth.getUser()
+    const user = userRes?.user
+    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
+
+    // own-folder 검사
+    const [firstToken] = path.split('/')
+    if (firstToken !== user.id) return fail('own-folder 정책 위반', 403)
+
+    const { error } = await supabase.storage.from(BUCKET).remove([path])
+    if (error) throw error
+
+    return ok({ message: '삭제되었습니다.' })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '이미지 삭제에 실패하였습니다.'
     return fail(message, 500)
   }
 }
