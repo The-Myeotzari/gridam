@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { EllipsisVertical, SquarePen, Trash2 } from 'lucide-react'
 import Button from '@/components/ui/button'
+import { EllipsisVertical, SquarePen, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 type Props = {
   onEdit?: () => void
@@ -65,7 +65,7 @@ export default function DropBox({
         <div
           className="
           absolute right-0 top-[calc(100%+4px)] z-50
-          min-w-[8rem] overflow-hidden
+          min-w-32 overflow-hidden
           rounded-lg border bg-popover p-1 text-popover-foreground shadow-md
         "
         >
