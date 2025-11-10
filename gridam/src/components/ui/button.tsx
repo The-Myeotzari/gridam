@@ -49,7 +49,7 @@ export default function Button({
   onClick,
   className = '',
   label,
-  isActive = false,
+  isActive = true,
   ...props
 }: ButtonProps) {
   // 기본 스타일
