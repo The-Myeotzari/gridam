@@ -3,19 +3,24 @@ import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/card'
 import Input from '@/components/ui/input'
 import Button from '@/components/ui/button'
 import Link from 'next/link'
-import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from '@/store/useToast'
 import { MESSAGES } from '@/constants/messages'
 import Image from 'next/image'
+import Toast from '@/components/ui/toast'
 
-export default function Register() {
-  const [nickname, setNickname] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+interface RegisterFormData {
+  nickname: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+export default function RegisterForm() {
+  const { register, handleSubmit } = useForm<RegisterFormData>()
 
-  const handleSignUpClick = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const onSubmit: SubmitHandler<RegisterFormData> = (data) => {
+    const { nickname, email, password, confirmPassword } = data
+
     //모든 항목을 입력해주세요.
     if (!nickname || !email || !password || !confirmPassword) {
       toast.error(MESSAGES.AUTH.ERROR.EMPTY_FORM)
@@ -23,8 +28,7 @@ export default function Register() {
     }
     //이메일 형식이 올바르지 않습니다.
     const emailRegex =
-      /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
-
+      /^[0-9a-zA-Z]([-+.']?[0-9a-zA-Z])*@[0-9a-zA-Z]([-a-zA-Z0-9]+\.)+[a-zA-Z]{2,}$/i
     if (!emailRegex.test(email)) {
       toast.error(MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT)
       return
@@ -34,9 +38,8 @@ export default function Register() {
       toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
       return
     }
-    //비밀번호에는 대소문자와 특수문자가 포함되어야 합니다.
-    //(?=.*\d)?
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+    //비밀번호에는 숫자, 영문 대·소문자, 특수문자가 각각 최소 1개 이상 포함되어야 합니다.
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
     if (!passwordRegex.test(password)) {
       toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT)
       return
@@ -62,17 +65,14 @@ export default function Register() {
       />
 
       <CardBody>
-        <form onSubmit={handleSignUpClick} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2 ">
             <label htmlFor="nickname" className="text-lg text-left font-semibold">
               닉네임
             </label>
             <Input
               type="text"
-              value={nickname}
-              onChange={(e) => {
-                setNickname(e.target.value)
-              }}
+              {...register('nickname')}
               id="nickname"
               className="w-full"
               placeholder="귀여운 닉네임"
@@ -84,10 +84,7 @@ export default function Register() {
             </label>
             <Input
               type="text"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-              }}
+              {...register('email')}
               id="email"
               className="w-full"
               placeholder="your@email.com"
@@ -99,10 +96,7 @@ export default function Register() {
             </label>
             <Input
               type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-              }}
+              {...register('password')}
               id="password"
               className="w-full"
               placeholder="• • • • • • • •"
@@ -114,10 +108,7 @@ export default function Register() {
             </label>
             <Input
               type="password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value)
-              }}
+              {...register('confirmPassword')}
               id="confirmPassword"
               className="w-full"
               placeholder="• • • • • • • •"
@@ -142,6 +133,7 @@ export default function Register() {
           <Link href="/login" className="text-base text-primary hover:underline">
             로그인
           </Link>
+          <Toast />
         </div>
       </CardFooter>
     </Card>
