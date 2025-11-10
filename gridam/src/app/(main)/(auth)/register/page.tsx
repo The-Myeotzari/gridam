@@ -16,7 +16,12 @@ interface RegisterFormData {
   confirmPassword: string
 }
 export default function RegisterForm() {
-  const { register, handleSubmit } = useForm<RegisterFormData>()
+  const { register, handleSubmit, watch, formState } = useForm<RegisterFormData>({
+    mode: 'onChange',
+  })
+
+  //버튼 상태 관리
+  const { isValid, isSubmitting } = formState
 
   const onSubmit: SubmitHandler<RegisterFormData> = (data) => {
     const { nickname, email, password, confirmPassword } = data
@@ -119,6 +124,7 @@ export default function RegisterForm() {
             variant="gradient"
             size="lg"
             className="w-full text-xl"
+            disabled={!formState.isValid || formState.isSubmitting}
             label={'가입하기'}
           />
         </form>
