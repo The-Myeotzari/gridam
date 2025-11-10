@@ -1,6 +1,6 @@
 'use client'
 
-import { useCanvasStore } from '@/store/useCanvas'
+import { useCanvasStore } from '@/features/write/store/useCanvas'
 import { useCallback, useEffect, useRef } from 'react'
 
 export function useCanvasDrawing() {

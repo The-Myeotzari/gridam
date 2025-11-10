@@ -1,12 +1,12 @@
 import { FlatCompat } from '@eslint/eslintrc'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
 import js from '@eslint/js'
 import prettier from 'eslint-config-prettier'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
 import importPlugin from 'eslint-plugin-import'
 import unusedImports from 'eslint-plugin-unused-imports'
+import globals from 'globals'
+import { dirname } from 'path'
+import tseslint from 'typescript-eslint'
+import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -29,7 +29,7 @@ const config = [
   },
 
   {
-    files: ['**/*.{ts,tsx,js,jsx}'],
+    files: ['**/*.{ts,tsx}'],
     plugins: {
       '@typescript-eslint': tseslint.plugin,
       import: importPlugin,
@@ -52,6 +52,16 @@ const config = [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
     },
+    overrides: [
+      {
+        files: ['**/*.test.ts', '**/*.test.tsx', '**/__tests__/**/*.{ts,tsx}'],
+        rules: {
+          'react/display-name': 'off',
+          '@typescript-eslint/no-explicit-any': 'off',
+          '@next/next/no-img-element': 'off',
+        },
+      },
+    ],
   },
 
   prettier,
