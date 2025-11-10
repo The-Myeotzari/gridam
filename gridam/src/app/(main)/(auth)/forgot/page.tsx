@@ -47,20 +47,8 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div
-          className="absolute bottom-20 right-20 w-40 h-40 bg-secondary/10 rounded-full blur-3xl animate-float"
-          style={{ animationDelay: '1s' }}
-        />
-        <div
-          className="absolute top-1/2 left-1/3 w-36 h-36 bg-accent/10 rounded-full blur-3xl animate-float"
-          style={{ animationDelay: '2s' }}
-        />
-      </div>
-
-      <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in">
+    <div className="flex-1 flex item-center justify-center">
+      <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto">
         <AuthHeader
           title="비밀번호 찾기"
           subtitle={isSubmitted ? '이메일을 확인해주세요' : '가입하신 이메일을 입력해주세요'}
