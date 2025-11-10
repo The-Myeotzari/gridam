@@ -8,12 +8,26 @@ import { toast } from '@/store/toast-store'
 import { MESSAGES } from '@/constants/messages'
 import Image from 'next/image'
 import Toast from '@/components/ui/toast'
+import { useMutation } from '@tanstack/react-query'
 
 interface RegisterFormData {
   nickname: string
   email: string
   password: string
   confirmPassword: string
+}
+// api 불러오기
+async function registerUser(data: Pick<RegisterFormData, 'nickname' | 'email' | 'password'>) {
+  const { nickname, email, password } = data
+  const res = await fetch('/apis/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+
+  const result = await res.json()
+  if (!res.ok) throw new Error(result.message || MESSAGES.AUTH.ERROR.REGISTER)
+  return result
 }
 export default function RegisterForm() {
   //입력할 때마다 유효성 검증
@@ -23,6 +37,18 @@ export default function RegisterForm() {
 
   //버튼 상태 관리
   const { isValid, isSubmitting } = formState
+
+  //TanstackQuery-useMutaion 활용
+  const mutation = useMutation({
+    mutationFn: (data: RegisterFormData) => registerUser(data),
+    onSuccess: () => {
+      toast.success(MESSAGES.AUTH.SUCCESS.REGISTER)
+      reset()
+    },
+    onError: (error) => {
+      toast.error(error.message || MESSAGES.AUTH.ERROR.REGISTER)
+    },
+  })
 
   const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
     const { nickname, email, password, confirmPassword } = data
@@ -55,26 +81,8 @@ export default function RegisterForm() {
       toast.error(MESSAGES.AUTH.ERROR.WRONG_PASSWORD)
       return
     }
-    // 유효성 검증 후 API 호출
-    try {
-      const res = await fetch('/apis/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname, email, password }),
-      })
-
-      const result = await res.json()
-
-      if (!res.ok) {
-        toast.error(result.message || MESSAGES.AUTH.ERROR.REGISTER)
-        return
-      }
-      toast.success(MESSAGES.AUTH.SUCCESS.REGISTER)
-      reset() // 폼초기화
-    } catch (err) {
-      toast.error(MESSAGES.AUTH.ERROR.REGISTER)
-    }
-    //회원가입이 완료되었습니다.
+    //post 실행
+    mutation.mutate(data)
   }
 
   return (
