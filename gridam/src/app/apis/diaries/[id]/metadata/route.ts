@@ -1,32 +1,38 @@
-import { fail, ok } from '@/app/apis/_lib/http'
-import getSupabaseServer from '@/utils/supabase/server'
-import { z } from 'zod'
+import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { Params } from '@/types/params'
+import { putSchema } from '@/types/zod/apis/diaries'
+import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { NextRequest, NextResponse } from 'next/server'
 
-const schema = z.object({
-  date: z.string(), // YYYY-MM-DD
-  timezone: z.string(),
-  weather: z.any().nullable().optional(),
-})
+export async function PUT(req: NextRequest, { params }: Params) {
+  try {
+    const { supabase } = await getAuthenticatedUser()
+    const { id } = await params
 
-export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await getSupabaseServer()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('Unauthorized', 401)
+    const body = await req.json()
+    const parsed = putSchema.safeParse(body)
+    if (!parsed.success) throw fail(parsed.error.message, 422)
 
-  const body = await req.json()
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) return fail(parsed.error.message, 422)
-  const { id } = await params
-  const { error } = await supabase.from('metadata').upsert({
-    diary_id: id,
-    date: parsed.data.date,
-    timezone: parsed.data.timezone,
-    weather: parsed.data.weather ?? null,
-  })
-  if (error) return fail(error.message, 500)
-  return ok(null)
+    const { date, timezone, weather } = parsed.data
+
+    const { error } = await supabase.from('metadata').upsert({
+      diary_id: id,
+      date,
+      timezone,
+      weather: weather ?? null,
+    })
+
+    if (error) throw fail(error.message, 500)
+    return withCORS(ok(null))
+  } catch (err: unknown) {
+    if (err instanceof NextResponse) {
+      return withCORS(err)
+    }
+    if (err instanceof Error) {
+      return withCORS(fail(err.message, 500))
+    }
+    return withCORS(fail('Unknown error', 500))
+  }
 }
 
 export { OPTIONS } from '@/app/apis/_lib/http'
