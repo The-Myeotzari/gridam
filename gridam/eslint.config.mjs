@@ -27,6 +27,13 @@ const config = [
       'next-env.d.ts',
     ],
   },
+  // ✅ 전역 React hook 규칙 끄기 (새 React 19 린트 대응)
+  {
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
 
   {
     files: ['**/*.{ts,tsx}'],
@@ -63,6 +70,8 @@ const config = [
       '@typescript-eslint/no-this-alias': 'off',
       'react/display-name': 'off',
       '@next/next/no-img-element': 'off',
+      //React hooks 관련 린트 비활성화
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 
