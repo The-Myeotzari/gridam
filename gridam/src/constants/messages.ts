@@ -21,7 +21,9 @@ export const MESSAGES = {
       WRONG_CURRENT_PASSWORD: '현재 비밀번호와 일치하지 않습니다.',
       EMPTY_FORM: '모든 항목을 입력해주세요.',
       INVALID_PASSWORD_LENGTH: '비밀번호는 8자 이상이어야 합니다.',
-      INVALID_PASSWORD_FORMAT: '비밀번호에는 대소문자와 특수문자가 포함되어야 합니다.',
+      INVALID_PASSWORD_FORMAT:
+        '비밀번호에는 숫자, 영문 대·소문자, 특수문자가 각각 최소 1개 이상 포함되어야 합니다.',
+      INVALID_EMAIL_FORMAT: '이메일 형식이 올바르지 않습니다.',
     },
   },
 
