@@ -9,7 +9,7 @@ import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
 import { useForgotPasswordStore } from '@/features/auth/forgot/store/forget-store'
 import { toast } from '@/store/toast-store'
 import { useMutation } from '@tanstack/react-query'
-import * as React from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 export default function Page() {
@@ -25,7 +25,7 @@ export default function Page() {
     defaultValues: { email },
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue('email', email)
   }, [email, setValue])
 
