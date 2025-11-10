@@ -2,7 +2,6 @@ import QueryProvider from '@/providers/query-provider'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
-import Toast from '@/components/ui/toast'
 
 const zenSerif = localFont({
   src: '../font/ZEN-SERIF-TTF-Regular.woff2',
@@ -22,10 +21,7 @@ export default function RootLayout({
   return (
     <QueryProvider>
       <html lang="en">
-        <body className={`${zenSerif.variable} font-pretendard`}>
-          {children}
-          <Toast />
-        </body>
+        <body className={`${zenSerif.variable} font-pretendard`}>{children}</body>
       </html>
     </QueryProvider>
   )
