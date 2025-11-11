@@ -1,50 +1,23 @@
-'use client'
-
 import Button from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import Input from '@/components/ui/input'
 import Label from '@/components/ui/label'
-import { ForgotPasswordInput, requestPasswordReset } from '@/features/auth/forgot/api/forgot.api'
+import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
-import { useForgotPasswordStore } from '@/features/auth/forgot/store/forget-store'
-import { toast } from '@/store/toast-store'
-import { useMutation } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import ForgotSubmitButton from '@/features/auth/forgot/components/forgot-submit-button'
+import Form from 'next/form'
+import Link from 'next/link'
 
-export default function Page() {
-  const { email, isSubmitted, setEmail, setSubmitted, reset } = useForgotPasswordStore()
+type PageProps = {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-  } = useForm<ForgotPasswordInput>({
-    mode: 'onSubmit',
-    defaultValues: { email },
-  })
+export default async function Page({ searchParams }: PageProps) {
+  const params = (await searchParams) ?? {}
 
-  useEffect(() => {
-    setValue('email', email)
-  }, [email, setValue])
-
-  const mutation = useMutation({
-    mutationFn: requestPasswordReset,
-    onSuccess: () => {
-      toast.success('비밀번호 재설정 링크를 이메일로 전송했습니다!')
-      setSubmitted(true)
-    },
-    onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : '요청 처리 중 오류가 발생했어요.'
-      toast.error(message)
-    },
-  })
-
-  const onSubmit = (values: ForgotPasswordInput) => {
-    setEmail(values.email)
-    return mutation.mutate(values)
-  }
+  const isSubmitted = params?.sent === '1'
+  const email = typeof params?.email === 'string' ? params!.email : ''
+  const error = typeof params?.error === 'string' ? params!.error : ''
 
   return (
     <div className="flex-1 flex item-center justify-center">
@@ -55,32 +28,25 @@ export default function Page() {
         />
 
         {!isSubmitted ? (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <Form action={forgetAction} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="font-handwritten text-lg">
                 이메일
               </Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
+                defaultValue={email}
                 placeholder="your@email.com"
                 className="font-handwritten text-lg rounded-xl h-12 w-full"
-                {...register('email')}
-                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              {errors.email && (
-                <p className="text-sm text-destructive font-handwritten">{errors.email.message}</p>
-              )}
+              {error ? <p className="text-sm text-destructive font-handwritten">{error}</p> : null}
             </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              // disabled={isSubmitting || mutation.isPending}
-              label={mutation.isPending ? '전송 중...' : '재설정 링크 전송'}
-              className="w-full font-handwritten text-xl rounded-full h-12 bg-linear-to-r from-primary to-secondary hover:opacity-90"
-            />
-          </form>
+            <ForgotSubmitButton className="w-full font-handwritten text-xl rounded-full h-12 bg-linear-to-r from-primary to-secondary hover:opacity-90" />
+          </Form>
         ) : (
           <div className="space-y-6">
             <div className="bg-primary/10 rounded-xl p-6 text-center">
@@ -95,12 +61,14 @@ export default function Page() {
               <p className="font-handwritten text-sm text-muted-foreground">
                 이메일을 받지 못하셨나요?
               </p>
-              <Button
-                variant="gradient"
-                onClick={reset}
-                label="다시 시도하기"
-                className="font-handwritten text-base rounded-full"
-              />
+              <Link href="/forgot">
+                <Button
+                  type="button"
+                  variant="gradient"
+                  label="다시 시도하기"
+                  className="font-handwritten text-base rounded-full"
+                />
+              </Link>
             </div>
           </div>
         )}
