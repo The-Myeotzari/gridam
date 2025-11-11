@@ -50,7 +50,7 @@ export default function DropBox({
     <div ref={rootRef} className={`relative inline-block ${className}`}>
       {/* 메뉴 열기 버튼 */}
       <Button
-        onClick={() => setOpen((v) => !v)}
+        // onClick={() => setOpen((v) => !v)}
         isActive={false}
         aria-label="메뉴 열기"
         label={<EllipsisVertical className="w-4 h-4 text-muted-foreground" />}
@@ -81,10 +81,10 @@ export default function DropBox({
             <Button
               size="sm"
               isActive={false}
-              onClick={() => {
-                setOpen(false)
-                onEdit?.()
-              }}
+              // onClick={() => {
+              //   setOpen(false)
+              //   onEdit?.()
+              // }}
               className="w-full justify-start h-auto px-0 py-0 bg-transparent border-0 text-sm font-medium hover:bg-transparent"
               label={editLabel}
             />
@@ -102,10 +102,10 @@ export default function DropBox({
             <Button
               size="sm"
               isActive={false}
-              onClick={() => {
-                setOpen(false)
-                onDelete?.()
-              }}
+              // onClick={() => {
+              //   setOpen(false)
+              //   onDelete?.()
+              // }}
               className="w-full justify-start h-auto px-0 py-0 bg-transparent border-0
                          text-sm font-medium text-destructive hover:bg-transparent"
               label={deleteLabel}
