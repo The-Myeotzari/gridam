@@ -1,8 +1,8 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
-import { fetchCurrentWeather } from '../lib/weathre'
+import { useEffect, useState } from 'react'
+import { fetchCurrentWeather } from '../lib/weather'
 import { useLocationStore } from '../store/location-store'
 
 export function useWeather() {
@@ -30,12 +30,10 @@ export function useWeather() {
     return () => navigator.geolocation.clearWatch(id)
   }, [lat, lon, setLocation])
 
-  const enabled = useMemo(() => lat != null && lon != null, [lat, lon])
-
   const query = useQuery({
     queryKey: ['current-weather', lat, lon],
     queryFn: ({ signal }) => fetchCurrentWeather(lat as number, lon as number, signal),
-    enabled,
+    enabled: lat != null && lon != null,
     staleTime: 1000 * 60,
     refetchOnWindowFocus: false,
   })

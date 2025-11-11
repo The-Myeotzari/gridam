@@ -1,5 +1,5 @@
 'use client'
-import Button from '@/components/ui/button.client'
+import Button from '@/components/ui/button'
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
 import Input from '@/components/ui/input'
 import Toast from '@/components/ui/toast'
