@@ -26,6 +26,7 @@ export const MESSAGES = {
       PASSWORD_RESET: '비밀번호 재설정에 실패했습니다. 다시 시도해주세요.',
       INVALID_EMAIL_FORMAT: '이메일 형식이 올바르지 않습니다',
       INVALID_NICKNAME_FORMAT: '닉네임은 2~12자 이내의 한글, 영문, 숫자로 입력해주세요.',
+      EMAIL_ALREADY_IN_USE: '이미 사용 중인 이메일입니다.',
     },
   },
 
