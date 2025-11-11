@@ -1,22 +1,6 @@
-'use client'
+import dynamic from 'next/dynamic'
 
-import { useModalStore } from '@/store/modal-store'
-import { Modal } from '@/components/ui/modal/modal'
-
-export default function ModalRoot() {
-  const { node, close } = useModalStore()
-
-  if (!node) return null
-
-  return (
-    <Modal
-      open={true}
-      onClose={close}
-      size="md"
-      closeOnBackdrop
-      closeOnEscape
-    >
-      {node}
-    </Modal>
-  );
+const ModalRoot = dynamic(() => import('@/components/ui/modal/modal-root.client'), { ssr: false })
+export default function ModalRootWrapper() {
+  return <ModalRoot />
 }

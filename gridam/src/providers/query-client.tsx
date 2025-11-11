@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { PropsWithChildren, useState } from 'react'
 
-const QueryProvider = ({ children }: PropsWithChildren) => {
+const QueryProviderClient = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -26,4 +26,4 @@ const QueryProvider = ({ children }: PropsWithChildren) => {
   )
 }
 
-export default QueryProvider
+export default QueryProviderClient
