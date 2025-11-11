@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { normalizeValue, buildCells } from '@/utils/textarea-core'
 import { getCellSize, gridStyle, heights } from '@/utils/grid'
 import { useCaretAutoScroll } from '@/hooks/use-caret-auto-scroll'
-import { setValueNormalized, handleInputOnce, propagateChange } from '@/utils/textarea-actions'
+import { handleInputOnce, propagateChange } from '@/utils/textarea-actions'
 /**
  * Props
  * - max/cols/width/cellSize/visibleRows: 격자 규격
