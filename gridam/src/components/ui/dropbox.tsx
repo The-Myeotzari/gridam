@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/ui/button.client'
+import Button from '@/components/ui/button'
 import { EllipsisVertical, SquarePen, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
