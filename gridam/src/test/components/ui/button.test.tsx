@@ -1,4 +1,4 @@
-import Button from '@/components/ui/button'
+import Button from '@/components/ui/button.client'
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 
