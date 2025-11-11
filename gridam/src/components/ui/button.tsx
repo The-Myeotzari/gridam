@@ -4,7 +4,7 @@ import cn from '@/utils/cn'
 type Variant = 'basic' | 'blue' | 'roundedBasic' | 'roundedRed' | 'gradient'
 type Size = 'default' | 'sm' | 'lg' | 'icon'
 
-export type ButtonClientProps = {
+export type ButtonProps = {
   type?: 'button' | 'submit' | 'reset'
   variant?: Variant
   size?: Size
@@ -40,7 +40,7 @@ const SIZE_STYLE: Record<Size, string> = {
   icon: 'h-10 w-10 p-0',
 }
 
-export default function ButtonClient({
+export default function Button({
   type = 'button',
   variant = 'basic',
   size = 'default',
@@ -48,7 +48,7 @@ export default function ButtonClient({
   label,
   isActive = false,
   ...props
-}: ButtonClientProps) {
+}: ButtonProps) {
   // 기본 스타일
   //font-weight 속성 적용 안 됨.
   const base =
