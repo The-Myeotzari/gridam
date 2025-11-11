@@ -8,7 +8,7 @@ jest.mock('@tanstack/react-query-devtools', () => ({
 }))
 
 // ✅ 테스트 대상 임포트 (프로젝트 경로에 맞게 수정)
-import QueryProvider from '@/providers/query-provider' // 예: src/providers/query-provider.tsx
+import QueryProvider from '@/providers/query-server' // 예: src/providers/query-provider.tsx
 
 // 내부에서 queryClient가 실제로 주입됐는지 확인하는 Probe 컴포넌트
 function Probe() {

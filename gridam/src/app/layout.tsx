@@ -1,4 +1,4 @@
-import QueryProvider from '@/providers/query-provider'
+import QueryProvider from '@/providers/query-server'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
