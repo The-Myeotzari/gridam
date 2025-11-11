@@ -1,4 +1,3 @@
-'use client'
 import Image from 'next/image'
 
 // OpenWeather weather.id 매핑 (참고: https://openweathermap.org/weather-conditions)

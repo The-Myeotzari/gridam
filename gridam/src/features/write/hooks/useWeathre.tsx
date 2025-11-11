@@ -1,9 +1,9 @@
 'use client'
 
+import { fetchCurrentWeather } from '@/features/write/lib/weather'
+import { useLocationStore } from '@/features/write/store/location-store'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { fetchCurrentWeather } from '../lib/weather'
-import { useLocationStore } from '../store/location-store'
 
 export function useWeather() {
   const { lat, lon, setLocation } = useLocationStore()
