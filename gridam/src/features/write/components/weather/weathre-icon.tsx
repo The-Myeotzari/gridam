@@ -1,10 +1,7 @@
-'use client'
 import Image from 'next/image'
 
 // OpenWeather weather.id 매핑 (참고: https://openweathermap.org/weather-conditions)
 export function mapWeatherIdToIcon(id: number, icon: string): string {
-  const isDay = icon.endsWith('d')
-
   // 2xx 천둥번개
   if (id >= 200 && id < 300) return '/icon/thunderstorm.svg'
   // 3xx 이슬비/소나기

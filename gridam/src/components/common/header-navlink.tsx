@@ -25,8 +25,8 @@ const colorMap = {
 type ActiveColor = keyof typeof colorMap
 
 export default function HeaderNavLink({ href, label, activeColor }: NavLinkProps) {
-  const pathname = usePathname()
-  const isActive = pathname === href
+  const path = usePathname()
+  const isActive = path === href
   const color = colorMap[activeColor]
 
   return (

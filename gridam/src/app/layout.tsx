@@ -1,4 +1,4 @@
-import QueryProvider from '@/providers/query-provider'
+import QueryProvider from '@/providers/query-providers'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
@@ -19,10 +19,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <QueryProvider>
-      <html lang="en">
+    <html lang="en">
+      <QueryProvider>
         <body className={`${zenSerif.variable} font-pretendard`}>{children}</body>
-      </html>
-    </QueryProvider>
+      </QueryProvider>
+    </html>
   )
 }
