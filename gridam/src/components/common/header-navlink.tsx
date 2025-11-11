@@ -1,10 +1,12 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 type NavLinkProps = {
   href: string
   label: string
   activeColor: ActiveColor // colorMap의 Key 타입과 동일
-  path: string
 }
 
 // 색상 매핑
@@ -22,7 +24,8 @@ const colorMap = {
 // colorMap의 Key를 자동으로 추출
 type ActiveColor = keyof typeof colorMap
 
-export default function HeaderNavLink({ href, label, activeColor, path }: NavLinkProps) {
+export default function HeaderNavLink({ href, label, activeColor }: NavLinkProps) {
+  const path = usePathname()
   const isActive = path === href
   const color = colorMap[activeColor]
 
