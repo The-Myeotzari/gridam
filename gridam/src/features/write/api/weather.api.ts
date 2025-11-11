@@ -2,12 +2,9 @@ const API = process.env.NEXT_PUBLIC_OPENWEATHER_KEY
 
 type Weather = {
   id: number
-  main: string
   description: string
   icon: string
   temp: number
-  feelsLike: number
-  name: string
 }
 
 export async function fetchWeather(lat: number, lon: number): Promise<Weather> {
@@ -37,11 +34,8 @@ export async function fetchWeather(lat: number, lon: number): Promise<Weather> {
 
   return {
     id: Number(weather.id) || 0,
-    main: String(weather.main ?? ''),
     description: weather.description ?? '',
     icon: weather.icon ?? '',
     temp: json?.main?.temp || 0,
-    feelsLike: json?.main?.feels_like || 0,
-    name: json?.name ?? '',
   }
 }
