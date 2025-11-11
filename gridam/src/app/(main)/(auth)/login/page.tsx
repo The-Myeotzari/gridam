@@ -1,87 +1,86 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import Button from '@/components/ui/button'
 import Input from '@/components/ui/input'
-import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { toast } from '@/store/toast-store'
-import { MESSAGES } from '@/constants/messages'
+import { useEffect, useActionState } from 'react'
+import { loginAction, type LoginResult } from '@/features/auth/login/api/login-action'
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [state, formAction] = useActionState<LoginResult | null, FormData>(loginAction, null)
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!email && !password) return toast.error(MESSAGES.AUTH.ERROR.EMPTY_EMAIL_PASSWORD)
-    if (!email) return toast.error(MESSAGES.AUTH.ERROR.EMPTY_EMAIL)
-    if (!password) return toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
-
-    toast.success(MESSAGES.AUTH.SUCCESS.LOGIN)
-  }
+  useEffect(() => {
+    if (!state) return
+    state.ok ? toast.success(state.message) : toast.error(state.message)
+  }, [state])
 
   return (
-    <Card className="w-full max-w-[420px] shadow-card" indent="none">
-      {/* 헤더 */}
-      <CardHeader
-        align="vertical"
-        iconSize="md"
-        className="text-center"
-        cardImage={<img src="/favicon.ico" alt="그리담 로고" width={56} height={56} />}
-        cardTitle={<h1 className="text-3xl font-extrabold">그리담 GRIDAM</h1>}
-        cardDescription={<span>오늘의 이야기를 그려요</span>}
-      />
+    <div className="flex-1 flex items-center justify-center">
+      <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto shadow-card">
+        {/* 헤더 */}
+        <div className="text-center mb-8">
+          <img
+            src="/favicon.ico"
+            alt="그리담 로고"
+            width={56}
+            height={56}
+            className="mx-auto mb-3"
+          />
+          <h1 className="text-3xl font-extrabold">그리담 GRIDAM</h1>
+          <p className="text-muted-foreground">오늘의 이야기를 그려요</p>
+        </div>
 
-      {/* 바디 */}
-      <CardBody className="px-8">
-        <form onSubmit={handleLogin} className="mt-4 space-y-5">
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold">이메일</span>
+        {/* 바디 */}
+        <form action={formAction} className="space-y-6" noValidate>
+          <div className="space-y-2">
+            <label className="font-handwritten text-lg font-bold" htmlFor="email">
+              이메일
+            </label>
             <Input
+              id="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="w-full h-11 rounded-xl border border-input bg-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="font-handwritten text-lg rounded-xl h-12 w-full"
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold">비밀번호</span>
+          <div className="space-y-2">
+            <label className="font-handwritten text-lg font-bold" htmlFor="password">
+              비밀번호
+            </label>
             <Input
+              id="password"
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full h-11 rounded-xl border border-input bg-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="font-handwritten text-lg rounded-xl h-12 w-full"
             />
-          </label>
+          </div>
 
           <Button
             type="submit"
-            variant="gradient"
-            size="lg"
-            isActive
+            variant="basic"
             label="로그인"
-            className="w-full mt-2"
+            className="w-full font-handwritten text-xl rounded-full h-12 bg-linear-to-r from-primary to-secondary hover:opacity-90"
           />
         </form>
-      </CardBody>
 
-      {/* 푸터 */}
-      <CardFooter className="px-8 flex-col gap-2 text-center text-sm">
-        <Link href="/forgot" className="text-muted-foreground hover:underline">
-          비밀번호를 잊으셨나요?
-        </Link>
-        <div className="text-muted-foreground">
-          <span className="p-1">계정이 없으신가요?</span>
-          <Link href="/register" className="font-semibold text-primary hover:underline">
-            회원가입
+        {/* 푸터 */}
+        <div className="mt-6 text-center font-handwritten text-base text-muted-foreground">
+          <Link href="/forgot" className="hover:underline">
+            비밀번호를 잊으셨나요?
           </Link>
+          <div className="mt-3">
+            계정이 없으신가요?{' '}
+            <Link href="/register" className="text-primary hover:underline font-semibold">
+              회원가입
+            </Link>
+          </div>
         </div>
-      </CardFooter>
-    </Card>
+      </Card>
+    </div>
   )
 }
