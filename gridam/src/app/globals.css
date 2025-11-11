@@ -160,3 +160,14 @@ body {
     hsl(208 100% 84%) 100%
   );
 }
+
+/* textarea 스크롤 가리기 */
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge(Chromium) */
+  }
+}
