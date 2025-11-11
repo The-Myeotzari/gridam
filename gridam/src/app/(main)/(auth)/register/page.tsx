@@ -1,13 +1,13 @@
 'use client'
-import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/card'
+import Button from '@/components/ui/button.client'
+import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
 import Input from '@/components/ui/input'
-import Button from '@/components/ui/button'
+import Toast from '@/components/ui/toast'
+import { MESSAGES } from '@/constants/messages'
+import { toast } from '@/store/toast-store'
+import Image from 'next/image'
 import Link from 'next/link'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from '@/store/toast-store'
-import { MESSAGES } from '@/constants/messages'
-import Image from 'next/image'
-import Toast from '@/components/ui/toast'
 
 interface RegisterFormData {
   nickname: string
