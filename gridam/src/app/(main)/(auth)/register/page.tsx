@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/card'
 import Input from '@/components/ui/input'
 import Button from '@/components/ui/button'
 import Link from 'next/link'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from '@/store/toast-store'
 import { MESSAGES } from '@/constants/messages'
 import Image from 'next/image'
@@ -16,6 +16,12 @@ interface RegisterFormData {
   password: string
   confirmPassword: string
 }
+//유효성 검사 - 비밀번호, 이메일, 닉네임
+const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\;/']).{8,}$/
+const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9]{2,12}$/
+
 // api 불러오기
 async function registerUser(data: Pick<RegisterFormData, 'nickname' | 'email' | 'password'>) {
   const { nickname, email, password } = data
@@ -26,13 +32,21 @@ async function registerUser(data: Pick<RegisterFormData, 'nickname' | 'email' | 
   })
 
   const result = await res.json()
-  if (!res.ok) throw new Error(result.message || MESSAGES.AUTH.ERROR.REGISTER)
+
+  if (res.ok) return result
+  if (result.message?.includes('already registered')) {
+    //닉네임은?
+    //이메일 중복 검사
+    // Supabase가 이메일 중복 시 에러 메시지 반환
+    throw new Error('이미 사용 중인 이메일입니다.')
+  }
+  throw new Error(result.message || MESSAGES.AUTH.ERROR.REGISTER)
   return result
 }
 export default function RegisterForm() {
   //입력할 때마다 유효성 검증
   const { register, handleSubmit, watch, formState, reset } = useForm<RegisterFormData>({
-    mode: 'onChange',
+    mode: 'onSubmit',
   })
 
   //버튼 상태 관리
@@ -49,40 +63,28 @@ export default function RegisterForm() {
       toast.error(error.message || MESSAGES.AUTH.ERROR.REGISTER)
     },
   })
-
+  //유효성 통과 시
   const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
     const { nickname, email, password, confirmPassword } = data
+    const { errors } = formState
+    mutation.mutate(data)
+  }
+  // 유효성 실패 시
+  const onInvalid = (errors: FieldErrors<RegisterFormData>) => {
+    //1. 첫 번째 필드에 오류가 발생한 필드의 키(이름) 찾기
+    const firstErrorKey = Object.keys(errors)[0] as keyof RegisterFormData | undefined
+    if (!firstErrorKey) return
 
-    //모든 항목을 입력해주세요.
-    if (!nickname || !email || !password || !confirmPassword) {
+    //2. 오류의 타입이 required인지 확인하여 빈 값 오류 우선 처리
+    const firstError = errors[firstErrorKey]
+    if (firstError?.type === 'required') {
       toast.error(MESSAGES.AUTH.ERROR.EMPTY_FORM)
       return
     }
-    //이메일 형식이 올바르지 않습니다.
-    const emailRegex =
-      /^[0-9a-zA-Z]([-+.']?[0-9a-zA-Z])*@[0-9a-zA-Z]([-a-zA-Z0-9]+\.)+[a-zA-Z]{2,}$/i
-    if (!emailRegex.test(email)) {
-      toast.error(MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT)
-      return
+    //3. required가 아닌 형식 오류 (validate)인 경우
+    if (firstError?.message) {
+      toast.error(firstError.message)
     }
-    //비밀번호는 8자 이상이어야 합니다.
-    if (password.length < 8) {
-      toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
-      return
-    }
-    //비밀번호에는 숫자, 영문 대·소문자, 특수문자가 각각 최소 1개 이상 포함되어야 합니다.
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
-    if (!passwordRegex.test(password)) {
-      toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT)
-      return
-    }
-    //현재 비밀번호와 일치하지 않습니다.
-    if (password !== confirmPassword) {
-      toast.error(MESSAGES.AUTH.ERROR.WRONG_PASSWORD)
-      return
-    }
-    //post 실행
-    mutation.mutate(data)
   }
 
   return (
@@ -97,14 +99,21 @@ export default function RegisterForm() {
       />
 
       <CardBody>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2 ">
             <label htmlFor="nickname" className="text-lg text-left font-semibold">
               닉네임
             </label>
             <Input
               type="text"
-              {...register('nickname')}
+              {...register('nickname', {
+                validate: (value) => {
+                  if (!NICKNAME_REGEX.test(value)) {
+                    return MESSAGES.AUTH.ERROR.INVALID_NICKNAME_FORMAT
+                  }
+                },
+                required: true,
+              })}
               id="nickname"
               className="w-full"
               placeholder="귀여운 닉네임"
@@ -116,7 +125,14 @@ export default function RegisterForm() {
             </label>
             <Input
               type="text"
-              {...register('email')}
+              {...register('email', {
+                validate: (value) => {
+                  if (!EMAIL_REGEX.test(value)) {
+                    return MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT
+                  }
+                },
+                required: true,
+              })}
               id="email"
               className="w-full"
               placeholder="your@email.com"
@@ -128,7 +144,17 @@ export default function RegisterForm() {
             </label>
             <Input
               type="password"
-              {...register('password')}
+              {...register('password', {
+                validate: (value) => {
+                  if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
+
+                  if (!PASSWORD_REGEX.test(value))
+                    return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
+
+                  return true
+                },
+                required: true,
+              })}
               id="password"
               className="w-full"
               placeholder="• • • • • • • •"
@@ -140,7 +166,12 @@ export default function RegisterForm() {
             </label>
             <Input
               type="password"
-              {...register('confirmPassword')}
+              {...register('confirmPassword', {
+                validate: (value) => {
+                  if (value !== watch('password')) return MESSAGES.AUTH.ERROR.WRONG_PASSWORD
+                },
+                required: true,
+              })}
               id="confirmPassword"
               className="w-full"
               placeholder="• • • • • • • •"
@@ -151,7 +182,7 @@ export default function RegisterForm() {
             variant="gradient"
             size="lg"
             className="w-full text-xl"
-            disabled={!formState.isValid || formState.isSubmitting}
+            // disabled={!formState.isValid || formState.isSubmitting}
             label={'가입하기'}
           />
         </form>
