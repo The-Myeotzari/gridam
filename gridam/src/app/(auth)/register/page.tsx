@@ -34,14 +34,7 @@ async function registerUser(data: Pick<RegisterFormData, 'nickname' | 'email' | 
   const result = await res.json()
 
   if (res.ok) return result
-  if (result.message?.includes('already registered')) {
-    //닉네임은?
-    //이메일 중복 검사
-    // Supabase가 이메일 중복 시 에러 메시지 반환
-    throw new Error('이미 사용 중인 이메일입니다.')
-  }
   throw new Error(result.message || MESSAGES.AUTH.ERROR.REGISTER)
-  return result
 }
 export default function RegisterForm() {
   //입력할 때마다 유효성 검증
