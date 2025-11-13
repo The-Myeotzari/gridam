@@ -1,16 +1,18 @@
 import { fetchWeather } from '@/features/write/api/weather.api'
-import WeatherIcon, { mapWeatherIdToIcon } from '@/features/write/components/weathre-icon'
+import WeatherIcon from '@/features/write/components/weathre-icon'
 import WriteForm from '@/features/write/components/write-form'
 import { formatDate } from '@/utils/format-date'
 import { getCoordsFromCookies } from '@/utils/get-coords-from-cookies'
+import { mapWeatherIdToIcon } from '@/utils/map-weather-to-icon'
 import { cookies } from 'next/headers'
 
 export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
   const data = await fetchWeather(coords.lat, coords.lon)
+  const weather = mapWeatherIdToIcon(data.id)
   const today = formatDate()
-  const wearther = mapWeatherIdToIcon(data.id)
+  const dateValue = new Date().toISOString().slice(0, 10)
 
   return (
     <div
@@ -30,7 +32,7 @@ export default async function Page() {
         </section>
       </section>
 
-      <WriteForm today={today} weather={wearther} />
+      <WriteForm today={today} dateValue={dateValue} weather={weather} />
     </div>
   )
 }
