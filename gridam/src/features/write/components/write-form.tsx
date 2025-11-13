@@ -2,7 +2,7 @@
 
 import Textarea from '@/components/ui/textarea'
 import { usePostDiary } from '@/features/write/api/queries/use-post-diary'
-import CanvasContainer from '@/features/write/components/canvas/canvas-container'
+import CanvasContainer from '@/features/write/components/canvas-container'
 import WriteButtons from '@/features/write/components/write-buttons'
 import { useCanvasStore } from '@/features/write/store/canvas-store'
 import { useSetDate, useSetText, useWriteStore } from '@/features/write/store/write-store'
