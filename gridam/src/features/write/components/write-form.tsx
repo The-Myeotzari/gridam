@@ -6,6 +6,7 @@ import CanvasContainer from '@/features/write/components/canvas-container'
 import WriteButtons from '@/features/write/components/write-buttons'
 import { useCanvasStore } from '@/features/write/store/canvas-store'
 import { useSetDate, useSetText, useWriteStore } from '@/features/write/store/write-store'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 type props = {
@@ -15,6 +16,7 @@ type props = {
 }
 
 export default function WriteForm({ today, dateValue, weather }: props) {
+  const router = useRouter()
   const setDate = useSetDate()
   const setText = useSetText()
 
@@ -28,6 +30,9 @@ export default function WriteForm({ today, dateValue, weather }: props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (isPending) return
+
     const textState = useWriteStore.getState()
     const canvasState = useCanvasStore.getState()
 
