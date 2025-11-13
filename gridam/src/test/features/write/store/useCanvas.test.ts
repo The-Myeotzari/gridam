@@ -1,4 +1,4 @@
-import { useCanvasStore } from '@/features/write/store/useCanvas'
+import { useCanvasStore } from '@/features/write/store/canvas-store'
 import '@testing-library/jest-dom'
 import { act } from '@testing-library/react'
 
