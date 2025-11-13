@@ -27,7 +27,7 @@ export default async function Page() {
 
         <section className="flex items-center leading-9 gap-2">
           <div className="font-bold text-md hidden sm:block">날씨</div>
-          <WeatherIcon id={data.id} icon={data.icon} alt={data.description} size={36} />
+          <WeatherIcon id={data.id} alt={data.description} size={36} />
           {/* <div className="text-md opacity-80">{Math.round(data.temp)}°C</div> */}
         </section>
       </section>
