@@ -11,5 +11,6 @@ export interface CreateDiaryPayload {
 }
 
 export interface CreateDiaryResponse {
-  id: string
+  data: { id: string } & CreateDiaryPayload
+  ok: boolean
 }
