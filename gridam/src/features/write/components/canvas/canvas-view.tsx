@@ -18,7 +18,7 @@ export function CanvasView({
   onPointerMove,
   onPointerUpOrLeave,
   className,
-  height = 600,
+  height = 40,
 }: Props) {
   if (!canvasRef) return null
 
@@ -27,7 +27,7 @@ export function CanvasView({
       <canvas
         ref={canvasRef}
         className={cn('block w-full rounded-xl cursor-crosshair', className)}
-        style={{ height }}
+        style={{ height: `${height}vh` }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUpOrLeave}
