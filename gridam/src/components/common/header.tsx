@@ -1,13 +1,8 @@
-'use client'
-
 import HeaderNavLink from '@/components/common/header-navlink'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
 export default function Header() {
-  const pathname = usePathname()
-
   const userName = '별빛나눔' // 로그인 후 실제 사용자 이름으로 교체
 
   return (
@@ -29,8 +24,8 @@ export default function Header() {
 
         {/* 네비게이션 */}
         <nav className="flex items-center gap-2 sm:gap-4 md:gap-6">
-          <HeaderNavLink href="/feed" label="피드" activeColor="primary" path={pathname} />
-          <HeaderNavLink href="/mypage" label="마이페이지" activeColor="accent" path={pathname} />
+          <HeaderNavLink href="/" label="피드" activeColor="primary" />
+          <HeaderNavLink href="/mypage" label="마이페이지" activeColor="accent" />
           <span className="text-xs sm:text-sm md:text-base text-primary">{userName}</span>
         </nav>
       </div>

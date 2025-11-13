@@ -1,8 +1,8 @@
-'use client'
 import cn from '@/utils/cn'
 import * as React from 'react'
 
 type SizeStyle = 'default' | 'sm' | 'md' | 'lg'
+
 const SIZE_STYLE: Record<SizeStyle, string> = {
   default: 'h-10 w-72',
   sm: 'h-4 w-32',
@@ -10,10 +10,12 @@ const SIZE_STYLE: Record<SizeStyle, string> = {
   lg: 'h-8 w-64',
 }
 
-interface InputType extends React.ComponentProps<'input'> {
+type NoEventAttrs = Omit<React.ComponentProps<'input'>, keyof React.DOMAttributes<HTMLInputElement>>
+
+export interface InputType extends NoEventAttrs {
   sizeStyle?: SizeStyle
-  type?: React.HTMLInputTypeAttribute
   className?: string
+  label?: string
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputType>(
@@ -28,7 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputType>(
         )}
         ref={ref}
         {...props}
-      ></input>
+      />
     )
   }
 )
