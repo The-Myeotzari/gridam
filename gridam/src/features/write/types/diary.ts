@@ -1,16 +1,14 @@
-export interface DiaryMeta {
-  timezone: string
-}
-
 export interface CreateDiaryPayload {
   content: string
   date: string
   emoji: string
   imageUrl?: string | null
-  meta?: DiaryMeta | null
+  meta?: {
+    timezone: string
+  } | null
 }
 
-export interface CreateDiaryResponse {
-  data: { id: string } & CreateDiaryPayload
-  ok: boolean
+export interface DiaryImageData {
+  path: string
+  url: string | null
 }

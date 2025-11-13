@@ -2,7 +2,7 @@
 
 import { QUERY_KEYS } from '@/constants/query-key'
 import { postDiary } from '@/features/write/api/post-diary.api'
-import { CreateDiaryPayload } from '@/features/write/types/diary'
+import type { CreateDiaryPayload } from '@/features/write/types/diary'
 import { toast } from '@/store/toast-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'

@@ -1,5 +1,10 @@
-import { CreateDiaryPayload, CreateDiaryResponse } from '@/features/write/types/diary'
+import type { CreateDiaryPayload } from '@/features/write/types/diary'
 import { api } from '@/lib/api'
+
+export interface CreateDiaryResponse {
+  data: { id: string } & CreateDiaryPayload
+  ok: boolean
+}
 
 export async function postDiary(payload: CreateDiaryPayload) {
   const res = await api.post<CreateDiaryResponse>('/diaries', payload)
