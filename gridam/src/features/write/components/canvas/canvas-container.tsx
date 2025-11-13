@@ -1,10 +1,10 @@
 'use client'
 
+import { useSetCanvas } from '@/features/write//store/canvas-store'
 import { CanvasToolbar } from '@/features/write/components/canvas/canvas-toolbar'
 import { CanvasView } from '@/features/write/components/canvas/canvas-view'
 import { useCanvasDrawing } from '@/features/write/hooks/use-canvas-drawing'
-import { useSetCanvas } from '@/features/write/store/write-store'
-import { memo, useEffect } from 'react'
+import { memo } from 'react'
 
 function CanvasContainer() {
   const { canvasRef, handleUndo, clearCanvas, onPointerDown, onPointerMove, onPointerUpOrLeave } =
@@ -18,18 +18,6 @@ function CanvasContainer() {
     const dataUrl = canvas.toDataURL('image/png')
     setCanvas(dataUrl)
   }
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const observer = new MutationObserver(saveImage)
-    observer.observe(canvas, { attributes: true, childList: true, subtree: true })
-
-    saveImage()
-
-    return () => observer.disconnect()
-  }, [canvasRef])
 
   return (
     <section

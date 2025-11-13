@@ -5,6 +5,9 @@ import { create } from 'zustand'
 type Snapshot = ImageData
 
 type CanvasState = {
+  canvas: string | null
+  setCanvas: (v: string | null) => void
+  //
   color: string
   isEraser: boolean
   // 히스토리 스택
@@ -21,6 +24,9 @@ type CanvasState = {
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
+  canvas: null,
+  setCanvas: (v) => set({ canvas: v }),
+
   color: 'var(--color-canva-red)',
   isEraser: false,
 
@@ -49,3 +55,6 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   clearHistory: () => set({ history: [] }),
 }))
+
+export const useCanvas = () => useCanvasStore((s) => s.canvas)
+export const useSetCanvas = () => useCanvasStore((s) => s.setCanvas)

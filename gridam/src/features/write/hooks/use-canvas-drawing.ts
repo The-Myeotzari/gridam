@@ -1,8 +1,7 @@
 'use client'
 
-import { useCanvasStore } from '@/features/write/store/canvas-store'
+import { useCanvasStore, useSetCanvas } from '@/features/write/store/canvas-store'
 import { useCallback, useEffect, useRef } from 'react'
-import { useSetCanvas } from '../store/write-store'
 
 export function useCanvasDrawing() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
