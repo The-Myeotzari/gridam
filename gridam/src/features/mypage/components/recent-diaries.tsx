@@ -15,7 +15,7 @@ interface RecentDiariesProps {
 }
 
 export default function RecentDiaries({ diaries }: RecentDiariesProps) {
-  const hasDiaries = diaries.length > 0
+  const hasDiaries: boolean = diaries.length > 0
 
   return (
     <section className="w-full">

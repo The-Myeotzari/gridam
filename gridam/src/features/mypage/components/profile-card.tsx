@@ -6,22 +6,27 @@ interface ProfileCardProps {
   createdAt: string
 }
 
+interface ProfileField{
+  label: string
+  value: string
+}
+
 export default function ProfileCard({ email, nickname, createdAt }: ProfileCardProps) {
+  const fields: ProfileField[] = [
+    { label: '이메일', value: email },
+    { label: '닉네임', value: nickname },
+    { label: '가입일', value: createdAt },
+  ]
+
   return (
     <Card className="w-full">
       <CardBody className="flex flex-col gap-2">
-        <div>
-          <p className="text-muted-foreground">이메일</p>
-          <p className="text-xl">{email}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">닉네임</p>
-          <p className="text-xl">{nickname}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">가입일</p>
-          <p className="text-xl">{createdAt}</p>
-        </div>
+        {fields.map(({ label, value }) => (
+          <div key={label}>
+            <p className="text-muted-foreground">{label}</p>
+            <p className="text-xl">{value}</p>
+          </div>
+        ))}
       </CardBody>
     </Card>
   )
