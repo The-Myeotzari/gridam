@@ -2,11 +2,11 @@
 
 // 셀 크기(cell)와 전체 그리드 너비(gridWidth) 계산
 // - cellSize가 지정되면 그대로 사용, 없으면 width/cols로 자동 계산
-export function getCellSize(width: number, cols: number, cellSize?: number) {
-  const cell = typeof cellSize === 'number' ? Math.floor(cellSize) : Math.floor(width / cols)
-  const gridWidth = cell * cols
-  return { cell, gridWidth }
-}
+// export function getCellSize(width: number, cols: number, cellSize?: number) {
+//   const cell = typeof cellSize === 'number' ? Math.floor(cellSize) : Math.floor(width / cols)
+//   const gridWidth = cell * cols
+//   return { cell, gridWidth }
+// }
 
 // CSS Grid 스타일 생성
 // gridTemplateColumns: 열 개수(cols)와 각 셀 크기(cell) 지정
