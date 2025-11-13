@@ -24,7 +24,7 @@ export default function WriteForm({ today, dateValue, weather }: props) {
     if (today) {
       setDate(today)
     }
-  }, [today])
+  }, [today, setDate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
