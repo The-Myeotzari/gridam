@@ -1,4 +1,4 @@
-import { RegisterFormData } from '@/app/(auth)/register/page'
+import { RegisterFormData } from '@/app/(auth)/register/register-form'
 import { MESSAGES } from '@/constants/messages'
 // api 불러오기
 export async function registerUser(
