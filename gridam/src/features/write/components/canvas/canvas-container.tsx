@@ -3,26 +3,33 @@
 import { CanvasToolbar } from '@/features/write/components/canvas/canvas-toolbar'
 import { CanvasView } from '@/features/write/components/canvas/canvas-view'
 import { useCanvasDrawing } from '@/features/write/hooks/use-canvas-drawing'
-import { useEffect } from 'react'
+import { useSetCanvas } from '@/features/write/store/write-store'
+import { memo, useEffect } from 'react'
 
-type Props = {
-  onReady?: (getImage: () => string | null) => void
-}
+function CanvasContainer() {
+  const { canvasRef, handleUndo, clearCanvas, onPointerDown, onPointerMove, onPointerUpOrLeave } =
+    useCanvasDrawing()
 
-export default function CanvasContainer({ onReady }: Props) {
-  const {
-    canvasRef,
-    handleUndo,
-    clearCanvas,
-    onPointerDown,
-    onPointerMove,
-    onPointerUpOrLeave,
-    getCanvasImage,
-  } = useCanvasDrawing()
+  const setCanvas = useSetCanvas()
+
+  const saveImage = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const dataUrl = canvas.toDataURL('image/png')
+    setCanvas(dataUrl)
+  }
 
   useEffect(() => {
-    if (onReady) onReady(getCanvasImage)
-  }, [onReady, getCanvasImage])
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const observer = new MutationObserver(saveImage)
+    observer.observe(canvas, { attributes: true, childList: true, subtree: true })
+
+    saveImage()
+
+    return () => observer.disconnect()
+  }, [canvasRef])
 
   return (
     <section
@@ -30,13 +37,25 @@ export default function CanvasContainer({ onReady }: Props) {
       style={{ borderColor: 'black' }}
     >
       <CanvasToolbar handleUndo={handleUndo} clearCanvas={clearCanvas} />
+
       <CanvasView
         canvasRef={canvasRef}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUpOrLeave={onPointerUpOrLeave}
+        onPointerDown={(e) => {
+          onPointerDown(e)
+          saveImage()
+        }}
+        onPointerMove={(e) => {
+          onPointerMove(e)
+          saveImage()
+        }}
+        onPointerUpOrLeave={(e) => {
+          onPointerUpOrLeave(e)
+          saveImage()
+        }}
         height={45}
       />
     </section>
   )
 }
+
+export default memo(CanvasContainer)
