@@ -1,4 +1,4 @@
-function formatDate() {
+export function formatDate() {
   return new Date().toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
