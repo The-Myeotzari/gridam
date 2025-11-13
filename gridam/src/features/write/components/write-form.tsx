@@ -3,14 +3,15 @@
 import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
 import Textarea from '@/components/ui/textarea'
 import { MESSAGES } from '@/constants/messages'
+import { usePostDiaryImage } from '@/features/write//api/queries/use-post-diary-image'
+import { postDiaryAction } from '@/features/write/api/action/post-diary-action'
 import { usePostDiary } from '@/features/write/api/queries/use-post-diary'
 import CanvasContainer from '@/features/write/components/canvas-container'
-import { useCanvasStore } from '@/features/write/store/canvas-store'
-import { useSetDate, useSetText, useWriteStore } from '@/features/write/store/write-store'
+import WriteButton from '@/features/write/components/write-button'
+import { useSetDate, useSetText } from '@/features/write/store/write-store'
 import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import WriteButton from './write-button'
+import { useCallback, useEffect } from 'react'
 
 type props = {
   today: string
@@ -20,10 +21,12 @@ type props = {
 
 export default function WriteForm({ today, dateValue, weather }: props) {
   const router = useRouter()
+
   const setDate = useSetDate()
   const setText = useSetText()
 
-  const { mutate: createDiary, isPending } = usePostDiary()
+  const { mutate: createDiary, isPending: createIsPending } = usePostDiary()
+  const { mutateAsync: uploadImage, isPending: uploadIsPending } = usePostDiaryImage()
 
   useEffect(() => {
     if (today) {
@@ -34,23 +37,17 @@ export default function WriteForm({ today, dateValue, weather }: props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (isPending) return
-
-    const textState = useWriteStore.getState()
-    const canvasState = useCanvasStore.getState()
-
-    createDiary({
-      content: textState.text,
+    await postDiaryAction({
       date: dateValue,
-      imageUrl: canvasState.canvas,
-      emoji: weather,
-      meta: {
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
+      weather,
+      createIsPending,
+      uploadIsPending,
+      createDiary,
+      uploadImage,
     })
   }
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     modalStore.open((close) => (
       <>
         <ModalHeader>{MESSAGES.DIARY.CANCEL.TITLE}</ModalHeader>
@@ -71,7 +68,7 @@ export default function WriteForm({ today, dateValue, weather }: props) {
         </ModalFooter>
       </>
     ))
-  }
+  }, [router])
 
   return (
     <form onSubmit={handleSubmit}>
@@ -89,7 +86,7 @@ export default function WriteForm({ today, dateValue, weather }: props) {
           label={MESSAGES.COMMON.SAVE_BUTTON}
           type="submit"
           variant="blue"
-          isPending={isPending}
+          isPending={createIsPending || uploadIsPending}
           className="ml-2"
         />
       </div>
