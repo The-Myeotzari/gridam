@@ -3,7 +3,6 @@
 import { redirect } from 'next/navigation'
 import { LoginSchema } from '@/types/zod/apis/auth'
 import { MESSAGES } from '@/constants/messages'
-import getSupabaseServer from '@/utils/supabase/server'
 
 export async function loginAction(formData: FormData): Promise<void> {
   // FormData -> 객체
@@ -17,25 +16,32 @@ export async function loginAction(formData: FormData): Promise<void> {
 
   if (!parsed.success) {
     const firstError = parsed.error.issues[0]?.message ?? MESSAGES.AUTH.ERROR.LOGIN
-
-    // 실패 → 다시 /login 으로 + 쿼리에 메시지
+    // 실패 → /login 으로 다시 보내면서 쿼리에 에러 메시지 추가
     redirect(`/login?message=${encodeURIComponent(firstError)}`)
   }
 
   const { email, password } = parsed.data
 
-  // Supabase 로그인 시도
-  const supabase = await getSupabaseServer()
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
+  const res = await fetch(`${baseUrl}/apis/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+    cache: 'no-store',
   })
 
-  if (error || !data.user) {
-    // 이메일 없거나 비밀번호 틀림
-    redirect(`/login?message=${encodeURIComponent(MESSAGES.AUTH.ERROR.ACCOUNT_NOT_EXIST)}`)
+  const json = await res.json()
+  // HTTP 에러 or 응답 구조 문제 → 실패로 간주해서 /login으로 리다이렉트
+  if (!res.ok || !json) {
+    const message = typeof json?.message === 'string' ? json.message : MESSAGES.AUTH.ERROR.LOGIN
+
+    redirect(`/login?message=${encodeURIComponent(message)}`)
   }
 
-  // 성공 → 홈으로 redirect (성공 메시지까지 보내고 싶으면 쿼리로)
-  redirect(`/?message=${encodeURIComponent(MESSAGES.AUTH.SUCCESS.LOGIN)}`)
+  // 성공 응답에서 메시지 꺼내기
+  const successMessage: string = json?.data?.message ?? json?.message ?? MESSAGES.AUTH.SUCCESS.LOGIN
+
+  // 성공 → 홈으로 리다이렉트 (+ 성공 메시지를 쿼리로 전달)
+  redirect(`/?message=${encodeURIComponent(successMessage)}`)
 }
