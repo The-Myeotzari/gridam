@@ -38,14 +38,8 @@ export default function RecentDiaries({ diaries }: RecentDiariesProps) {
                 <CardHeader
                   align="horizontal"
                   cardImage={diary.weatherIcon}
-                  cardTitle={
-                    <>
-                      <p>{diary.date}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {diary.weekday}
-                      </p>
-                    </>
-                  }
+                  cardTitle={diary.date}
+                  cardDescription={diary.weekday}
                   right={<DropBox id={diary.id} />}
                   iconSize="sm"
                 />
