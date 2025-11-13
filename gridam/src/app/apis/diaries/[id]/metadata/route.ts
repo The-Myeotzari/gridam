@@ -13,13 +13,13 @@ export async function PUT(req: NextRequest, { params }: Params) {
     const parsed = putSchema.safeParse(body)
     if (!parsed.success) throw fail(parsed.error.message, 422)
 
-    const { date, timezone, weather } = parsed.data
+    const { date, timezone, emoji } = parsed.data
 
     const { error } = await supabase.from('metadata').upsert({
       diary_id: id,
       date,
       timezone,
-      weather: weather ?? null,
+      emoji: emoji ?? null,
     })
 
     if (error) throw fail(error.message, 500)
