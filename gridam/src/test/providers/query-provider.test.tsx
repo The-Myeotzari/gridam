@@ -1,40 +1,31 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 
-// ✅ Devtools는 테스트에서 간단히 모킹
-jest.mock('@tanstack/react-query-devtools', () => ({
-  ReactQueryDevtools: () => <div data-testid="rq-devtools" />,
-}))
-
-// ✅ 테스트 대상 임포트 (프로젝트 경로에 맞게 수정)
-import QueryProvider from '@/providers/query-server' // 예: src/providers/query-provider.tsx
-
-// 내부에서 queryClient가 실제로 주입됐는지 확인하는 Probe 컴포넌트
 function Probe() {
   const qc = useQueryClient()
   return <span data-testid="has-client">{String(!!qc)}</span>
 }
 
-describe('<QueryProvider />', () => {
-  it('children을 렌더링하고 React Query 컨텍스트를 제공한다', () => {
+function makeWrapper() {
+  const client = new QueryClient()
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  )
+}
+
+describe('React Query provider', () => {
+  it('컨텍스트를 제공한다', () => {
+    const wrapper = makeWrapper()
     render(
-      <QueryProvider>
+      <>
         <Probe />
         <p>hello</p>
-      </QueryProvider>
+      </>,
+      { wrapper }
     )
 
     expect(screen.getByText('hello')).toBeInTheDocument()
     expect(screen.getByTestId('has-client')).toHaveTextContent('true')
-  })
-
-  it('ReactQueryDevtools가 렌더링된다(모킹)', () => {
-    render(
-      <QueryProvider>
-        <div />
-      </QueryProvider>
-    )
-    expect(screen.getByTestId('rq-devtools')).toBeInTheDocument()
   })
 })

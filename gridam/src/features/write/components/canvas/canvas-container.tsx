@@ -9,15 +9,18 @@ export default function CanvasContainer() {
     useCanvasDrawing()
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
+    <section
+      className="flex flex-col items-center gap-4 p-5 border-b"
+      style={{ borderColor: 'black' }}
+    >
       <CanvasToolbar handleUndo={handleUndo} clearCanvas={clearCanvas} />
       <CanvasView
         canvasRef={canvasRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUpOrLeave={onPointerUpOrLeave}
-        height={600}
+        height={45}
       />
-    </div>
+    </section>
   )
 }
