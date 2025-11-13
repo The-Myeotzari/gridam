@@ -1,6 +1,6 @@
 'use client'
 
-import { useCanvasStore } from '@/features/write/store/useCanvas'
+import { useCanvasStore, useSetCanvas } from '@/features/write/store/canvas-store'
 import { useCallback, useEffect, useRef } from 'react'
 
 export function useCanvasDrawing() {
@@ -134,6 +134,13 @@ export function useCanvasDrawing() {
     return () => window.removeEventListener('resize', onResize)
   }, [pushSnapshot, setupCanvas])
 
+  const setCanvas = useSetCanvas()
+  const getCanvasImage = () => {
+    const canvas = canvasRef.current
+    const canvasImage = canvas ? canvas.toDataURL('image/png') : null
+    setCanvas(canvasImage)
+  }
+
   return {
     canvasRef,
     color,
@@ -145,5 +152,6 @@ export function useCanvasDrawing() {
     onPointerDown,
     onPointerMove,
     onPointerUpOrLeave,
+    getCanvasImage,
   }
 }

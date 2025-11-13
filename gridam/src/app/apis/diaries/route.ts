@@ -60,13 +60,11 @@ export async function POST(req: NextRequest) {
 
     if (error) throw fail(error.message, 500)
 
-    // 2) Optional metadata
     if (meta) {
       const { error: metaErr } = await supabase.from('metadata').insert({
         diary_id: diary.id,
         date,
-        timezone: meta.timezone,
-        weather: meta.weather ?? null,
+        timezone: meta.timezone, // 시간대
       })
       if (metaErr) throw fail(metaErr.message, 500)
     }
