@@ -52,7 +52,7 @@ export default function Textarea({
     if (!viewportRef.current) return
 
     const update = () => {
-      const parentW = viewportRef.current!.clientWidth ?? 600
+      const parentW = viewportRef.current?.clientWidth || 600
       const nextCell = Math.floor(parentW / cols)
       setCell(nextCell)
     }
