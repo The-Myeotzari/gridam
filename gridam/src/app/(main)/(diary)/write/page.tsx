@@ -1,26 +1,28 @@
-import Textarea from '@/components/ui/textarea'
-import CanvasContainer from '@/features/write/components/canvas/canvas-container'
-import WriteFooter from '@/features/write/components/write-footer'
-import WriteHader from '@/features/write/components/write-header'
+import WeatherContainer from '@/features/write/components/weather/weather-container'
+import WriteForm from '@/features/write/components/write-form'
+import { getCoordsFromCookies } from '@/utils/get-coords-from-cookies'
+import { cookies } from 'next/headers'
 
-export default function Page() {
+const DEFAULT = { lat: 37.5665, lon: 126.978 }
+
+export default async function Page() {
+  const cookie = await cookies()
+  const coords = getCoordsFromCookies(cookie)
+  const today = formatDate()
+
   return (
     <div
       className="max-w-4xl mx-auto border-2 border-solid bg-(--color-cream-white)"
       style={{ borderColor: 'black' }}
     >
-      {/* 날짜 및 날씨 */}
-      <WriteHader />
-
-      {/* 그림 도구 및 그림판 */}
-      <CanvasContainer />
-
-      {/* 글작성 */}
-      <section className="p-5">
-        <Textarea />
+      <section
+        className="flex items-center justify-between p-5 border-b"
+        style={{ borderColor: 'black' }}
+      >
+        <div className="font-bold text-md sm:text-xl">{today}</div>
+        <WeatherContainer lat={coords.lat} lon={coords.lon} />
       </section>
-
-      <WriteFooter />
+      <WriteForm />
     </div>
   )
 }
