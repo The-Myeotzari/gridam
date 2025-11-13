@@ -2,11 +2,27 @@
 
 import { CanvasToolbar } from '@/features/write/components/canvas/canvas-toolbar'
 import { CanvasView } from '@/features/write/components/canvas/canvas-view'
-import { useCanvasDrawing } from '@/features/write/hooks/useCanvasDrawing'
+import { useCanvasDrawing } from '@/features/write/hooks/use-canvas-drawing'
+import { useEffect } from 'react'
 
-export default function CanvasContainer() {
-  const { canvasRef, handleUndo, clearCanvas, onPointerDown, onPointerMove, onPointerUpOrLeave } =
-    useCanvasDrawing()
+type Props = {
+  onReady?: (getImage: () => string | null) => void
+}
+
+export default function CanvasContainer({ onReady }: Props) {
+  const {
+    canvasRef,
+    handleUndo,
+    clearCanvas,
+    onPointerDown,
+    onPointerMove,
+    onPointerUpOrLeave,
+    getCanvasImage,
+  } = useCanvasDrawing()
+
+  useEffect(() => {
+    if (onReady) onReady(getCanvasImage)
+  }, [onReady, getCanvasImage])
 
   return (
     <section
