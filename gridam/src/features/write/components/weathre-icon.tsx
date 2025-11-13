@@ -3,7 +3,6 @@ import Image from 'next/image'
 
 type Props = {
   id: number
-  icon: string
   alt?: string
   size?: number
 }
