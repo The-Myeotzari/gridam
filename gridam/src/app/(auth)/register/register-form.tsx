@@ -8,7 +8,7 @@ import { FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
 import { MESSAGES } from '@/constants/messages'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { toast } from '@/store/toast-store'
-import { registerUser } from '@/app/(auth)/register/actions'
+import { registerUser } from '@/features/auth/register/api/register-actions'
 import Button from '@/components/ui/button'
 import { QUERY_KEYS } from '@/constants/query-key'
 
@@ -45,8 +45,6 @@ export default function RegisterForm() {
 
   //유효성 통과 시
   const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
-    const { nickname, email, password, confirmPassword } = data
-    const { errors } = formState
     mutation.mutate(data)
   }
   // 유효성 실패 시
@@ -68,126 +66,82 @@ export default function RegisterForm() {
   }
   return (
     <>
-      <Card indent="none">
-        <CardHeader
-          align="vertical"
-          cardImage={
-            <Image
-              src="/favicon.ico"
-              width={56}
-              height={56}
-              alt="그리담로고"
-              className=" mx-auto "
-            />
-          }
-          cardTitle={<h1 className="text-4xl mb-2 text-navy-gray">회원가입</h1>}
-          cardDescription={<p className="text-lg">그리담과 함께 시작해요</p>}
-        />
-
-        <CardBody>
-          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2 ">
-              <label htmlFor="nickname" className="text-lg text-left font-semibold">
-                닉네임
-              </label>
-              <Input
-                type="text"
-                {...register('nickname', {
-                  validate: (value) => {
-                    if (!NICKNAME_REGEX.test(value)) {
-                      return MESSAGES.AUTH.ERROR.INVALID_NICKNAME_FORMAT
-                    }
-                  },
-                  required: true,
-                })}
-                id="nickname"
-                className="w-full"
-                placeholder="귀여운 닉네임"
-              />
-            </div>
-            <div className="flex flex-col gap-2 ">
-              <label htmlFor="email" className="text-lg  text-left font-semibold">
-                이메일
-              </label>
-              <Input
-                type="text"
-                {...register('email', {
-                  validate: (value) => {
-                    if (!EMAIL_REGEX.test(value)) {
-                      return MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT
-                    }
-                  },
-                  required: true,
-                })}
-                id="email"
-                className="w-full"
-                placeholder="your@email.com"
-              />
-            </div>
-            <div className="flex flex-col gap-2 ">
-              <label htmlFor="password" className="text-lg text-left font-semibold">
-                비밀번호
-              </label>
-              <Input
-                type="password"
-                {...register('password', {
-                  validate: (value) => {
-                    if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
-
-                    if (!PASSWORD_REGEX.test(value))
-                      return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
-
-                    return true
-                  },
-                  required: true,
-                })}
-                id="password"
-                className="w-full"
-                placeholder="• • • • • • • •"
-              />
-            </div>
-            <div className="flex flex-col gap-2 ">
-              <label htmlFor="confirmPassword" className="text-lg text-left font-semibold">
-                비밀번호 확인
-              </label>
-              <Input
-                type="password"
-                {...register('confirmPassword', {
-                  validate: (value) => {
-                    if (value !== getValues('password')) return MESSAGES.AUTH.ERROR.WRONG_PASSWORD
-                  },
-                  required: true,
-                })}
-                id="confirmPassword"
-                className="w-full"
-                placeholder="• • • • • • • •"
-              />
-            </div>
-            <Button
-              type="submit"
-              variant="gradient"
-              size="lg"
-              className="w-full text-xl disabled:cursor-not-allowed disabled:from-gray-300         // 그라데이션 시작 색 회색
-                disabled:to-gray-300 disabled:text-gray-500 disabled:opacity-70"
-              disabled={mutation.isPending}
-              label={'가입하기'}
-            />
-          </form>
-        </CardBody>
-
-        <CardFooter className="flex-col">
-          <div className="text-center flex gap-1">
-            <div className="font-handwritten text-base text-muted-foreground">
-              이미 계정이 있으신가요?
-            </div>
-
-            <Link href="/login" className="text-base text-primary hover:underline">
-              로그인
-            </Link>
-            <Toast />
+      <CardBody>
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 ">
+            <label htmlFor="nickname" className="text-lg text-left font-semibold">
+              닉네임
+            </label>
           </div>
-        </CardFooter>
-      </Card>
+          <div className="flex flex-col gap-2 ">
+            <label htmlFor="email" className="text-lg  text-left font-semibold">
+              이메일
+            </label>
+            <Input
+              type="text"
+              {...register('email', {
+                validate: (value) => {
+                  if (!EMAIL_REGEX.test(value)) {
+                    return MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT
+                  }
+                },
+                required: true,
+              })}
+              id="email"
+              className="w-full"
+              placeholder="your@email.com"
+            />
+          </div>
+          <div className="flex flex-col gap-2 ">
+            <label htmlFor="password" className="text-lg text-left font-semibold">
+              비밀번호
+            </label>
+            <Input
+              type="password"
+              {...register('password', {
+                validate: (value) => {
+                  if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
+
+                  if (!PASSWORD_REGEX.test(value))
+                    return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
+
+                  return true
+                },
+                required: true,
+              })}
+              id="password"
+              className="w-full"
+              placeholder="• • • • • • • •"
+            />
+          </div>
+          <div className="flex flex-col gap-2 ">
+            <label htmlFor="confirmPassword" className="text-lg text-left font-semibold">
+              비밀번호 확인
+            </label>
+            <Input
+              type="password"
+              {...register('confirmPassword', {
+                validate: (value) => {
+                  if (value !== getValues('password')) return MESSAGES.AUTH.ERROR.WRONG_PASSWORD
+                },
+                required: true,
+              })}
+              id="confirmPassword"
+              className="w-full"
+              placeholder="• • • • • • • •"
+            />
+          </div>
+          <Button
+            type="submit"
+            variant="gradient"
+            size="lg"
+            className="w-full text-xl disabled:cursor-not-allowed disabled:from-gray-300         // 그라데이션 시작 색 회색
+                disabled:to-gray-300 disabled:text-gray-500 disabled:opacity-70"
+            disabled={mutation.isPending}
+            label={'가입하기'}
+          />
+        </form>
+      </CardBody>
     </>
   )
 }
