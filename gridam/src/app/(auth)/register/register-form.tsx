@@ -1,9 +1,5 @@
 'use client'
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
-import Input from '@/components/ui/input'
-import Toast from '@/components/ui/toast'
-import Image from 'next/image'
-import Link from 'next/link'
 import { FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
 import { MESSAGES } from '@/constants/messages'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
@@ -11,6 +7,7 @@ import { toast } from '@/store/toast-store'
 import { registerUser } from '@/features/auth/register/api/register-actions'
 import Button from '@/components/ui/button'
 import { QUERY_KEYS } from '@/constants/query-key'
+import RegisterInput from '@/features/auth/register/components/register-input'
 
 export interface RegisterFormData {
   nickname: string
@@ -68,69 +65,59 @@ export default function RegisterForm() {
     <>
       <CardBody>
         <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 ">
-            <label htmlFor="nickname" className="text-lg text-left font-semibold">
-              닉네임
-            </label>
-          </div>
-          <div className="flex flex-col gap-2 ">
-            <label htmlFor="email" className="text-lg  text-left font-semibold">
-              이메일
-            </label>
-            <Input
-              type="text"
-              {...register('email', {
-                validate: (value) => {
-                  if (!EMAIL_REGEX.test(value)) {
-                    return MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT
-                  }
-                },
-                required: true,
-              })}
-              id="email"
-              className="w-full"
-              placeholder="your@email.com"
-            />
-          </div>
-          <div className="flex flex-col gap-2 ">
-            <label htmlFor="password" className="text-lg text-left font-semibold">
-              비밀번호
-            </label>
-            <Input
-              type="password"
-              {...register('password', {
-                validate: (value) => {
-                  if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
+          <RegisterInput
+            label="닉네임"
+            name="nickname"
+            placeholder="귀여운 닉네임"
+            register={register}
+            validation={{
+              required: true,
+              validate: (value) =>
+                NICKNAME_REGEX.test(value) || MESSAGES.AUTH.ERROR.INVALID_NICKNAME_FORMAT,
+            }}
+          />
 
-                  if (!PASSWORD_REGEX.test(value))
-                    return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
+          <RegisterInput
+            label="이메일"
+            type="text"
+            name="email"
+            placeholder="your@email.com"
+            register={register}
+            validation={{
+              required: true,
+              validate: (value) =>
+                EMAIL_REGEX.test(value) || MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT,
+            }}
+          />
 
-                  return true
-                },
-                required: true,
-              })}
-              id="password"
-              className="w-full"
-              placeholder="• • • • • • • •"
-            />
-          </div>
-          <div className="flex flex-col gap-2 ">
-            <label htmlFor="confirmPassword" className="text-lg text-left font-semibold">
-              비밀번호 확인
-            </label>
-            <Input
-              type="password"
-              {...register('confirmPassword', {
-                validate: (value) => {
-                  if (value !== getValues('password')) return MESSAGES.AUTH.ERROR.WRONG_PASSWORD
-                },
-                required: true,
-              })}
-              id="confirmPassword"
-              className="w-full"
-              placeholder="• • • • • • • •"
-            />
-          </div>
+          <RegisterInput
+            label="비밀번호"
+            type="password"
+            name="password"
+            placeholder="• • • • • • • •"
+            register={register}
+            validation={{
+              required: true,
+              validate: (value) => {
+                if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
+                if (!PASSWORD_REGEX.test(value)) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
+                return true
+              },
+            }}
+          />
+
+          <RegisterInput
+            label="비밀번호 확인"
+            type="password"
+            name="confirmPassword"
+            placeholder="• • • • • • • •"
+            register={register}
+            validation={{
+              required: true,
+              validate: (value) =>
+                value === getValues('password') || MESSAGES.AUTH.ERROR.WRONG_PASSWORD,
+            }}
+          />
           <Button
             type="submit"
             variant="gradient"
