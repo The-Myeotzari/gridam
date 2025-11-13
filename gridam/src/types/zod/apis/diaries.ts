@@ -1,16 +1,15 @@
 import z from 'zod'
 
 export const createSchema = z.object({
-  content: z.string().min(1).max(200),
-  date: z.string(), // 'YYYY-MM-DD'
+  content: z.string(),
+  date: z.string(), // YYYY-MM-DD
   emoji: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().nullable(),
   meta: z
     .object({
       timezone: z.string(),
-      weather: z.any().optional(),
     })
-    .optional(),
+    .nullable(),
 })
 
 export const querySchema = z.object({
@@ -27,5 +26,5 @@ export const updateSchema = z.object({
 export const putSchema = z.object({
   date: z.string(), // YYYY-MM-DD
   timezone: z.string(),
-  weather: z.any().nullable().optional(),
+  emoji: z.string().optional(),
 })

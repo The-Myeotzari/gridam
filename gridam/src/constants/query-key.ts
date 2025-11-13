@@ -13,6 +13,14 @@ export const QUERY_KEYS = {
   // Me 관련
   ME: ['me'] as const,
 
+  // 다이어리
+  DIARY: {
+    ROOT: ['diary'] as const,
+    LIST: ['diary', 'list'] as const,
+    DETAIL: (id: string) => ['diary', id] as const,
+    CREATE: ['diary', 'create'] as const,
+  },
+
   //Drafts 관련
   DRAFTS: {
     ROOT: ['drafts'] as const,
