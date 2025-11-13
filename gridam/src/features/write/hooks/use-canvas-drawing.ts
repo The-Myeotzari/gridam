@@ -2,6 +2,7 @@
 
 import { useCanvasStore } from '@/features/write/store/canvas-store'
 import { useCallback, useEffect, useRef } from 'react'
+import { useSetCanvas } from '../store/write-store'
 
 export function useCanvasDrawing() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -134,9 +135,11 @@ export function useCanvasDrawing() {
     return () => window.removeEventListener('resize', onResize)
   }, [pushSnapshot, setupCanvas])
 
+  const setCanvas = useSetCanvas()
   const getCanvasImage = () => {
     const canvas = canvasRef.current
-    return canvas ? canvas.toDataURL('image/png') : null
+    const canvasImage = canvas ? canvas.toDataURL('image/png') : null
+    setCanvas(canvasImage)
   }
 
   return {
