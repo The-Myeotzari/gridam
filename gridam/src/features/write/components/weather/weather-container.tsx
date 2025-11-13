@@ -7,13 +7,10 @@ export default async function WeatherContainer({ lat, lon }: Props) {
   const data = await fetchWeather(lat, lon)
 
   return (
-    <section style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '12px 0 24px' }}>
+    <section className="flex items-center leading-9 gap-1">
+      <div className="font-bold text-md hidden sm:block">날씨</div>
       <WeatherIcon id={data.id} icon={data.icon} alt={data.description} size={36} />
-      <div style={{ lineHeight: 1.2 }}>
-        <div style={{ fontSize: 14, opacity: 0.8 }}>
-          {data.description} · {Math.round(data.temp)}°C
-        </div>
-      </div>
+      <div className="text-md opacity-80">{Math.round(data.temp)}°C</div>
     </section>
   )
 }
