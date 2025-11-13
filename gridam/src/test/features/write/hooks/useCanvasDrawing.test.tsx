@@ -1,4 +1,4 @@
-import { useCanvasDrawing } from '@/features/write/hooks/useCanvasDrawing'
+import { useCanvasDrawing } from '@/features/write/hooks/use-canvas-drawing'
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 
