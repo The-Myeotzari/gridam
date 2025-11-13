@@ -39,5 +39,16 @@ export const MESSAGES = {
       UPDATE: '일기 수정에 실패했습니다.',
       DELETE: '일기 삭제에 실패했습니다.',
     },
+    CANCEL: {
+      TITLE: '정말 뒤로 가시겠어요?',
+      DESCRIPTION: `작성 중인 내용이 저장되지 않고 사라질 수 있어요.
+이 작업은 되돌릴 수 없어요.`,
+    },
+  },
+  COMMON: {
+    CANCEL: '취소',
+    CONFIRM: '확인',
+    CANCEL_BUTTON: '취소하기',
+    SAVE_BUTTON: '저장하기',
   },
 } as const
