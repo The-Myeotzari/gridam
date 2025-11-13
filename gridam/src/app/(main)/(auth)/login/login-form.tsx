@@ -35,6 +35,7 @@ export default function LoginForm() {
             width={56}
             height={56}
             className="mx-auto mb-3"
+            style={{ width: 'auto', height: 'auto' }}
           />
           <h1 className="text-3xl font-extrabold">그리담 GRIDAM</h1>
           <p className="text-muted-foreground">오늘의 이야기를 그려요</p>
@@ -50,6 +51,7 @@ export default function LoginForm() {
               id="email"
               name="email"
               type="email"
+              autoComplete="current-password"
               placeholder="your@email.com"
               className="font-handwritten text-lg rounded-xl h-12 w-full"
             />
@@ -62,6 +64,7 @@ export default function LoginForm() {
               id="password"
               name="password"
               type="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               className="font-handwritten text-lg rounded-xl h-12 w-full"
             />
