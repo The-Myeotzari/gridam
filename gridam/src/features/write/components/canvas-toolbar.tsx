@@ -1,7 +1,7 @@
 'use client'
 
 import Button from '@/components/ui/button'
-import { useCanvasStore } from '@/features/write/store/useCanvas'
+import { useCanvasStore } from '@/features/write/store/canvas-store'
 import { Trash2, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 

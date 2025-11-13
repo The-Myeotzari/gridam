@@ -1,7 +1,5 @@
-import Image from 'next/image'
-
 // OpenWeather weather.id 매핑 (참고: https://openweathermap.org/weather-conditions)
-export function mapWeatherIdToIcon(id: number, icon: string): string {
+export function mapWeatherIdToIcon(id: number): string {
   // 2xx 천둥번개
   if (id >= 200 && id < 300) return '/icon/thunderstorm.svg'
   // 3xx 이슬비/소나기
@@ -20,16 +18,4 @@ export function mapWeatherIdToIcon(id: number, icon: string): string {
   if (id === 803 || id === 804) return '/icon/broken-clouds.svg'
 
   return '/icon/clear sky.svg'
-}
-
-type Props = {
-  id: number
-  icon: string
-  alt?: string
-  size?: number
-}
-
-export default function WeatherIcon({ id, icon, alt, size = 48 }: Props) {
-  const src = mapWeatherIdToIcon(id, icon)
-  return <Image src={src} alt={alt ?? 'weather icon'} width={size} height={size} priority />
 }
