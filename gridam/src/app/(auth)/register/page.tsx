@@ -1,9 +1,41 @@
+import { Card, CardHeader, CardFooter } from '@/components/ui/card'
 import RegisterForm from './register-form'
+import Image from 'next/image'
+import Link from 'next/link'
+import Toast from '@/components/ui/toast'
 
 export default function Page() {
   return (
     <>
-      <RegisterForm />
+      <Card indent="none">
+        <CardHeader
+          align="vertical"
+          cardImage={
+            <Image
+              src="/favicon.ico"
+              width={56}
+              height={56}
+              alt="그리담로고"
+              className=" mx-auto "
+            />
+          }
+          cardTitle={<h1 className="text-4xl mb-2 text-navy-gray">회원가입</h1>}
+          cardDescription={<p className="text-lg">그리담과 함께 시작해요</p>}
+        />
+        <RegisterForm />
+        <CardFooter className="flex-col">
+          <div className="text-center flex gap-1">
+            <div className="font-handwritten text-base text-muted-foreground">
+              이미 계정이 있으신가요?
+            </div>
+
+            <Link href="/login" className="text-base text-primary hover:underline">
+              로그인
+            </Link>
+            <Toast />
+          </div>
+        </CardFooter>
+      </Card>
     </>
   )
 }
