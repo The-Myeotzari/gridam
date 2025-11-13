@@ -1,5 +1,5 @@
 import { fetchWeather } from '@/features/write/api/weather.api'
-import WeatherIcon from '@/features/write/components/weathre-icon'
+import WeatherIcon from '@/features/write/components/weather-icon'
 import WriteForm from '@/features/write/components/write-form'
 import { formatDate } from '@/utils/format-date'
 import { getCoordsFromCookies } from '@/utils/get-coords-from-cookies'
