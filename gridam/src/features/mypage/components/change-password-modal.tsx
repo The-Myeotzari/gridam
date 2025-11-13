@@ -15,7 +15,7 @@ const ChangePasswordFormSchema = z.object({
 
 type ChangePasswordForm = z.infer<typeof ChangePasswordFormSchema>
 
-export default function ResetModal({ close }: { close: () => void }) {
+export default function ChangePasswordModal({ close }: { close: () => void }) {
   const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<ChangePasswordForm>()
 
   // TODO: 비밀번호 변경 API 연동
