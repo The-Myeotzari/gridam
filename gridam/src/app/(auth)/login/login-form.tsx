@@ -5,21 +5,10 @@ import Button from '@/components/ui/button'
 import Input from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { toast } from '@/store/toast-store'
-import { useEffect, useState, Suspense } from 'react'
+import { useState } from 'react'
 import { loginAction } from '@/features/auth/login/api/login-action'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-
-function LoginMessageToast() {
-  const searchParams = useSearchParams()
-  const message = searchParams.get('message')
-
-  useEffect(() => {
-    if (message) toast.error(message)
-  }, [message])
-
-  return null
-}
 
 export default function LoginForm() {
   const router = useRouter()
@@ -45,10 +34,6 @@ export default function LoginForm() {
 
   return (
     <div className="flex-1 flex items-center justify-center">
-      <Suspense fallback={null}>
-        <LoginMessageToast />
-      </Suspense>
-
       <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto shadow-card">
         {/* 헤더 */}
         <div className="text-center mb-8">
