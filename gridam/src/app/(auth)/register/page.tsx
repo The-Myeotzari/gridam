@@ -7,7 +7,10 @@ import Toast from '@/components/ui/toast'
 export default function Page() {
   return (
     <>
-      <Card indent="none">
+      <Card
+        indent="none"
+        className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto"
+      >
         <CardHeader
           align="vertical"
           cardImage={
@@ -16,11 +19,11 @@ export default function Page() {
               width={56}
               height={56}
               alt="그리담로고"
-              className=" mx-auto "
+              className=" mx-auto"
             />
           }
-          cardTitle={<h1 className="text-4xl mb-2 text-navy-gray">회원가입</h1>}
-          cardDescription={<p className="text-lg">그리담과 함께 시작해요</p>}
+          cardTitle={<h1 className="text-4xl mb-2 text-navy-gray text-center">회원가입</h1>}
+          cardDescription={<p className="text-lg text-muted-foreground">그리담과 함께 시작해요</p>}
         />
         <RegisterForm />
         <CardFooter className="flex-col">
