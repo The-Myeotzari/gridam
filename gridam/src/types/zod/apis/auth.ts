@@ -1,7 +1,7 @@
 import { MESSAGES } from '@/constants/messages'
 import { z } from 'zod'
 
-const PASSWORD_REGEX: RegExp = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\;/']).+$/
+export const PASSWORD_REGEX: RegExp = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\;/']).+$/
 
 export const SignUpSchema = z.object({
   email: z.email().min(1, { error: MESSAGES.AUTH.ERROR.EMPTY_EMAIL }),
