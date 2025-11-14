@@ -19,7 +19,6 @@ export default function DropBox({
   id,
   onEdit,
   onDelete,
-  onEdit,
   className = '',
   editLabel = '수정하기',
   deleteLabel = '삭제하기',
