@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import MyPageActions from '@/features/mypage/components/mypage-actions'
+import MyPageActions from '@/features/mypage/components/mypage-buttons'
 import { ButtonProps } from '@/components/ui/button'
 
 // modalStore mock
