@@ -1,7 +1,9 @@
-import QueryProvider from '@/providers/query-provider'
+import '@/app/globals.css'
+import ModalRoot from '@/components/ui/modal/modal-root.client'
+import Toast from '@/components/ui/toast'
+import QueryProvider from '@/providers/query-providers'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
-import './globals.css'
 
 const zenSerif = localFont({
   src: '../font/ZEN-SERIF-TTF-Regular.woff2',
@@ -19,10 +21,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <QueryProvider>
-      <html lang="en">
-        <body className={`${zenSerif.variable} font-pretendard`}>{children}</body>
-      </html>
-    </QueryProvider>
+    <html lang="en">
+      <QueryProvider>
+        <body className={`${zenSerif.variable} font-pretendard`}>
+          {children}
+          <Toast />
+          <ModalRoot />
+        </body>
+      </QueryProvider>
+    </html>
   )
 }

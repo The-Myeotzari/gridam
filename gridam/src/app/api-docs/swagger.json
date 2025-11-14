@@ -1,0 +1,1627 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Gridam API",
+    "version": "1.0.0",
+    "description": "gridam API"
+  },
+  "servers": [{ "url": "/apis", "description": "Next.js App Router API base (로컬/배포 공통)" }],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "회원가입, 로그인, 비밀번호 재설정 등 인증 관련 API"
+    },
+    {
+      "name": "Me",
+      "description": "내 정보( Supabase Auth User ) API"
+    },
+    {
+      "name": "Storage",
+      "description": "이미지 업로드"
+    },
+    {
+      "name": "Drafts",
+      "description": "임시저장(Drafts) CRUD 및 게시(publish) API. 모든 엔드포인트는 **로그인 사용자 전용**이며, Authorization 헤더로 Supabase access_token(JWT)을 전달해야 합니다."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase access_token"
+      }
+    },
+    "schemas": {
+      "SuccessEnvelope": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "ok" },
+          "data": {}
+        },
+        "required": ["ok", "message"]
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "VALIDATION_ERROR" },
+          "details": { "type": "object", "nullable": true }
+        },
+        "required": ["ok", "message"]
+      },
+      "Draft": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "7f9c7a87-bb69-4e35-8baf-1b6b0eac3e50"
+          },
+          "user_id": { "type": "string", "format": "uuid" },
+          "content": { "type": "string", "maxLength": 200 },
+          "image_url": { "type": "string", "nullable": true, "example": "images/<uid>/canvas.png" },
+          "emoji": { "type": "string", "nullable": true, "example": "🙂" },
+          "status": { "type": "string", "enum": ["draft", "published"], "example": "draft" },
+          "date": { "type": "string", "format": "date", "example": "2025-11-07" },
+          "published_at": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "deleted_at": { "type": "string", "format": "date-time", "nullable": true }
+        },
+        "required": ["id", "user_id", "content", "status", "date", "created_at"]
+      },
+      "DraftCreate": {
+        "type": "object",
+        "required": ["content", "date"],
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "오늘은 해가 쨍쨍 🌞"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "storage object path",
+            "example": "images/<uid>/canvas.png"
+          },
+          "emoji": { "type": "string", "nullable": true, "example": "🌞" },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "YYYY-MM-DD",
+            "example": "2025-11-07"
+          }
+        }
+      },
+      "DraftUpdate": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "수정본 내용"
+          },
+          "image": { "type": "string", "nullable": true, "example": "images/<uid>/new.png" },
+          "emoji": { "type": "string", "nullable": true, "example": "✨" }
+        },
+        "additionalProperties": false
+      },
+      "PublishResult": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["published"], "example": "published" },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-07T09:05:00.000Z"
+          },
+          "date": { "type": "string", "format": "date", "example": "2025-11-07" }
+        },
+        "required": ["id", "status", "published_at", "date"]
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/apis/drafts": {
+      "post": {
+        "tags": ["Drafts"],
+        "summary": "Create a draft diary",
+        "description": "임시저장(초안) 생성. `date`는 **YYYY-MM-DD** 문자열이어야 함.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/DraftCreate" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "초안 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "422": {
+            "description": "VALIDATION_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/drafts/latest": {
+      "get": {
+        "tags": ["Drafts"],
+        "summary": "Get latest draft",
+        "description": "본인 기준 최신 임시저장 1건 반환. 없으면 `data: null`.",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": {
+                    "data": {
+                      "oneOf": [{ "$ref": "#/components/schemas/Draft" }, { "type": "null" }]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/drafts/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" },
+          "description": "Draft ID (uuid)"
+        }
+      ],
+      "get": {
+        "tags": ["Drafts"],
+        "summary": "Get a single draft (by id)",
+        "description": "본인 소유, `status='draft'`, `deleted_at IS NULL` 조건을 만족하는 초안 1건 조회.",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (조건 불일치)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Drafts"],
+        "summary": "Update a draft",
+        "description": "임시저장 일부 수정. body는 부분 필드만 포함 가능.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/DraftUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (id 형식 오류 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (조건 불일치)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "422": {
+            "description": "VALIDATION_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Drafts"],
+        "summary": "Soft delete a draft",
+        "description": "`deleted_at` 타임스탬프를 갱신하는 소프트 삭제.",
+        "responses": {
+          "204": { "description": "삭제 성공 (본문 없음)" },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (조건 불일치)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/drafts/{id}/publish": {
+      "post": {
+        "tags": ["Drafts"],
+        "summary": "Publish a draft",
+        "description": "초안을 게시 상태(`published`)로 전환. 하루 1게시 제한(같은 user_id+date published 유니크)에 걸리면 409.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "게시 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/PublishResult" } }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (draft 없음)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "409": {
+            "description": "DAILY_LIMIT (유니크 충돌)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "이메일/비밀번호 회원가입 (인증 메일 발송)",
+        "description": "회원가입 시 이메일 인증 링크를 전송합니다. 이미 존재하는 이메일이어도 같은 안내 문구를 반환합니다. (Supabase 보안 설정 조정 불가)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "jane.doe@example.com"
+                  },
+                  "password": { "type": "string", "minLength": 8, "example": "R!chPassw0rd" },
+                  "nickname": { "type": "string", "example": "jane" }
+                },
+                "required": ["email", "password", "nickname"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "회원가입 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "example": {
+                        "id": "fcc2asfasfd-6301-45ba-a8cc-0asf502a93",
+                        "aud": "authenticated",
+                        "role": "authenticated",
+                        "email": "asd123@gmail.com",
+                        "phone": "",
+                        "confirmation_sent_at": "2025-11-08T08:47:30.794880492Z",
+                        "app_metadata": { "provider": "email", "providers": ["email"] },
+                        "user_metadata": {
+                          "email": "asd123@gmail.com",
+                          "email_verified": false,
+                          "nickname": "asdasd",
+                          "phone_verified": false,
+                          "sub": "fasfasfd-6301-45asfcc-0asfasf93"
+                        },
+                        "identities": {
+                          "identity_id": "14asfasfe9-8fasf-4cae-8asf-a36004",
+                          "id": "fcc27asfasf6301-45ba-a8cc-09dc21502asf",
+                          "user_id": "fccasfasfd-6301-45ba-a8cc-09dasfa93",
+                          "identity_data": {
+                            "email": "asd123@gmail.com",
+                            "email_verified": false,
+                            "nickname": "asdasd",
+                            "phone_verified": false,
+                            "sub": "fccasfasf-6301asfba-a8ccasf502a93"
+                          },
+
+                          "provider": "email",
+                          "last_sign_in_at": "2025-11-08T08:47:30.76319728Z",
+                          "created_at": "2025-11-08T08:47:30.763966Z",
+                          "updated_at": "2025-11-08T08:47:30.763966Z",
+                          "email": "asd123@gmail.com"
+                        },
+                        "created_at": "2025-11-08T08:47:30.738882Z",
+                        "updated_at": "2025-11-08T08:47:31.822949Z",
+                        "is_anonymous": false
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "이메일 인증 이메일이 발송되었습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "유효성 오류" },
+          "409": { "description": "중복 이메일" }
+        }
+      }
+    },
+    "/apis/auth/confirm": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "이메일 인증 확인 & 리다이렉트",
+        "description": "Supabase가 전송한 인증 메일의 링크를 통해 접근하는 확인 페이지입니다.",
+        "parameters": {
+          "in": "query",
+          "name": "next",
+          "required": "false",
+          "schema": {
+            "type": "string",
+            "example": "/welcome"
+          },
+          "description": "인증 완료 후 이동할 경로. 지정하지 않으면 홈(/)로 이동합니다."
+        },
+        "responses": {
+          "200": {
+            "description": "확인 페이지에 도착(클라이언트가 해시 처리 후 리다이렉트 수행)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "회원가입이 완료되었습니다. 곧 다음 페이지로 이동합니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "잘못된 접근(필수 정보 누락 등)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ok": {
+                    "type": "boolean",
+                    "example": "false"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "유효하지 않은 접근입니다. 인증 링크를 다시 확인해 주세요."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "이메일/비밀번호 로그인",
+        "description": "성공 시 Supabase 세션 쿠키가 설정됩니다.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "jane.doe@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "R!chPassw0rd"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": "true"
+                    },
+                    "user": {
+                      "type": "object",
+                      "example": {
+                        "id": "fcc2asfasfd-6301-45ba-a8cc-0asf502a93",
+                        "aud": "authenticated",
+                        "role": "authenticated",
+                        "email": "asd123@gmail.com",
+                        "phone": "",
+                        "confirmation_sent_at": "2025-11-08T08:47:30.794880492Z",
+                        "app_metadata": { "provider": "email", "providers": ["email"] },
+                        "user_metadata": {
+                          "email": "asd123@gmail.com",
+                          "email_verified": false,
+                          "nickname": "asdasd",
+                          "phone_verified": false,
+                          "sub": "fasfasfd-6301-45asfcc-0asfasf93"
+                        },
+                        "identities": {
+                          "identity_id": "14asfasfe9-8fasf-4cae-8asf-a36004",
+                          "id": "fcc27asfasf6301-45ba-a8cc-09dc21502asf",
+                          "user_id": "fccasfasfd-6301-45ba-a8cc-09dasfa93",
+                          "identity_data": {
+                            "email": "asd123@gmail.com",
+                            "email_verified": false,
+                            "nickname": "asdasd",
+                            "phone_verified": false,
+                            "sub": "fccasfasf-6301asfba-a8ccasf502a93"
+                          },
+
+                          "provider": "email",
+                          "last_sign_in_at": "2025-11-08T08:47:30.76319728Z",
+                          "created_at": "2025-11-08T08:47:30.763966Z",
+                          "updated_at": "2025-11-08T08:47:30.763966Z",
+                          "email": "asd123@gmail.com"
+                        },
+
+                        "created_at": "2025-11-08T08:47:30.738882Z",
+                        "updated_at": "2025-11-08T08:47:31.822949Z",
+                        "is_anonymous": false
+                      },
+                      "session": {
+                        "type": "object",
+                        "properties": {
+                          "access_token": {
+                            "type": "string",
+                            "example": "eyJhbGciOiJIUzI1NiIsInR5..."
+                          },
+                          "refresh_token": {
+                            "type": "string",
+                            "example": "v0Odt6eyqX8..."
+                          },
+                          "expires_in": {
+                            "type": "integer",
+                            "example": 3600
+                          }
+                        }
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "로그인 되었습니다."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "이메일 또는 비밀번호가 올바르지 않습니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "로그아웃",
+        "description": "Supabase 세션을 무효화합니다.",
+        "responses": {
+          "200": {
+            "description": "로그아웃 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "로그아웃 되었습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "세션 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "로그인된 세션이 없습니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/auth/reset/complete": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "비밀번호 재설정 완료 (새 비밀번호 저장)",
+        "description": "사용자가 메일로 전달받은 링크를 통해 진입한 뒤 새 비밀번호를 입력합니다.\n링크의 토큰을 Supabase가 자동 검증한 후 세션이 활성화된 상태에서 요청해야 합니다.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "newPassword": {
+                    "type": "string",
+                    "example": "N3wR!chPassw0rd"
+                  }
+                },
+                "required": ["newPassword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "비밀번호 변경 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "example": {
+                        "id": "fcc2asfasfd-6301-45ba-a8cc-0asf502a93",
+                        "aud": "authenticated",
+                        "role": "authenticated",
+                        "email": "asd123@gmail.com",
+                        "phone": "",
+                        "confirmation_sent_at": "2025-11-08T08:47:30.794880492Z",
+                        "app_metadata": {
+                          "provider": "email",
+                          "providers": ["email"]
+                        },
+                        "user_metadata": {
+                          "email": "asd123@gmail.com",
+                          "email_verified": false,
+                          "nickname": "asdasd",
+                          "phone_verified": false,
+                          "sub": "fasfasfd-6301-45asfcc-0asfasf93"
+                        },
+                        "identities": [
+                          {
+                            "identity_id": "14asfasfe9-8fasf-4cae-8asf-a36004",
+                            "id": "fcc27asfasf6301-45ba-a8cc-09dc21502asf",
+                            "user_id": "fccasfasfd-6301-45ba-a8cc-09dasfa93",
+                            "identity_data": {
+                              "email": "asd123@gmail.com",
+                              "email_verified": false,
+                              "nickname": "asdasd",
+                              "phone_verified": false,
+                              "sub": "fccasfasf-6301asfba-a8ccasf502a93"
+                            },
+                            "provider": "email",
+                            "last_sign_in_at": "2025-11-08T08:47:30.76319728Z",
+                            "created_at": "2025-11-08T08:47:30.763966Z",
+                            "updated_at": "2025-11-08T08:47:30.763966Z",
+                            "email": "asd123@gmail.com"
+                          }
+                        ],
+                        "created_at": "2025-11-08T08:47:30.738882Z",
+                        "updated_at": "2025-11-08T08:47:31.822949Z",
+                        "is_anonymous": false
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "비밀번호 재설정이 완료되었습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "토큰/세션 없음 또는 만료됨",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "세션이 만료되었습니다. 다시 비밀번호 재설정을 요청해 주세요."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "비밀번호 정책 위반 등 유효성 검증 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "비밀번호는 8자 이상, 대문자와 특수문자를 포함해야 합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "비밀번호 변경 중 오류가 발생했습니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/auth/reset/request": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "비밀번호 재설정 메일 발송",
+        "description": "존재 여부와 관계없이 동일한 응답을 반환합니다.\n사용자는 받은 메일의 링크를 통해 다음 단계(complete)로 이동합니다.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "jane.doe@example.com"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "안내 문구 (항상 동일)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "비밀번호 재설정 이메일이 발송되었습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "메일 발송 중 오류가 발생했습니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/me": {
+      "get": {
+        "tags": ["Me"],
+        "summary": "내 정보( Supabase Auth User ) + 일기 통계 + 최신 3개",
+        "responses": {
+          "200": {
+            "description": "성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "description": "Supabase Auth User",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "fcc2-...-a93"
+                            },
+                            "email": {
+                              "type": "string",
+                              "example": "user@example.com"
+                            },
+                            "app_metadata": {
+                              "type": "object",
+                              "properties": {
+                                "provider": {
+                                  "type": "string",
+                                  "example": "email"
+                                },
+                                "providers": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "example": ["email"]
+                                }
+                              }
+                            },
+                            "user_metadata": {
+                              "type": "object",
+                              "additionalProperties": true
+                            }
+                          }
+                        },
+                        "stats": {
+                          "type": "object",
+                          "properties": {
+                            "diariesCount": {
+                              "type": "integer",
+                              "example": 42
+                            },
+                            "postDaysCount": {
+                              "type": "integer",
+                              "example": 17
+                            }
+                          }
+                        },
+                        "latestDiaries": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string" },
+                              "image_url": { "type": "string", "nullable": true },
+                              "emoji": { "type": "string" },
+                              "content": { "type": "string", "nullable": true },
+                              "created_at": { "type": "string" },
+                              "updated_at": { "type": "string", "nullable": true }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 필요",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "오류 발생"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/uploads": {
+      "post": {
+        "tags": ["Storage"],
+        "summary": "업로드(프라이빗 버킷) + 즉시 서명 URL 반환",
+        "description": "- RLS: own-folder 정책(`path_tokens[1] = auth.uid()`)을 통과해야 함\n- 요청 주체는 **인증 사용자**여야 하며, 라우트는 **사용자 세션 컨텍스트**로 동작해야 함\n- 성공 시 `path`와 TTL이 짧은 `signedUrl`을 반환",
+        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG/JPEG/WebP 이미지 파일"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "업로드 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "이미지 업로드에 성공하였습니다."
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "8b5c0f1e-8f4a-4a36-9e9b-1b2a3c4d5e6f/1731123456789.png"
+                    },
+                    "signedUrl": {
+                      "type": "string",
+                      "example": "https://*.supabase.co/storage/v1/object/sign/diary-images/8b5c.../1731.png?token=..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청(파일 누락 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "file 필드가 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 필요(세션/토큰 없음)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "RLS 위반(own-folder 불일치 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "new row violates row-level security policy"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "허용되지 않은 MIME 타입",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "허용되지 않은 MIME: image/gif"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "파일 용량 초과",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "파일이 너무 큽니다(최대 5MB)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/uploads": {
+      "delete": {
+        "tags": ["Storage"],
+        "summary": "프라이빗 버킷 객체 삭제",
+        "description": "- RLS: own-folder 정책(`path_tokens[1] = auth.uid()`)을 통과해야 함\n- 요청 주체는 **인증 사용자**여야 하며, 라우트는 **사용자 세션 컨텍스트**로 동작\n- 단일 객체 삭제만 지원(필요 시 배열 삭제로 확장 가능)",
+        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "버킷 내부 객체 경로 (예: `userId/1731123456789.webp`)"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "삭제 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "삭제되었습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청(파일 누락 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "file 필드가 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 필요(세션/토큰 없음)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "RLS 위반(own-folder 불일치 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "new row violates row-level security policy"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/uploads/replace": {
+      "post": {
+        "tags": ["Storage"],
+        "summary": "기존 이미지를 새 파일로 교체(업로드 후 구 이미지 삭제)",
+        "description": "- 절차: 새 업로드 → (클라이언트/서버) 다이어리 row `image_path` 업데이트 → 구 이미지 삭제\n- RLS: own-folder 정책(`path_tokens[1] = auth.uid()`) 검증",
+        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PNG/JPEG/WebP 이미지 파일"
+                  },
+                  "oldPath": {
+                    "type": "string",
+                    "description": "교체 대상 기존 경로 (예: `userId/old.webp`)"
+                  }
+                },
+                "required": ["file", "oldPath"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "이미지 교체 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": true },
+                    "message": {
+                      "type": "string",
+                      "example": "이미지 수정에 성공하였습니다."
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "8b5c0f1e-8f4a-4a36-9e9b-1b2a3c4d5e6f/1731123456789.png"
+                    },
+                    "signedUrl": {
+                      "type": "string",
+                      "example": "https://*.supabase.co/storage/v1/object/sign/diary-images/8b5c.../1731.png?token=..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청(파일 누락 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "file 필드가 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 필요(세션/토큰 없음)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "RLS 위반(own-folder 불일치 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "new row violates row-level security policy"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "허용되지 않은 MIME 타입",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "허용되지 않은 MIME: image/gif"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "파일 용량 초과",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "파일이 너무 큽니다(최대 5MB)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "유효하지 않은 접근입니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/uploads/sign": {
+      "get": {
+        "tags": ["Storage"],
+        "summary": "프라이빗 버킷 객체에 대한 서명 URL 재발급",
+        "description": "- RLS: own-folder 정책(`path_tokens[1] = auth.uid()`)을 통과해야 함\n- 요청 주체는 **인증 사용자**여야 하며, 라우트는 **사용자 세션 컨텍스트**로 동작해야 함\n- 입력받은 `path`(예: `{userId}/1731123456789.png`)로 짧은 TTL의 `signedUrl`을 재발급",
+        "security": [{ "cookieAuth": [] }, { "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "버킷 내부 객체 경로 (예: `8b5c0f1e-.../1731123456789.png`)"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "재발급 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": true },
+                    "signedUrl": {
+                      "type": "string",
+                      "example": "https://*.supabase.co/storage/v1/object/sign/diary-images/8b5c.../1731.png?token=..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청(쿼리 누락 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "path 파라미터가 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 필요(세션/토큰 없음)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "로그인이 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "RLS 위반(own-folder 불일치 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "own-folder 정책 위반"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "이미지 불러오기에 실패하였습니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
