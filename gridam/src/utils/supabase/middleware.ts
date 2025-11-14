@@ -37,6 +37,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/reset') &&
     !request.nextUrl.pathname.startsWith('/forgot') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
+    !request.nextUrl.pathname.startsWith('/apis') &&
     !request.nextUrl.pathname.startsWith('/error')
   ) {
     // 로그인 페이지로 사용자 리다이렉트
