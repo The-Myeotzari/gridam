@@ -2,23 +2,17 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Label from "@/components/ui/label";
 import { ModalBody, ModalHeader } from "@/components/ui/modal/modal";
-import { PASSWORD_REGEX } from "@/types/zod/apis/auth";
+import { ChangePasswordFormSchema } from "@/types/zod/apis/auth";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
-const ChangePasswordFormSchema = z.object({
-  password: z.string().min(8),
-  newPassword: z.string().min(8).regex(PASSWORD_REGEX),
-  confirmPassword: z.string().min(8)
-})
 
 type ChangePasswordForm = z.infer<typeof ChangePasswordFormSchema>
 
 export default function ChangePasswordModal({ close }: { close: () => void }) {
   const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<ChangePasswordForm>()
 
-  // TODO: 비밀번호 변경 API 연동
+  // TODO: 비밀번호 변경 API 연동, 유효성 검사
   const handleFormSubmit = (payload: ChangePasswordForm) => {
     console.log(payload)
   }
@@ -55,7 +49,6 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
             type='password'
             className='w-full'
             placeholder="• • • • • • • •"
-            {...register('confirmPassword')}
           />
           <Button
             type='submit'
