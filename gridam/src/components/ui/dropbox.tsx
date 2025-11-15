@@ -1,29 +1,50 @@
 import DropBoxClient from '@/components/ui/dropbox.client'
-import { EllipsisVertical } from 'lucide-react'
+import { type DropBoxItem } from '@/components/ui/dropbox-labels'
+import { EllipsisVertical, SquarePen, Trash2 } from 'lucide-react'
 
 type Action<T> = (arg: T) => Promise<void> | void
 
-export default function DropBox({
-  id,
-  onDelete,
-  onEdit,
-  className = '',
-  editLabel = '수정하기',
-  deleteLabel = '삭제하기',
-}: {
+export type DropBoxActionItem = DropBoxItem<{ id: string }>
+
+type Props = {
   id: string
-  onDelete?: Action<{ id: string }>
   onEdit?: Action<{ id: string }>
+  onDelete?: Action<{ id: string }>
   className?: string
   editLabel?: string
   deleteLabel?: string
-}) {
+}
+
+export default function DropBox({
+  id,
+  onEdit,
+  onDelete,
+  className = '',
+  editLabel = '수정하기',
+  deleteLabel = '삭제하기',
+}: Props) {
+  const items: DropBoxActionItem[] = [
+    onEdit && {
+      key: 'edit',
+      label: editLabel,
+      icon: <SquarePen className="h-4 w-4" />,
+      tone: 'secondary',
+      onSelect: onEdit,
+    },
+    onDelete && {
+      key: 'delete',
+      label: deleteLabel,
+      icon: <Trash2 className="h-4 w-4" />,
+      tone: 'destructive',
+      onSelect: onDelete,
+    },
+  ].filter(Boolean) as DropBoxActionItem[]
+
   return (
     <DropBoxClient
-      className={className}
-      onDelete={onDelete}
-      onEdit={onEdit}
       id={id}
+      items={items}
+      className={className}
       trigger={
         <button
           type="button"
@@ -33,8 +54,6 @@ export default function DropBox({
           <EllipsisVertical className="h-4 w-4 text-muted-foreground" />
         </button>
       }
-      editLabel={editLabel}
-      deleteLabel={deleteLabel}
     />
   )
 }
