@@ -1,17 +1,13 @@
 import cn from '@/utils/cn'
+import React from 'react'
 
 //색상, 크기 옵션의 타입 지정
 type Variant = 'basic' | 'blue' | 'roundedBasic' | 'roundedRed' | 'gradient'
 type Size = 'default' | 'sm' | 'lg' | 'icon'
 
-export type ButtonProps = {
-  type?: 'button' | 'submit' | 'reset'
-  variant?: Variant
-  size?: Size
-  className?: string
-  label: string | React.ReactNode
-  isActive?: boolean
-}
+// 기본 스타일
+const BASE_STYLE =
+  'inline-flex items-center gap-2 whitespace-nowrap focus-visible:ring-* disabled:* ring-offset-background justify-center px-4 py-2 font-semibold border transition text-sm cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
 
 const VARIANT_STYLE: Record<Variant, string> = {
   basic:
@@ -40,35 +36,51 @@ const SIZE_STYLE: Record<Size, string> = {
   icon: 'h-10 w-10 p-0',
 }
 
-export default function Button({
-  type = 'button',
-  variant = 'basic',
-  size = 'default',
-  className = '',
-  label,
-  isActive = false,
-  ...props
-}: ButtonProps) {
-  // 기본 스타일
-  //font-weight 속성 적용 안 됨.
-  const base =
-    'inline-flex items-center gap-2 whitespace-nowrap focus-visible:ring-* disabled:* ring-offset-background justify-center px-4 py-2 font-semibold border transition text-sm cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+type NoEventAttrs = Omit<
+  React.ComponentProps<'button'>,
+  keyof React.DOMAttributes<HTMLButtonElement>
+>
 
-  return (
-    <>
-      <button
-        type={type}
-        className={cn(
-          base,
-          VARIANT_STYLE[variant],
-          SIZE_STYLE[size],
-          isActive ? VARIANT_ACTIVE_STYLE[variant] : '',
-          className
-        )}
-        {...props}
-      >
-        {label}
-      </button>
-    </>
-  )
+export interface ButtonProps extends NoEventAttrs {
+  type?: 'button' | 'submit' | 'reset'
+  variant?: Variant
+  size?: Size
+  className?: string
+  label: string | React.ReactNode
+  isActive?: boolean
 }
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      type = 'button',
+      variant = 'basic',
+      size = 'default',
+      className = '',
+      label,
+      isActive = false,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <>
+        <button
+          type={type}
+          className={cn(
+            BASE_STYLE,
+            VARIANT_STYLE[variant],
+            SIZE_STYLE[size],
+            isActive ? VARIANT_ACTIVE_STYLE[variant] : '',
+            className
+          )}
+          ref={ref}
+          {...props}
+        >
+          {label}
+        </button>
+      </>
+    )
+  }
+)
+Button.displayName = 'Button'
+export default Button
