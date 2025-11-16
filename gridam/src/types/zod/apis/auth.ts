@@ -32,10 +32,16 @@ export const ResetCompleteSchema = z.object({
     .regex(PASSWORD_REGEX, { error: MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT }),
 })
 
-export const ChangePasswordFormSchema = z.object({
-  password: z.string().min(8),
-  newPassword: z
-    .string()
-    .min(8, MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
-    .regex(PASSWORD_REGEX, MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT),
-})
+export const ChangePasswordFormSchema = z
+  .object({
+    password: z.string().min(8),
+    newPassword: z
+      .string()
+      .min(8, MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
+      .regex(PASSWORD_REGEX, MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: MESSAGES.AUTH.ERROR.WRONG_PASSWORD,
+  })

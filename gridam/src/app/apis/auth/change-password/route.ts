@@ -1,7 +1,7 @@
 import { ChangePasswordFormSchema } from "@/types/zod/apis/auth"
 import getSupabaseServer from "@/utils/supabase/server"
-import { NextRequest, NextResponse } from "next/server"
-import z, { ZodError } from "zod"
+import { NextRequest } from "next/server"
+import { ZodError } from "zod"
 import { fail, ok } from "@/app/apis/_lib/http"
 import { MESSAGES } from "@/constants/messages"
 
@@ -53,16 +53,10 @@ export async function POST(req: NextRequest) {
     return ok(MESSAGES.AUTH.SUCCESS.PASSWORD_RESET, 200)
   } catch (err) {
     if (err instanceof ZodError) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: '요청 값이 올바르지 않습니다.',
-          errors: z.treeifyError(err),
-        },
-        { status: 400 }
-      )
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
     }
 
-    return fail('알 수 없는 오류가 발생했습니다.', 500)
+    return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, 500)
   }
 }
