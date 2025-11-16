@@ -1,14 +1,7 @@
 import { Card, CardBody, CardHeader } from '@/components/ui/card'
 import DropBox from '@/components/ui/dropbox'
-
-interface RecentDiary {
-  id: string
-  date: string
-  weekday: string
-  time: string
-  content: string
-  weatherIcon: React.ReactNode
-}
+import { RecentDiary } from '../types/mypage'
+import Image from 'next/image'
 
 interface RecentDiariesProps {
   diaries: RecentDiary[]
@@ -37,7 +30,7 @@ export default function RecentDiaries({ diaries }: RecentDiariesProps) {
               >
                 <CardHeader
                   align="horizontal"
-                  cardImage={diary.weatherIcon}
+                  cardImage={<Image src={diary.emoji} alt='날씨' width={40} height={40}/>}
                   cardTitle={diary.date}
                   cardDescription={diary.weekday}
                   right={<DropBox id={diary.id} />}

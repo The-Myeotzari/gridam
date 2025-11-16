@@ -1,41 +1,32 @@
+import { getUserData } from "@/features/mypage/api/mypage.api";
 import MyStats from "@/features/mypage/components/my-stats";
-import MyPageActions from "@/features/mypage/components/mypage-actions";
+import MyPageButtons from "@/features/mypage/components/mypage-buttons";
 import MyPageHeader from "@/features/mypage/components/mypage-header";
 import ProfileCard from "@/features/mypage/components/profile-card";
 import RecentDiaries from "@/features/mypage/components/recent-diaries";
-import { Sun } from 'lucide-react'
 
-export default function MyPage() {
-  // TODO: 추후 API 연동 필요
-  const user = {
-    email: 'asd@gridam.com',
-    nickname: 'Gridam',
-    createdAt: '2025.11.13',
+export default async function MyPage() {
+  const res = await getUserData()
+
+  // 간단한 에러 화면 or 에러 컴포넌트
+  if (!res.ok || !res.data) {
+    return (
+      <div className="w-full h-[50vh] flex flex-col items-center justify-center gap-2">
+        <p className="text-lg font-semibold">마이페이지를 불러오는 중 오류가 발생했어요.</p>
+        <p className="text-sm text-gray-500">{res.message}</p>
+      </div>
+    )
   }
 
-  const stats = {
-    totalDiaries: 3,
-    totalDays: 3,
-  }
-
-  const recentDiaries = [
-    {
-      id: '1',
-      date: '2025.11.13',
-      weekday: '목요일',
-      time: '13:09',
-      content: '내용',
-      weatherIcon: <Sun />, // 일기 emoji 사용
-    },
-  ]
+  const { user, stats, recentDiaries } = res.data
 
   return (
     <div className="w-full lg:max-w-3/4 lg:mx-auto flex flex-col gap-6 font-bold items-center">
       <MyPageHeader/>
-      <ProfileCard email={user.email} nickname={user.nickname} createdAt={user.createdAt} />
+      <ProfileCard email={user.email} nickname={user.nickname} createdAt={user.created_at} />
       <MyStats totalDays={stats.totalDays} totalDiaries={stats.totalDiaries}/>
       <RecentDiaries diaries={recentDiaries}/>
-      <MyPageActions/>
+      <MyPageButtons/>
     </div>
   )
 }
