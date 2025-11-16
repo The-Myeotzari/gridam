@@ -46,7 +46,6 @@ export async function POST(req: NextRequest) {
     })
 
     if (updateError) {
-      console.error('updateUser error:', updateError)
       return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, 500)
     }
 

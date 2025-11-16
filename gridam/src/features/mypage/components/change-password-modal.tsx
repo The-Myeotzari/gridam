@@ -16,7 +16,7 @@ import { AxiosError } from "axios";
 type ChangePasswordForm = z.infer<typeof ChangePasswordFormSchema>
 
 export default function ChangePasswordModal({ close }: { close: () => void }) {
-  const { register, formState: { errors, isSubmitting }, handleSubmit, reset } = useForm<ChangePasswordForm>()
+  const { register, formState: { isSubmitting }, handleSubmit, reset } = useForm<ChangePasswordForm>()
 
 
   // TODO: 비밀번호 변경 API 연동, 유효성 검사
@@ -37,7 +37,6 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
       close()
     } catch (err) {
       const message = err instanceof AxiosError ? err.response?.data.message : MESSAGES.AUTH.ERROR.PASSWORD_RESET
-      console.error('[change-password] error:', err)
       toast.error(message)
     }
   }
@@ -62,11 +61,6 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
             placeholder="• • • • • • • •"
             {...register('password')}
           />
-          {errors.password && (
-            <p className="text-xs text-destructive">
-              {errors.password.message}
-            </p>
-          )}
           <Label htmlFor='new-password' className='font-bold'>새 비밀번호</Label>
           <Input
             id='new-password'
@@ -76,11 +70,6 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
             disabled={isSubmitting}
             {...register('newPassword')}
           />
-          {errors.newPassword && (
-            <p className="text-xs text-destructive">
-              {errors.newPassword.message}
-            </p>
-          )}
           <Label htmlFor='confirm-new-password' className='font-bold'>새 비밀번호 확인</Label>
           <Input
             id='confirm-new-password'
@@ -90,11 +79,6 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
             disabled={isSubmitting}
             {...register('confirmPassword')}
           />
-          {errors.confirmPassword && (
-            <p className="text-xs text-destructive">
-              {errors.confirmPassword.message}
-            </p>
-          )}
           <span className={loading ? "pointer-events-none opacity-50" : ""}>
             <Button
               type="submit"

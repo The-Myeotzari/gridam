@@ -9,7 +9,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: () => api.post('/auth/logout'),
     onSuccess: () => {
-      // 유저 관련 캐시 싹 비우고 싶으면
+      // 유저 관련 캐시 비우고 싶으면
       queryClient.clear()
     }
   })
