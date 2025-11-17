@@ -33,6 +33,4 @@ export async function updateDiary({
     imageUrl,
     // status: 'published',
   })
-
-  console.log('🟦 수정 성공!')
 }
