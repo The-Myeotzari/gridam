@@ -1,13 +1,13 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { createSchema, querySchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
 
-    // 글 조회
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) {
       return withCORS(fail('로그인이 필요합니다.', 401))
@@ -31,10 +31,13 @@ export async function GET(req: NextRequest) {
 
     query = query.order('created_at', { ascending: false })
 
-    const { data, error } = await query
+    const { data: diaries, error } = await query
     if (error) throw fail(error.message, 500)
+    if (!diaries) return withCORS(ok([]))
 
-    return withCORS(ok(data))
+    const diariesWithSignedUrls = await withSignedImageUrls(supabase, diaries)
+
+    return withCORS(ok(diariesWithSignedUrls))
   } catch (err: unknown) {
     if (err instanceof NextResponse) return withCORS(err)
     if (err instanceof Error) return withCORS(fail(err.message, 500))
