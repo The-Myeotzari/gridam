@@ -1,5 +1,5 @@
-import { fetchWeather } from '@/features/write/api/weather.api'
-import WeatherIcon from '@/features/write/components/weather/weather-icon'
+import { fetchWeather } from '@/features/diary-detail/api/weather.api'
+import WeatherIcon from '@/features/diary-detail/components/weather/weather-icon'
 
 type Props = { lat: number; lon: number }
 

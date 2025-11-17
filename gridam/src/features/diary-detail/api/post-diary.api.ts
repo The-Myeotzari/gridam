@@ -1,4 +1,4 @@
-import type { CreateDiaryPayload } from '@/features/write/types/diary'
+import type { CreateDiaryPayload } from '@/features/diary-detail/types/diary'
 import { api } from '@/lib/api'
 
 export interface CreateDiaryResponse {
