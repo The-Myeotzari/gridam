@@ -27,6 +27,7 @@ export default function RegisterForm() {
   //비동기 요청 (로딩, 성공, 실패)
   const mutation = useMutation({
     mutationFn: (data: RegisterFormData) => registerUser(data),
+    retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...QUERY_KEYS.AUTH.ME] })
       toast.success(MESSAGES.AUTH.SUCCESS.REGISTER_AND_EMAIL)
