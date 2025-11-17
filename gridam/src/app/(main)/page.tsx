@@ -16,11 +16,12 @@ export default async function Home({ searchParams }: Props) {
   const params = await searchParams
   const { year, month } = resolveYearMonth(params)
 
-  const queryClient = new QueryClient()
+  const { items, nextCursor, hasMore } = await getDiaryServer({ year, month })
 
-  const diaries = await queryClient.fetchQuery({
-    queryKey: QUERY_KEYS.DIARY.LIST_MONTH(year, month),
-    queryFn: () => getDiaryServer({ year, month }),
+  const queryClient = new QueryClient()
+  queryClient.setQueryData(QUERY_KEYS.DIARY.LIST(year, month), {
+    pages: [{ items, nextCursor, hasMore }],
+    pageParams: [null],
   })
 
   const dehydratedState = dehydrate(queryClient)
@@ -37,7 +38,7 @@ export default async function Home({ searchParams }: Props) {
       <Month year={year} month={month} />
 
       <HydrationBoundary state={dehydratedState}>
-        <FeedList year={year} month={month} initialDiaries={diaries} />
+        <FeedList year={year} month={month} initialDiaries={items} />
       </HydrationBoundary>
 
       <Link href="/write">
