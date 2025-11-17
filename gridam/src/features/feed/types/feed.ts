@@ -1,6 +1,15 @@
 export type GetDiaryParams = {
   year: string
   month: string
+  status?: string
+  cursor?: string | null
+  limit?: number
+}
+
+export type DiaryPage = {
+  items: Diary[]
+  nextCursor: string | null
+  hasMore: boolean
 }
 
 export type Diary = {
