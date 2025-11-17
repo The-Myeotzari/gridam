@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
     }
 
-    if (!user.email) {
+    if (!user.email || user.app_metadata.provider !== 'email') {
       return fail('이메일 계정이 아닙니다.', 400)
     }
 

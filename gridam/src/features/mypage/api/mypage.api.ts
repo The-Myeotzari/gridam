@@ -54,7 +54,7 @@ export async function getUserData() {
       user: {
         id: user.id,
         email: user.email ?? '',
-        nickname: user.user_metadata.nickname ?? '',
+        nickname: user.user_metadata.nickname ?? user.user_metadata.name ?? '',
         created_at: new Date(user.created_at).toISOString().slice(0, 10),
       },
       stats: {
