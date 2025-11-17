@@ -1,4 +1,4 @@
-import type { DiaryImageData } from '@/features/write/types/diary'
+import type { DiaryImageData } from '@/features/diary-detail/types/diary'
 import { api } from '@/lib/api'
 
 interface UploadDiaryImageResponse {

@@ -20,6 +20,7 @@ export const QUERY_KEYS = {
     LIST: (year: string, month: string) => ['diary', 'list', { year, month }] as const,
     DETAIL: (id: string) => ['diary', id] as const,
     CREATE: ['diary', 'create'] as const,
+    UPDATE: ['diary', 'update'] as const,
   },
 
   //Drafts 관련
