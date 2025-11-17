@@ -29,6 +29,7 @@ export const MESSAGES = {
       INVALID_EMAIL_FORMAT: '이메일 형식이 올바르지 않습니다',
       INVALID_NICKNAME_FORMAT: '닉네임은 2~12자 이내의 한글, 영문, 숫자로 입력해주세요.',
       EMAIL_ALREADY_IN_USE: '이미 사용 중인 이메일입니다.',
+      REGISTER_TOO_MANY_REQUEST: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
     },
   },
 
