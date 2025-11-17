@@ -62,73 +62,71 @@ export default function RegisterForm() {
     }
   }
   return (
-    <>
-      <CardBody>
-        <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-4">
-          <RegisterInput
-            label="닉네임"
-            name="nickname"
-            placeholder="귀여운 닉네임"
-            register={register}
-            validation={{
-              required: true,
-              validate: (value) =>
-                NICKNAME_REGEX.test(value) || MESSAGES.AUTH.ERROR.INVALID_NICKNAME_FORMAT,
-            }}
-          />
+    <CardBody>
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-4">
+        <RegisterInput
+          label="닉네임"
+          name="nickname"
+          placeholder="귀여운 닉네임"
+          register={register}
+          validation={{
+            required: true,
+            validate: (value) =>
+              NICKNAME_REGEX.test(value) || MESSAGES.AUTH.ERROR.INVALID_NICKNAME_FORMAT,
+          }}
+        />
 
-          <RegisterInput
-            label="이메일"
-            type="text"
-            name="email"
-            placeholder="your@email.com"
-            register={register}
-            validation={{
-              required: true,
-              validate: (value) =>
-                EMAIL_REGEX.test(value) || MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT,
-            }}
-          />
+        <RegisterInput
+          label="이메일"
+          type="text"
+          name="email"
+          placeholder="your@email.com"
+          register={register}
+          validation={{
+            required: true,
+            validate: (value) =>
+              EMAIL_REGEX.test(value) || MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT,
+          }}
+        />
 
-          <RegisterInput
-            label="비밀번호"
-            type="password"
-            name="password"
-            placeholder="• • • • • • • •"
-            register={register}
-            validation={{
-              required: true,
-              validate: (value) => {
-                if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
-                if (!PASSWORD_REGEX.test(value)) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
-                return true
-              },
-            }}
-          />
+        <RegisterInput
+          label="비밀번호"
+          type="password"
+          name="password"
+          placeholder="• • • • • • • •"
+          register={register}
+          validation={{
+            required: true,
+            validate: (value) => {
+              if (value.length < 8) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH
+              if (!PASSWORD_REGEX.test(value)) return MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT
+              return true
+            },
+          }}
+        />
 
-          <RegisterInput
-            label="비밀번호 확인"
-            type="password"
-            name="confirmPassword"
-            placeholder="• • • • • • • •"
-            register={register}
-            validation={{
-              required: true,
-              validate: (value) =>
-                value === getValues('password') || MESSAGES.AUTH.ERROR.WRONG_PASSWORD,
-            }}
-          />
-          <Button
-            type="submit"
-            variant="gradient"
-            size="lg"
-            className="w-full text-xl disabled:cursor-not-allowed disabled:from-gray-300         // 그라데이션 시작 색 회색
+        <RegisterInput
+          label="비밀번호 확인"
+          type="password"
+          name="confirmPassword"
+          placeholder="• • • • • • • •"
+          register={register}
+          validation={{
+            required: true,
+            validate: (value) =>
+              value === getValues('password') || MESSAGES.AUTH.ERROR.WRONG_PASSWORD,
+          }}
+        />
+        <Button
+          type="submit"
+          variant="gradient"
+          size="lg"
+          className="w-full text-xl disabled:cursor-not-allowed disabled:from-gray-300         // 그라데이션 시작 색 회색
                 disabled:to-gray-300 disabled:text-gray-500 disabled:opacity-70"
-            disabled={mutation.isPending}
-            label={'가입하기'}
-          />
-        </form>
-      </CardBody>
-    </>
+          disabled={mutation.isPending}
+          label={'가입하기'}
+        />
+      </form>
+    </CardBody>
   )
 }
