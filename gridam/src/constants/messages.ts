@@ -33,11 +33,13 @@ export const MESSAGES = {
       CREATE: '일기가 저장되었습니다!',
       UPDATE: '일기가 수정되었습니다!',
       DELETE: '일기가 성공적으로 삭제되었습니다.',
+      READ_NO_DATA: '아직 이 달에 작성된 일기가 없어요.',
     },
     ERROR: {
       CREATE: '일기 저장에 실패했습니다.',
       UPDATE: '일기 수정에 실패했습니다.',
       DELETE: '일기 삭제에 실패했습니다.',
+      READ: '일기 조회에 실패했습니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',
