@@ -1,48 +1,19 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { createSchema, querySchema } from '@/types/zod/apis/diaries'
+import { getDiaryServer } from '@/features/feed/api/get-diary.server'
+import { createSchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
-import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url)
+  const { searchParams } = new URL(req.url)
 
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return withCORS(fail('로그인이 필요합니다.', 401))
-    }
-
-    const parsed = querySchema.safeParse(Object.fromEntries(searchParams))
-    const status = parsed.success ? parsed.data.status : undefined
-    const year = parsed.success ? parsed.data.year : undefined
-    const month = parsed.success ? parsed.data.month : undefined
-
-    let query = supabase.from('diaries').select('*').eq('user_id', user.id)
-
-    if (status) query = query.eq('status', status)
-
-    if (year && month) {
-      const startDate = new Date(Number(year), Number(month) - 1, 1).toISOString()
-      const endDate = new Date(Number(year), Number(month), 1).toISOString()
-
-      query = query.gte('created_at', startDate).lt('created_at', endDate)
-    }
-
-    query = query.order('created_at', { ascending: false })
-
-    const { data: diaries, error } = await query
-    if (error) throw fail(error.message, 500)
-    if (!diaries) return withCORS(ok([]))
-
-    const diariesWithSignedUrls = await withSignedImageUrls(supabase, diaries)
-
-    return withCORS(ok(diariesWithSignedUrls))
-  } catch (err: unknown) {
-    if (err instanceof NextResponse) return withCORS(err)
-    if (err instanceof Error) return withCORS(fail(err.message, 500))
-    return withCORS(fail('Unknown error', 500))
-  }
+  return Response.json(
+    await getDiaryServer({
+      year: searchParams.get('year')!,
+      month: searchParams.get('month')!,
+      cursor: searchParams.get('cursor'),
+    })
+  )
 }
 
 export async function POST(req: NextRequest) {

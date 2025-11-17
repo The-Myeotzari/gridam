@@ -16,6 +16,8 @@ export const querySchema = z.object({
   status: z.enum(['draft', 'published']).optional(),
   year: z.coerce.number().int().optional(),
   month: z.coerce.number().int().min(1).max(12).optional(),
+  cursor: z.iso.datetime().optional(),
+  limit: z.coerce.number().int().min(1).max(50).optional(),
 })
 
 export const updateSchema = z.object({

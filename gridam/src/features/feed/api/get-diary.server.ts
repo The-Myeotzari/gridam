@@ -1,31 +1,45 @@
 import { MESSAGES } from '@/constants/messages'
-import type { Diary, GetDiaryParams } from '@/features/feed/types/feed'
+import type { DiaryPage, GetDiaryParams } from '@/features/feed/types/feed'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
 
-export async function getDiaryServer({ year, month }: GetDiaryParams): Promise<Diary[]> {
-  const { supabase, user } = await getAuthenticatedUser()
-  if (!user) {
-    throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
-  }
-  const userId = user.id
+const DEFAULT_LIMIT = 5
 
-  let query = supabase.from('diaries').select('*').eq('user_id', userId)
+export async function getDiaryServer({ year, month, cursor }: GetDiaryParams): Promise<DiaryPage> {
+  const { supabase, user } = await getAuthenticatedUser()
+
+  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+
+  let query = supabase.from('diaries').select('*').eq('user_id', user.id)
 
   if (year && month) {
-    const startDate = new Date(Number(year), Number(month) - 1, 1).toISOString()
-    const endDate = new Date(Number(year), Number(month), 1).toISOString()
-    query = query.gte('created_at', startDate).lt('created_at', endDate)
+    const start = new Date(Number(year), Number(month) - 1, 1).toISOString()
+    const end = new Date(Number(year), Number(month), 1).toISOString()
+    query = query.gte('created_at', start).lt('created_at', end)
   }
 
-  query = query.order('created_at', { ascending: false })
+  if (cursor) {
+    query = query.lt('created_at', cursor)
+  }
 
-  const { data: diaries, error } = await query
+  query = query.order('created_at', { ascending: false }).limit(DEFAULT_LIMIT + 1)
+
+  const { data, error } = await query
   if (error) throw error
-  if (!diaries) return []
 
-  const diariesTyped = diaries as Diary[]
-  const diariesWithSignedUrls = await withSignedImageUrls(supabase, diariesTyped)
+  if (!data || data.length === 0) {
+    return { items: [], nextCursor: null, hasMore: false }
+  }
 
-  return diariesWithSignedUrls
+  const hasMore = data.length > DEFAULT_LIMIT
+  const items = hasMore ? data.slice(0, DEFAULT_LIMIT) : data
+
+  const diariesWithSignedUrls = await withSignedImageUrls(supabase, items)
+  const lastItem = items[items.length - 1]
+
+  return {
+    items: diariesWithSignedUrls,
+    nextCursor: hasMore ? lastItem.created_at : null,
+    hasMore,
+  }
 }
