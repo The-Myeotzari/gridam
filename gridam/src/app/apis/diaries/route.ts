@@ -1,37 +1,19 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { createSchema, querySchema } from '@/types/zod/apis/diaries'
-import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { getDiaryServer } from '@/features/feed/api/get-diary.server'
+import { createSchema } from '@/types/zod/apis/diaries'
+import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url)
-    const { supabase, user } = await getAuthenticatedUser()
+  const { searchParams } = new URL(req.url)
 
-    const parsed = querySchema.safeParse(Object.fromEntries(searchParams))
-    const status = parsed.success ? parsed.data.status : undefined
-
-    let query = supabase
-      .from('diaries')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false })
-
-    if (status) query = query.eq('status', status)
-
-    const { data, error } = await query
-    if (error) throw fail(error.message, 500)
-
-    return withCORS(ok(data))
-  } catch (err: unknown) {
-    if (err instanceof NextResponse) {
-      return withCORS(err)
-    }
-    if (err instanceof Error) {
-      return withCORS(fail(err.message, 500))
-    }
-    return withCORS(fail('Unknown error', 500))
-  }
+  return Response.json(
+    await getDiaryServer({
+      year: searchParams.get('year')!,
+      month: searchParams.get('month')!,
+      cursor: searchParams.get('cursor'),
+    })
+  )
 }
 
 export async function POST(req: NextRequest) {

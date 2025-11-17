@@ -1,5 +1,5 @@
 import { fail } from '@/app/apis/_lib/http'
-import getSupabaseServer from './supabase/server'
+import getSupabaseServer from '@/utils/supabase/server'
 
 export async function getAuthenticatedUser() {
   const supabase = await getSupabaseServer()

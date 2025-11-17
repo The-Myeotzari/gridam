@@ -1,7 +1,7 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { Params } from '@/types/params'
 import { updateSchema } from '@/types/zod/apis/diaries'
-import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest, NextResponse } from 'next/server'
 
 type DiaryPatch = {
