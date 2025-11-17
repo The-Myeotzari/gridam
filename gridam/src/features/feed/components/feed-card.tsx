@@ -2,6 +2,7 @@ import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
 import DropBox from '@/components/ui/dropbox'
 import type { Diary } from '@/features/feed/types/feed'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 type props = {
   diary: Diary
@@ -9,7 +10,17 @@ type props = {
 }
 
 export default function FeedCard({ diary, isFirst }: props) {
+  const router = useRouter()
   const hasEmoji = typeof diary.emoji === 'string' && diary.emoji.trim() !== ''
+
+  const handleEdit = () => {
+    // 다이어리 수정 페이지 이동
+    router.push(`/feed/${diary.id}/edit`)
+  }
+
+  const handleDelete = async () => {
+    // 실제 삭제 API 호출
+  }
 
   return (
     <Card>
@@ -30,7 +41,15 @@ export default function FeedCard({ diary, isFirst }: props) {
             </div>
           )
         }
-        right={<DropBox id={diary.id} />}
+        right={
+          <DropBox
+            id={diary.id}
+            onEdit={() => handleEdit()}
+            onDelete={() => {
+              console.log('삭제 모달 오픈')
+            }}
+          />
+        }
         cardTitle={diary.date}
         align="horizontal"
         className="text-muted-foreground font-semibold"
