@@ -1,31 +1,54 @@
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
 import DropBox from '@/components/ui/dropbox'
+import { Diary } from '@/features/feed/types/feed'
 import Image from 'next/image'
 
 type props = {
-  id: string
-  emoji: string
-  date: string
-  contents: string
-  diaryImage: string
+  diary: Diary
+  isFirst?: boolean
 }
 
-export default function FeedCard() {
+export default function FeedCard({ diary, isFirst }: props) {
+  const hasEmoji = typeof diary.emoji === 'string' && diary.emoji.trim() !== ''
+
   return (
     <Card>
       <CardHeader
-        cardImage={<Image src="/icon/clear-sky.svg" alt="날씨 이모지" width={36} height={36} />}
-        // 게시글 id
-        right={<DropBox id="1" />}
-        cardTitle="2025.12.12"
+        cardImage={
+          hasEmoji ? (
+            <Image
+              src={diary.emoji!}
+              alt={`${diary.id}_날씨_아이콘_이미지`}
+              width={36}
+              height={36}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-9 w-9 text-xs text-muted-foreground">
+              날씨
+              <br />
+              없음
+            </div>
+          )
+        }
+        right={<DropBox id={diary.id} />}
+        cardTitle={diary.date}
         align="horizontal"
         className="text-muted-foreground font-semibold"
       />
 
-      <CardBody className="text-left">내용</CardBody>
+      <CardBody className="text-left">{diary.content}</CardBody>
+
       <CardFooter className="relative w-full aspect-square">
-        {/* 이미지 있을 떄만 출력 */}
-        <Image src="/icon/clear-sky.svg" alt="이미지" fill className="object-contain" />
+        {diary.image_url && (
+          <Image
+            src={diary.image_url}
+            alt={`${diary.id}_그림일기_이미지`}
+            fill
+            className="object-contain"
+            loading={isFirst ? 'eager' : 'lazy'}
+            priority={!!isFirst}
+          />
+        )}
       </CardFooter>
     </Card>
   )
