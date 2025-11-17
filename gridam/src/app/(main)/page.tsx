@@ -19,7 +19,7 @@ export default async function Home({ searchParams }: Props) {
   const queryClient = new QueryClient()
 
   const diaries = await queryClient.fetchQuery({
-    queryKey: QUERY_KEYS.DIARY.LIST(year, month),
+    queryKey: QUERY_KEYS.DIARY.LIST_MONTH(year, month),
     queryFn: () => getDiaryServer({ year, month }),
   })
 

@@ -17,7 +17,7 @@ type Props = {
 
 export default function FeedList({ year, month, initialDiaries }: Props) {
   const queryOptions = {
-    queryKey: QUERY_KEYS.DIARY.LIST(year, month),
+    queryKey: QUERY_KEYS.DIARY.LIST_MONTH(year, month),
     queryFn: () => getDiary({ year, month }),
     initialData: initialDiaries,
   }
