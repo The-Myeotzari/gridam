@@ -1,10 +1,10 @@
 'use client'
 
+import { CanvasToolbar } from '@/features/diary-detail/components/canvas/canvas-toolbar'
+import { CanvasView } from '@/features/diary-detail/components/canvas/canvas-view'
 import { useCanvasDrawing } from '@/features/diary-detail/hooks/use-canvas-drawing'
 import { useSetCanvas } from '@/features/diary-detail/store/canvas-store'
 import { memo, useCallback, useEffect } from 'react'
-import { CanvasToolbar } from './canvas-toolbar'
-import { CanvasView } from './canvas-view'
 
 function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
   const { canvasRef, handleUndo, clearCanvas, onPointerDown, onPointerMove, onPointerUpOrLeave } =
