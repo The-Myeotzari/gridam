@@ -42,7 +42,7 @@ describe('Header', () => {
 
   it('네비게이션 링크와 사용자명을 렌더링한다', () => {
     render(<Header />)
-    expect(screen.getByTestId('nav-피드')).toHaveAttribute('href', '/feed')
+    expect(screen.getByTestId('nav-피드')).toHaveAttribute('href', '/')
     expect(screen.getByTestId('nav-마이페이지')).toHaveAttribute('href', '/mypage')
     expect(screen.getByText('별빛나눔')).toBeInTheDocument()
   })

@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { normalizeValue, buildCells } from '@/utils/textarea-core'
-import { getCellSize, gridStyle, heights } from '@/utils/grid'
 import { useCaretAutoScroll } from '@/hooks/use-caret-auto-scroll'
+import { gridStyle, heights } from '@/utils/grid'
 import { handleInputOnce, propagateChange } from '@/utils/textarea-actions'
+import { buildCells, normalizeValue } from '@/utils/textarea-core'
+import { useEffect, useMemo, useRef, useState } from 'react'
 /**
  * Props
  * - max/cols/width/cellSize/visibleRows: 격자 규격
@@ -29,21 +29,41 @@ export default function Textarea({
   onChange,
   max = 200, // 최대 그래핌 수
   cols = 10, // 가로 칸 수
-  width = 600, // 전체 폭(px)
-  cellSize, // 칸 크기(px). 미지정 시 width/cols
+  // width = 600, // 전체 폭(px)
+  // cellSize, // 칸 크기(px). 미지정 시 width/cols
   visibleRows = 5, // 뷰포트에 보일 행 수
   className,
   placeholder,
   readOnly,
 }: Props) {
   // 치수 계산
-  const { cell, gridWidth } = getCellSize(width, cols, cellSize)
+  // const { cell, gridWidth } = getCellSize(width, cols, cellSize)
 
   // 상태/참조
   const isControlled = value !== undefined
   const [inner, setInner] = useState(() => normalizeValue(value ?? '', max))
   const ceRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
+  const [cell, setCell] = useState(0)
+  const gridWidth = cell * cols
+
+  // 부모 width 기반 계산
+  useEffect(() => {
+    if (!viewportRef.current) return
+
+    const update = () => {
+      const parentW = viewportRef.current?.clientWidth || 600
+      const nextCell = Math.floor(parentW / cols)
+      setCell(nextCell)
+    }
+
+    update()
+
+    const ro = new ResizeObserver(update)
+    ro.observe(viewportRef.current)
+
+    return () => ro.disconnect()
+  }, [cols])
 
   // 커서 기준 자동 스크롤
   const { ensureVisible } = useCaretAutoScroll(viewportRef, ceRef, cols, cell, visibleRows)
@@ -78,12 +98,12 @@ export default function Textarea({
   const showPh = !view && placeholder
 
   return (
-    <div className={className} style={{ width }}>
+    <div className={className}>
       {/* 뷰포트(스크롤 영역) */}
       <div
         ref={viewportRef}
         className="relative rounded-xl bg-card border border-border overflow-y-auto overflow-x-hidden no-scrollbar box-border [-webkit-overflow-scrolling:touch]"
-        style={{ width, height: viewportH }}
+        style={{ height: viewportH }}
         onMouseDown={(e) => {
           e.preventDefault()
           if (ceRef.current) ceRef.current.focus()

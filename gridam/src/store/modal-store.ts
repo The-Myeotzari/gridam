@@ -40,3 +40,18 @@ export const useModalStore = create<ModalState>()((set, get) => ({
 
   isOpen: () => get().node !== null,
 }))
+
+export const modalStore = {
+  open: (render: (close: () => void) => ReactNode) => {
+    const { open } = useModalStore.getState()
+    open(render)
+  },
+  close: () => {
+    const { close } = useModalStore.getState()
+    close()
+  },
+  isOpen: () => {
+    const { isOpen } = useModalStore.getState()
+    return isOpen()
+  },
+}
