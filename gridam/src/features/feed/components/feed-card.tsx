@@ -1,6 +1,6 @@
 import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
 import DropBox from '@/components/ui/dropbox'
-import { Diary } from '@/features/feed/types/feed'
+import type { Diary } from '@/features/feed/types/feed'
 import Image from 'next/image'
 
 type props = {

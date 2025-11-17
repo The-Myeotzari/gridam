@@ -1,5 +1,5 @@
 import { MESSAGES } from '@/constants/messages'
-import { Diary, GetDiaryParams } from '@/features/feed/types/feed'
+import type { Diary, GetDiaryParams } from '@/features/feed/types/feed'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
 

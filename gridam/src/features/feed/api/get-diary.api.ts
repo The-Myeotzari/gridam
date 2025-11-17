@@ -1,4 +1,4 @@
-import { Diary } from '@/features/feed/types/feed'
+import type { Diary } from '@/features/feed/types/feed'
 import { api } from '@/lib/api'
 
 type GetDiaryParams = {
