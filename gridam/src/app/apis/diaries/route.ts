@@ -1,6 +1,6 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { createSchema, querySchema } from '@/types/zod/apis/diaries'
-import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
 import { NextRequest, NextResponse } from 'next/server'
 
