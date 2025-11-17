@@ -1,7 +1,7 @@
-import { RegisterFormData } from '@/app/(auth)/register/register-form'
 import { MESSAGES } from '@/constants/messages'
 import { api } from '@/lib/api'
 import { AxiosError } from 'axios'
+import { RegisterFormData } from '@/features/auth/register/types/register'
 // api 불러오기
 export async function registerUser(
   data: Pick<RegisterFormData, 'nickname' | 'email' | 'password'>
