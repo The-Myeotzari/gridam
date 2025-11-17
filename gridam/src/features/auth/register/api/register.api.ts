@@ -15,6 +15,10 @@ export async function registerUser(
         throw new Error(error.response?.data?.message)
       }
 
+      if (error.response?.status === 429) {
+        throw new Error(MESSAGES.AUTH.ERROR.REGISTER_TOO_MANY_REQUEST)
+      }
+
       throw new Error(error.response?.data?.message || MESSAGES.AUTH.ERROR.REGISTER)
     }
     // AxiosError가 아닌 경우

@@ -7,6 +7,8 @@ export const MESSAGES = {
       LOGOUT: '로그아웃 되었습니다.',
       PASSWORD_RESET: '비밀번호 재설정이 완료되었습니다.',
       PASSWORD_RESET_EMAIL: '비밀번호 재설정 이메일이 발송되었습니다.',
+      REGISTER_AND_EMAIL:
+        '회원가입 요청이 완료되었습니다. 이메일로 전송된 인증 링크를 확인해주세요.',
     },
     ERROR: {
       UNAUTHORIZED_USER: '인증되지 않은 사용자입니다. 로그인 해주세요.',
@@ -27,6 +29,7 @@ export const MESSAGES = {
       INVALID_EMAIL_FORMAT: '이메일 형식이 올바르지 않습니다',
       INVALID_NICKNAME_FORMAT: '닉네임은 2~12자 이내의 한글, 영문, 숫자로 입력해주세요.',
       EMAIL_ALREADY_IN_USE: '이미 사용 중인 이메일입니다.',
+      REGISTER_TOO_MANY_REQUEST: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
     },
   },
 
