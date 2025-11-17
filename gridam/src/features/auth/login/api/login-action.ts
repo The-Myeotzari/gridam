@@ -1,5 +1,3 @@
-'use server'
-
 import { LoginSchema } from '@/types/zod/apis/auth'
 import { MESSAGES } from '@/constants/messages'
 
