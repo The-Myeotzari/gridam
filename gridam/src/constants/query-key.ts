@@ -16,8 +16,7 @@ export const QUERY_KEYS = {
   // 다이어리
   DIARY: {
     ROOT: ['diary'] as const,
-    LIST: ['diary', 'list'] as const,
-    LIST_MONTH: (year: string, month: string) => ['diary', 'list', { year, month }] as const,
+    LIST: (year: string, month: string) => ['diary', 'list', { year, month }] as const,
     DETAIL: (id: string) => ['diary', id] as const,
     CREATE: ['diary', 'create'] as const,
   },
