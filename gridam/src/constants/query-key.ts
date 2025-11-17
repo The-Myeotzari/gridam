@@ -8,6 +8,7 @@ export const QUERY_KEYS = {
     RESET_REQUEST: ['auth', 'reset', 'request'] as const,
     RESET_COMPLETE: ['auth', 'reset', 'complete'] as const,
     ME: ['auth', 'me'] as const,
+    CHANGE_PASSWORD: ['auth', 'change'] as const
   },
 
   // Me 관련
