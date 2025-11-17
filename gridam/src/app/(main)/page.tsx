@@ -1,22 +1,29 @@
 import Button from '@/components/ui/button'
-import FeedCard from '@/features/feed/components/feed-card'
+import { QUERY_KEYS } from '@/constants/query-key'
+import { getDiaryServer } from '@/features/feed/api/get-diary.server'
+import FeedList from '@/features/feed/components/feed-list'
 import Month from '@/features/feed/components/month'
+import { type DiarySearchParams, resolveYearMonth } from '@/features/feed/utils/diary-date'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
 
-type props = {
-  searchParams?: {
-    [key: string]: string | string[] | undefined
-    year?: string
-    month?: string
-  }
+type Props = {
+  searchParams: Promise<DiarySearchParams>
 }
 
-export default async function Home({ searchParams }: props) {
-  const params = await searchParams // 반드시 await 필요!
+export default async function Home({ searchParams }: Props) {
+  const params = await searchParams
+  const { year, month } = resolveYearMonth(params)
 
-  const year = typeof params?.year === 'string' ? params.year : '2000'
-  const month = typeof params?.month === 'string' ? params.month : '02'
+  const queryClient = new QueryClient()
+
+  const diaries = await queryClient.fetchQuery({
+    queryKey: QUERY_KEYS.DIARY.LIST(year, month),
+    queryFn: () => getDiaryServer({ year, month }),
+  })
+
+  const dehydratedState = dehydrate(queryClient)
 
   return (
     <div className="flex flex-col gap-4 p-4 mt-10 text-center">
@@ -29,7 +36,9 @@ export default async function Home({ searchParams }: props) {
 
       <Month year={year} month={month} />
 
-      <FeedCard />
+      <HydrationBoundary state={dehydratedState}>
+        <FeedList year={year} month={month} initialDiaries={diaries} />
+      </HydrationBoundary>
 
       <Link href="/write">
         <Button
