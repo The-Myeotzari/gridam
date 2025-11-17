@@ -1,6 +1,6 @@
-import { useCanvasStore } from '@/features/write/store/canvas-store'
-import { useWriteStore } from '@/features/write/store/write-store'
-import type { CreateDiaryPayload, DiaryImageData } from '@/features/write/types/diary'
+import { useCanvasStore } from '@/features/diary-detail/store/canvas-store'
+import { useWriteStore } from '@/features/diary-detail/store/write-store'
+import type { CreateDiaryPayload, DiaryImageData } from '@/features/diary-detail/types/diary'
 import { getDataURLToBlob } from '@/utils/get-data-url-to-blob'
 
 type UploadImageArgs = {

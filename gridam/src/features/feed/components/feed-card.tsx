@@ -15,7 +15,7 @@ export default function FeedCard({ diary, isFirst }: props) {
 
   const handleEdit = () => {
     // 다이어리 수정 페이지 이동
-    router.push(`/feed/${diary.id}/edit`)
+    router.push(`/${diary.id}`)
   }
 
   const handleDelete = async () => {

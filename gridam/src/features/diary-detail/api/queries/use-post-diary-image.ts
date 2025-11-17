@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/constants/query-key'
-import { postDiaryImage } from '@/features/write/api/post-diary-image.api'
+import { postDiaryImage } from '@/features/diary-detail/api/post-diary-image.api'
 import { useMutation } from '@tanstack/react-query'
 
 export function usePostDiaryImage() {
