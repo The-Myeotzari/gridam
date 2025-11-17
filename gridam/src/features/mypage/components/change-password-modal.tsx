@@ -7,7 +7,7 @@ import { ChangePasswordFormSchema } from "@/types/zod/apis/auth";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { useChangePassword } from "../api/queries/use-change-password";
+import { useChangePassword } from "@/features/mypage/api/queries/use-change-password";
 import { toast } from "@/store/toast-store";
 import { MESSAGES } from "@/constants/messages";
 import Button from "@/components/ui/button";

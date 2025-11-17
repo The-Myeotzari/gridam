@@ -1,7 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import MyPageActions from '@/features/mypage/components/mypage-buttons'
+import MyPageButtons from '@/features/mypage/components/mypage-buttons'
 import { ButtonProps } from '@/components/ui/button'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const pushMock = jest.fn()
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: pushMock,
+  }),
+}))
 
 // modalStore mock
 const openMock = jest.fn()
@@ -32,26 +40,33 @@ jest.mock('@/features/mypage/components/change-password-modal', () => {
   }
 })
 
-describe('MyPageActions', () => {
+// 🔹 공용 render 헬퍼
+function renderWithClient(ui: React.ReactElement) {
+  const queryClient = new QueryClient()
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+  )
+}
+
+describe('MyPageButtons', () => {
   beforeEach(() => {
     openMock.mockClear()
+    pushMock.mockClear()
   })
 
   it('비밀번호 변경, 로그아웃 버튼을 렌더링한다', () => {
-    render(<MyPageActions />)
+    renderWithClient(<MyPageButtons />)
 
     expect(screen.getByText('비밀번호 변경')).toBeInTheDocument()
     expect(screen.getByText('로그아웃')).toBeInTheDocument()
   })
 
   it('비밀번호 변경 버튼 클릭 시 modalStore.open이 호출된다', () => {
-    render(<MyPageActions />)
+    renderWithClient(<MyPageButtons />)
 
-    // span에 onClick이 걸려 있으므로 텍스트 기준으로 클릭
     fireEvent.click(screen.getByText('비밀번호 변경'))
 
     expect(openMock).toHaveBeenCalledTimes(1)
-    // 첫 번째 인자로 close 함수를 인자로 받는 렌더 함수가 넘어오는지 정도만 확인
     const [renderFn] = openMock.mock.calls[0]
     expect(typeof renderFn).toBe('function')
   })

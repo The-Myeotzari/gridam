@@ -47,7 +47,7 @@ describe('RecentDiaries', () => {
         weekday: '목요일',
         time: '13:09',
         content: '오늘의 일기',
-        weatherIcon: <span>☀️</span>,
+        emoji: '/emojis/sun.png',
       },
     ]
 
@@ -58,6 +58,8 @@ describe('RecentDiaries', () => {
 
     // 일기 내용
     expect(screen.getByText('오늘의 일기')).toBeInTheDocument()
+    const img = screen.getByAltText('날씨')
+    expect(img).toBeInTheDocument();
     expect(screen.getByText('13:09')).toBeInTheDocument()
     expect(screen.getByText('2025.11.13')).toBeInTheDocument()
     expect(screen.getByText('목요일')).toBeInTheDocument()

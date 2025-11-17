@@ -1,6 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
+import { useChangePassword } from '@/features/mypage/api/queries/use-change-password'
+import { toast } from '@/store/toast-store'
 
 // Button / Input / Label / Modal mock들
 jest.mock('@/components/ui/button', () => (props: any) => (
@@ -32,25 +34,40 @@ jest.mock('@/components/ui/modal/modal', () => ({
   ModalBody: (props: any) => <div>{props.children}</div>,
 }))
 
-// lucide-react X 아이콘 mock (테스트에선 역할만 필요)
+// lucide-react X 아이콘 mock
 jest.mock('lucide-react', () => ({
   X: (props: any) => <svg data-testid="x-icon" {...props} />,
 }))
 
+// useChangePassword 훅 mock
+jest.mock('@/features/mypage/api/queries/use-change-password')
+
+// toast mock
+jest.mock('@/store/toast-store', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}))
+
+const mockUseChangePassword = useChangePassword as jest.Mock
+const mockToast = toast as jest.Mocked<typeof toast>
+
 describe('ChangePasswordModal', () => {
   const closeMock = jest.fn()
-  const originalConsoleLog = console.log
 
   beforeEach(() => {
     closeMock.mockClear()
-    console.log = jest.fn()
-  })
-
-  afterEach(() => {
-    console.log = originalConsoleLog
+    jest.clearAllMocks()
   })
 
   it('비밀번호 변경 모달 UI를 렌더링한다', () => {
+    // useChangePassword 기본 mock (필수)
+    mockUseChangePassword.mockReturnValue({
+      mutateAsync: jest.fn(),
+      isPending: false,
+    })
+
     render(<ChangePasswordModal close={closeMock} />)
 
     expect(screen.getByText('비밀번호 변경')).toBeInTheDocument()
@@ -68,6 +85,11 @@ describe('ChangePasswordModal', () => {
   })
 
   it('X 아이콘 클릭 시 close가 호출된다', () => {
+    mockUseChangePassword.mockReturnValue({
+      mutateAsync: jest.fn(),
+      isPending: false,
+    })
+
     render(<ChangePasswordModal close={closeMock} />)
 
     const xIcon = screen.getByTestId('x-icon')
@@ -76,26 +98,41 @@ describe('ChangePasswordModal', () => {
     expect(closeMock).toHaveBeenCalledTimes(1)
   })
 
-  it('폼 제출 시 입력값이 console.log로 전달된다', async () => {
-  render(<ChangePasswordModal close={closeMock} />)
+  it('폼 제출 시 useChangePassword.mutateAsync가 올바른 값으로 호출되고 성공 시 모달을 닫는다', async () => {
+    const mutateAsync = jest.fn().mockResolvedValue({
+      ok: true,
+      message: '비밀번호가 변경되었습니다.',
+    })
 
-  const currentPasswordInput = screen.getByLabelText('현재 비밀번호')
-  const newPasswordInput     = screen.getByLabelText('새 비밀번호')
-  const confirmPasswordInput = screen.getByLabelText('새 비밀번호 확인')
+    mockUseChangePassword.mockReturnValue({
+      mutateAsync,
+      isPending: false,
+    })
 
-  fireEvent.change(currentPasswordInput, { target: { value: 'currentPass123' } })
-  fireEvent.change(newPasswordInput,     { target: { value: 'newPass123!' } })
-  fireEvent.change(confirmPasswordInput, { target: { value: 'newPass123!' } })
+    render(<ChangePasswordModal close={closeMock} />)
 
-  fireEvent.click(screen.getByText('변경하기'))
+    const currentPasswordInput = screen.getByLabelText('현재 비밀번호')
+    const newPasswordInput     = screen.getByLabelText('새 비밀번호')
+    const confirmPasswordInput = screen.getByLabelText('새 비밀번호 확인')
 
-  await waitFor(() => {
-    expect(console.log).toHaveBeenCalledTimes(1)
-    expect(console.log).toHaveBeenCalledWith({
-      password: 'currentPass123',
-      newPassword: 'newPass123!',
-      confirmPassword: 'newPass123!',
+    fireEvent.change(currentPasswordInput, { target: { value: 'currentPass123' } })
+    fireEvent.change(newPasswordInput,     { target: { value: 'newPass123!' } })
+    fireEvent.change(confirmPasswordInput, { target: { value: 'newPass123!' } })
+
+    fireEvent.click(screen.getByText('변경하기'))
+
+    await waitFor(() => {
+      expect(mutateAsync).toHaveBeenCalledTimes(1)
+      expect(mutateAsync).toHaveBeenCalledWith({
+        password: 'currentPass123',
+        newPassword: 'newPass123!',
+        confirmPassword: 'newPass123!',
+      })
+    })
+
+    await waitFor(() => {
+      expect(mockToast.success).toHaveBeenCalled()
+      expect(closeMock).toHaveBeenCalledTimes(1)
     })
   })
-})
 })
