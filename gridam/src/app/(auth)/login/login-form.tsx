@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { loginAction } from '@/features/auth/login/api/login-action'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import SocialLoginButtons from './login-button'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -78,6 +79,7 @@ export default function LoginForm() {
               className="font-handwritten text-lg rounded-xl h-12 w-full"
             />
           </div>
+          <SocialLoginButtons />
 
           <Button
             type="submit"
