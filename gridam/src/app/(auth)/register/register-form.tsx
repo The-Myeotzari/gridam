@@ -9,6 +9,7 @@ import Button from '@/components/ui/button'
 import { QUERY_KEYS } from '@/constants/query-key'
 import RegisterInput from '@/features/auth/register/components/register-input'
 import { RegisterFormData } from '@/features/auth/register/types/register'
+import { useRouter } from 'next/navigation'
 
 //유효성 검사 - 비밀번호, 이메일, 닉네임
 const PASSWORD_REGEX =
@@ -17,6 +18,7 @@ const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
 const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9]{2,12}$/
 
 export default function RegisterForm() {
+  const router = useRouter()
   const queryClient = useQueryClient()
   const { register, handleSubmit, getValues, formState, reset } = useForm<RegisterFormData>({
     mode: 'onSubmit',
@@ -25,9 +27,11 @@ export default function RegisterForm() {
   //비동기 요청 (로딩, 성공, 실패)
   const mutation = useMutation({
     mutationFn: (data: RegisterFormData) => registerUser(data),
+    retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...QUERY_KEYS.AUTH.ME] })
-      toast.success(MESSAGES.AUTH.SUCCESS.REGISTER)
+      toast.success(MESSAGES.AUTH.SUCCESS.REGISTER_AND_EMAIL)
+      router.push('/login')
       reset()
     },
     onError: (error) => {
