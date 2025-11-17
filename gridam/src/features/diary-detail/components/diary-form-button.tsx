@@ -5,7 +5,11 @@ type WriteButtonProps = {
   isPending?: boolean
 } & ButtonProps
 
-export default function WriteButton({ isPending, className, ...buttonProps }: WriteButtonProps) {
+export default function DiaryFormButton({
+  isPending,
+  className,
+  ...buttonProps
+}: WriteButtonProps) {
   return (
     <Button
       {...buttonProps}
