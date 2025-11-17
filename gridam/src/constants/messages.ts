@@ -7,6 +7,8 @@ export const MESSAGES = {
       LOGOUT: '로그아웃 되었습니다.',
       PASSWORD_RESET: '비밀번호 재설정이 완료되었습니다.',
       PASSWORD_RESET_EMAIL: '비밀번호 재설정 이메일이 발송되었습니다.',
+      REGISTER_AND_EMAIL:
+        '회원가입 요청이 완료되었습니다. 이메일로 전송된 인증 링크를 확인해주세요.',
     },
     ERROR: {
       UNAUTHORIZED_USER: '인증되지 않은 사용자입니다. 로그인 해주세요.',
