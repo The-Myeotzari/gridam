@@ -1,7 +1,7 @@
 import { MESSAGES } from '@/constants/messages'
 import { z } from 'zod'
 
-const PASSWORD_REGEX: RegExp = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\;/']).+$/
+export const PASSWORD_REGEX: RegExp = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\;/']).+$/
 
 export const SignUpSchema = z.object({
   email: z.email().min(1, { error: MESSAGES.AUTH.ERROR.EMPTY_EMAIL }),
@@ -31,3 +31,17 @@ export const ResetCompleteSchema = z.object({
     .min(8, { error: MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH })
     .regex(PASSWORD_REGEX, { error: MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT }),
 })
+
+export const ChangePasswordFormSchema = z
+  .object({
+    password: z.string().min(8),
+    newPassword: z
+      .string()
+      .min(8, MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)
+      .regex(PASSWORD_REGEX, MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: MESSAGES.AUTH.ERROR.WRONG_PASSWORD,
+  })

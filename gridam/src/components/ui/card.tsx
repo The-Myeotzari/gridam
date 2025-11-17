@@ -12,7 +12,7 @@ const ICON_BOX: Record<IconSize, string> = {
 }
 
 const INDENT_VAR: Record<IndentSize, string> = {
-  none: '1rem',
+  none: '1.5rem',
   sm: '4.5rem',
   md: '5rem',
   lg: '5.5rem',
@@ -21,7 +21,6 @@ const INDENT_VAR: Record<IndentSize, string> = {
 interface CardProps extends ComponentPropsWithRef<'div'> {
   children?: ReactNode
   hoverable?: boolean
-  align?: Align
   indent?: IndentSize
 }
 
@@ -70,7 +69,7 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        'pt-4 px-4 text-card-foreground',
+        'pt-6 px-6 text-card-foreground',
         'flex justify-between items-center gap-2',
         className
       )}
@@ -110,7 +109,7 @@ interface CardBodyProps extends ComponentPropsWithRef<'div'> {
 export function CardBody({ className, children, ...props }: CardBodyProps) {
   return (
     <div
-      className={cn('p-4 flex-1 min-w-0 text-card-foreground', 'pl-(--gutter)', className)}
+      className={cn('p-6 flex-1 min-w-0 text-card-foreground', 'pl-(--gutter)', className)}
       {...props}
     >
       {children}
@@ -125,7 +124,7 @@ interface CardFooterProps extends ComponentPropsWithRef<'div'> {
 export function CardFooter({ className, children, ...props }: CardFooterProps) {
   return (
     <div
-      className={cn('p-4 flex items-center text-card-foreground', 'pl-(--gutter)', className)}
+      className={cn('p-6 flex items-center text-card-foreground', 'pl-(--gutter)', className)}
       {...props}
     >
       {children}
