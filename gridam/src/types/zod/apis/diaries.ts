@@ -21,10 +21,9 @@ export const querySchema = z.object({
 })
 
 export const updateSchema = z.object({
-  content: z.string().min(1).max(200).optional(),
-  emoji: z.string().optional(),
-  imageUrl: z.string().url().nullable().optional(),
-  status: z.enum(['draft', 'published']).optional(),
+  content: z.string().min(1).max(2000).optional(),
+  imageUrl: z.string().nullable().optional(),
+  // status: z.enum(['draft', 'published']).optional(),
 })
 
 export const putSchema = z.object({
