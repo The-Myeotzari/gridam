@@ -21,9 +21,8 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
   }
 
   const { email, password } = parsed.data
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
-  const res = await fetch(`${baseUrl}/apis/auth/login`, {
+  const res = await fetch(`/apis/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
