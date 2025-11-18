@@ -1,16 +1,18 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/constants/messages'
 import { Params } from '@/types/params'
 import { DraftUpdateSchema } from '@/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
 // 임시저장 글 1개 조회
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { data, error } = await supabase
       .from('diaries')
@@ -20,11 +22,15 @@ export async function GET(_req: NextRequest, { params }: Params) {
       .eq('status', 'draft')
       .is('deleted_at', null)
       .single()
-    if (error) throw fail(error.message, 404)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
 
     return withCORS(ok(data))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
   }
 }
 
@@ -32,12 +38,13 @@ export async function GET(_req: NextRequest, { params }: Params) {
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+
     const { id } = await params
     const body = await req.json()
 
     const parsed = DraftUpdateSchema.safeParse(body)
-    if (!parsed.success) throw fail(parsed.error.message, 422)
+    if (!parsed.success) throw fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_DATA, 500)
 
     const { content, imageUrl } = parsed.data
 
@@ -54,11 +61,15 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .select('*')
       .single()
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500)
 
     return withCORS(ok(data))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500))
   }
 }
 
@@ -66,7 +77,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { id } = await params
 
@@ -76,12 +87,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .eq('id', id)
       .single()
 
-    if (fetchErr) throw fail(fetchErr.message, 500)
-    if (!existing) throw fail('Diary not found', 404)
-    if (existing.user_id !== user.id) throw fail('Forbidden', 403)
+    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
+    if (!existing) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
     if (existing.deleted_at) {
       // 이미 삭제됨
-      return withCORS(ok(null, 204))
+      return withCORS(ok(MESSAGES.DIARY.ERROR.DRAFT_DELETE_OVER, 204))
     }
 
     const { error } = await supabase
@@ -90,10 +100,14 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .eq('id', id)
       .is('deleted_at', null)
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500)
     return withCORS(ok(null, 204))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500))
   }
 }
 

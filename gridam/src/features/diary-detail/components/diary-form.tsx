@@ -103,11 +103,11 @@ export default function DiaryForm({
 
       <div className="text-center mb-4">
         <span onClick={handleCancel} className="mr-2">
-          <DiaryFormButton label="취소" type="button" />
+          <DiaryFormButton label={MESSAGES.COMMON.CANCEL_BUTTON} type="button" />
         </span>
 
         <DiaryFormButton
-          label={isEdit ? '수정하기' : '저장하기'}
+          label={isEdit ? MESSAGES.COMMON.UPDATE_BUTTON : MESSAGES.COMMON.SAVE_BUTTON}
           type="submit"
           variant="blue"
           isPending={createPending || uploadPending || updatePending}

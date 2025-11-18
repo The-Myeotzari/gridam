@@ -1,14 +1,16 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/constants/messages'
 import { Params } from '@/types/params'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
 // 임시 저장 발생
 export async function POST(_req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { id } = await params
 
@@ -21,10 +23,14 @@ export async function POST(_req: NextRequest, { params }: Params) {
       .select('id,status,published_at,date')
       .single()
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE, 500)
     return withCORS(ok(data))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE, 500))
   }
 }
 

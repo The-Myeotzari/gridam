@@ -32,7 +32,7 @@ export async function getDiaryServer({ year, month, cursor }: GetDiaryParams): P
   query = query.order('published_at', { ascending: false }).limit(DEFAULT_LIMIT + 1)
 
   const { data, error } = await query
-  if (error) throw error
+  if (error) throw MESSAGES.DIARY.ERROR.READ
 
   if (!data || data.length === 0) {
     return { items: [], nextCursor: null, hasMore: false }
