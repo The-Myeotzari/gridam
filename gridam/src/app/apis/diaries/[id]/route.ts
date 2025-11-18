@@ -1,7 +1,7 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { Params } from '@/types/params'
 import { updateSchema } from '@/types/zod/apis/diaries'
-import { getAuthenticatedUser } from '@/utils/getAuthenticatedUser'
+import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest, NextResponse } from 'next/server'
 
 type DiaryPatch = {
@@ -41,17 +41,17 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const parsed = updateSchema.safeParse(body)
     if (!parsed.success) throw fail(parsed.error.message, 422)
 
-    const { content, emoji, imageUrl, status } = parsed.data
+    // status
+    const { content, imageUrl } = parsed.data
     const patch: DiaryPatch = {
       ...(content !== undefined && { content }),
-      ...(emoji !== undefined && { emoji }),
       ...(imageUrl !== undefined && { image_url: imageUrl }),
     }
 
-    if (status) {
-      patch.status = status
-      patch.published_at = status === 'published' ? new Date().toISOString() : null
-    }
+    // if (status) {
+    //   patch.status = status
+    //   patch.published_at = status === 'published' ? new Date().toISOString() : null
+    // }
 
     const { error } = await supabase.from('diaries').update(patch).eq('id', id)
     if (error) throw fail(error.message, 500)

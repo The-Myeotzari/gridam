@@ -8,6 +8,7 @@ export const QUERY_KEYS = {
     RESET_REQUEST: ['auth', 'reset', 'request'] as const,
     RESET_COMPLETE: ['auth', 'reset', 'complete'] as const,
     ME: ['auth', 'me'] as const,
+    CHANGE_PASSWORD: ['auth', 'change'] as const
   },
 
   // Me 관련
@@ -16,9 +17,10 @@ export const QUERY_KEYS = {
   // 다이어리
   DIARY: {
     ROOT: ['diary'] as const,
-    LIST: ['diary', 'list'] as const,
+    LIST: (year: string, month: string) => ['diary', 'list', { year, month }] as const,
     DETAIL: (id: string) => ['diary', id] as const,
     CREATE: ['diary', 'create'] as const,
+    UPDATE: ['diary', 'update'] as const,
   },
 
   //Drafts 관련

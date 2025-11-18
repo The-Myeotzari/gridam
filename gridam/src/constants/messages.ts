@@ -7,6 +7,8 @@ export const MESSAGES = {
       LOGOUT: '로그아웃 되었습니다.',
       PASSWORD_RESET: '비밀번호 재설정이 완료되었습니다.',
       PASSWORD_RESET_EMAIL: '비밀번호 재설정 이메일이 발송되었습니다.',
+      REGISTER_AND_EMAIL:
+        '회원가입 요청이 완료되었습니다. 이메일로 전송된 인증 링크를 확인해주세요.',
     },
     ERROR: {
       UNAUTHORIZED_USER: '인증되지 않은 사용자입니다. 로그인 해주세요.',
@@ -23,8 +25,11 @@ export const MESSAGES = {
       INVALID_PASSWORD_LENGTH: '비밀번호는 8자 이상이어야 합니다.',
       INVALID_PASSWORD_FORMAT:
         '비밀번호에는 숫자, 영문 대·소문자, 특수문자가 각각 최소 1개 이상 포함되어야 합니다.',
-      PASSWORD_RESET: '비밀번호 재설정에 실패하었습니다.',
+      PASSWORD_RESET: '비밀번호 재설정에 실패했습니다. 다시 시도해주세요.',
       INVALID_EMAIL_FORMAT: '이메일 형식이 올바르지 않습니다',
+      INVALID_NICKNAME_FORMAT: '닉네임은 2~12자 이내의 한글, 영문, 숫자로 입력해주세요.',
+      EMAIL_ALREADY_IN_USE: '이미 사용 중인 이메일입니다.',
+      REGISTER_TOO_MANY_REQUEST: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
     },
   },
 
@@ -33,11 +38,13 @@ export const MESSAGES = {
       CREATE: '일기가 저장되었습니다!',
       UPDATE: '일기가 수정되었습니다!',
       DELETE: '일기가 성공적으로 삭제되었습니다.',
+      READ_NO_DATA: '아직 이 달에 작성된 일기가 없어요.',
     },
     ERROR: {
       CREATE: '일기 저장에 실패했습니다.',
       UPDATE: '일기 수정에 실패했습니다.',
       DELETE: '일기 삭제에 실패했습니다.',
+      READ: '일기 조회에 실패했습니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',
