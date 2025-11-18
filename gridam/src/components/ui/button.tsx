@@ -1,15 +1,13 @@
-'use client'
 import cn from '@/utils/cn'
 
 //색상, 크기 옵션의 타입 지정
 type Variant = 'basic' | 'blue' | 'roundedBasic' | 'roundedRed' | 'gradient'
 type Size = 'default' | 'sm' | 'lg' | 'icon'
 
-type ButtonProps = {
+export type ButtonProps = {
   type?: 'button' | 'submit' | 'reset'
   variant?: Variant
   size?: Size
-  onClick?: () => void
   className?: string
   label: string | React.ReactNode
   isActive?: boolean
@@ -46,7 +44,6 @@ export default function Button({
   type = 'button',
   variant = 'basic',
   size = 'default',
-  onClick,
   className = '',
   label,
   isActive = false,
@@ -61,7 +58,6 @@ export default function Button({
     <>
       <button
         type={type}
-        onClick={onClick}
         className={cn(
           base,
           VARIANT_STYLE[variant],
