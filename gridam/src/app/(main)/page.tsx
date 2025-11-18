@@ -29,10 +29,8 @@ export default async function Home({ searchParams }: Props) {
   return (
     <div className="flex flex-col gap-4 p-4 mt-10 text-center">
       <div className="mb-8 text-center animate-fade-in">
-        <h1 className="font-handwritten text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
-        <p className="font-handwritten text-xl text-muted-foreground">
-          모두의 하루를 담은 그림 일기
-        </p>
+        <h1 className="font-bold text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
+        <p className="font-bold text-xl text-muted-foreground">모두의 하루를 담은 그림 일기</p>
       </div>
 
       <Month year={year} month={month} />
