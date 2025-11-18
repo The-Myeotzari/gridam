@@ -76,9 +76,9 @@ export default async function Page({ searchParams }: PageProps) {
         <div className="mt-6 text-center">
           <div className="font-handwritten text-base text-muted-foreground">
             계정이 없으신가요?{' '}
-            <a href="/signup" className="text-primary hover:underline">
+            <Link href="/signup" className="text-primary hover:underline">
               회원가입
-            </a>
+            </Link>
           </div>
         </div>
       </Card>
