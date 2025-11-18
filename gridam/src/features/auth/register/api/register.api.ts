@@ -3,9 +3,7 @@ import { api } from '@/lib/api'
 import { AxiosError } from 'axios'
 import { RegisterFormData } from '@/features/auth/register/types/register'
 // api 불러오기
-export async function registerUser(
-  data: Pick<RegisterFormData, 'nickname' | 'email' | 'password'>
-) {
+export async function registerUser(data: Omit<RegisterFormData, 'comfirmPassword'>) {
   try {
     const res = await api.post('/auth/register', data)
     return res.data
