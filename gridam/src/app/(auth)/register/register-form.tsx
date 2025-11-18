@@ -4,12 +4,11 @@ import { FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
 import { MESSAGES } from '@/constants/messages'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { toast } from '@/store/toast-store'
-import { registerUser } from '@/features/auth/register/api/register.api'
 import Button from '@/components/ui/button'
-import { QUERY_KEYS } from '@/constants/query-key'
 import RegisterInput from '@/features/auth/register/components/register-input'
 import { RegisterFormData } from '@/features/auth/register/types/register'
 import { useRouter } from 'next/navigation'
+import registerAction from '@/features/auth/register/api/register-action'
 
 //유효성 검사 - 비밀번호, 이메일, 닉네임
 const PASSWORD_REGEX =
@@ -23,22 +22,7 @@ export default function RegisterForm() {
   const { register, handleSubmit, getValues, formState, reset } = useForm<RegisterFormData>({
     mode: 'onSubmit',
   })
-
-  //비동기 요청 (로딩, 성공, 실패)
-  const mutation = useMutation({
-    mutationFn: (data: RegisterFormData) => registerUser(data),
-    retry: false,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [...QUERY_KEYS.AUTH.ME] })
-      toast.success(MESSAGES.AUTH.SUCCESS.REGISTER_AND_EMAIL)
-      router.push('/login')
-      reset()
-    },
-    onError: (error) => {
-      toast.error(error.message || MESSAGES.AUTH.ERROR.REGISTER)
-    },
-  })
-
+  const mutation = useMutation(registerAction({ queryClient, router, reset }))
   //유효성 통과 시
   const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
     mutation.mutate(data)
