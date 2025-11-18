@@ -30,24 +30,34 @@ export default function SocialLoginButtons() {
         type="button"
         onClick={handleGoogle}
         className="w-full h-12 rounded-full border border-[#F2F2F2] bg-[#F2F2F2]
-                   flex items-center justify-center gap-3"
+               flex items-center justify-center gap-3"
       >
-        <Image src="/image/google-login.png" alt="Google" width={190} height={40} />
+        <div className="relative" style={{ width: 190, height: 40 }}>
+          <Image
+            src="/image/google-login.png"
+            alt="Google"
+            fill
+            className="object-contain"
+            sizes="190px"
+          />
+        </div>
       </button>
 
       <button
         type="button"
         onClick={handleKakao}
         className="w-full h-12 rounded-full bg-[#FEE500]
-                   flex items-center justify-center px-4"
+               flex items-center justify-center px-4"
       >
-        <Image
-          src="/image/kakao-login.png"
-          alt="Login with Kakao"
-          width={320}
-          height={48}
-          className="h-full w-auto"
-        />
+        <div className="relative" style={{ width: 190, height: 48 }}>
+          <Image
+            src="/image/kakao-login.png"
+            alt="Login with Kakao"
+            fill
+            className="object-contain"
+            sizes="190px"
+          />
+        </div>
       </button>
     </div>
   )
