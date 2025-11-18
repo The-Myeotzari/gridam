@@ -1,5 +1,6 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/constants/messages'
 import { getDiaryServer } from '@/features/feed/api/get-diary.server'
 import { createSchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
@@ -28,7 +29,28 @@ export async function POST(req: NextRequest) {
 
     const { content, date, emoji, imageUrl, meta } = parsed.data
 
-    // 1) Create diary
+    // 중복체크
+    const start = new Date(`${date}T00:00:00.000Z`).toISOString()
+    const end = new Date(`${date}T23:59:59.999Z`).toISOString()
+
+    const { data: existingDiary, error: existingError } = await supabase
+      .from('diaries')
+      .select('id')
+      .eq('user_id', user.id)
+      .gte('created_at', start)
+      .lte('created_at', end)
+      .maybeSingle()
+
+    if (existingError) {
+      throw fail(existingError.message, 500)
+    }
+
+    if (existingDiary) {
+      return withCORS(
+        fail(MESSAGES.DIARY.ERROR.CREATE_OVER, 409) // 409 Conflict
+      )
+    }
+
     const { data: diary, error } = await supabase
       .from('diaries')
       .insert({
@@ -55,14 +77,14 @@ export async function POST(req: NextRequest) {
     }
 
     return withCORS(ok({ id: diary.id }, 201))
-  } catch (err: unknown) {
+  } catch (err) {
     if (err instanceof NextResponse) {
       return withCORS(err)
     }
     if (err instanceof Error) {
       return withCORS(fail(err.message, 500))
     }
-    return withCORS(fail('Unknown error', 500))
+    return withCORS(fail('', 500))
   }
 }
 

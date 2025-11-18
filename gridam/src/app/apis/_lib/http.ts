@@ -1,7 +1,10 @@
-export const ok = (data: unknown, init: number = 200) =>
-  Response.json({ ok: true, data }, { status: init })
-export const fail = (message: string, init: number = 400) =>
-  Response.json({ ok: false, message }, { status: init })
+import { NextResponse } from 'next/server'
+
+export const ok = (data: unknown, init = 200) =>
+  NextResponse.json({ ok: true, data }, { status: init })
+
+export const fail = (message: string, init = 400) =>
+  NextResponse.json({ ok: false, message }, { status: init })
 
 export const withCORS = (resp: Response) => {
   resp.headers.set('Access-Control-Allow-Origin', '*')

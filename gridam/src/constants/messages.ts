@@ -42,6 +42,7 @@ export const MESSAGES = {
     },
     ERROR: {
       CREATE: '일기 저장에 실패했습니다.',
+      CREATE_OVER: '오늘 일기가 이미 생성되었습니다.',
       UPDATE: '일기 수정에 실패했습니다.',
       DELETE: '일기 삭제에 실패했습니다.',
       READ: '일기 조회에 실패했습니다.',
