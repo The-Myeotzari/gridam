@@ -1,18 +1,16 @@
+// TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { Params } from '@/types/params'
-import getSupabaseServer from '@/utils/supabase/server'
+import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 
+// 임시 저장 발생
 export async function POST(_req: NextRequest, { params }: Params) {
   try {
-    const { id } = await params
-    const supabase = await getSupabaseServer()
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
 
-    const {
-      data: { user },
-      error: authErr,
-    } = await supabase.auth.getUser()
-    if (authErr || !user) return withCORS(fail('UNAUTHORIZED', 401))
+    const { id } = await params
 
     const { data, error } = await supabase
       .from('diaries')
@@ -23,12 +21,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
       .select('id,status,published_at,date')
       .single()
 
-    if (error?.code === 'PGRST116') return withCORS(fail('Draft not found', 404))
-    if (error && /duplicate key value|unique/i.test(error.message)) {
-      return withCORS(fail('You already published a diary for this date.', 409))
-    }
-    if (error) return withCORS(fail('Failed to publish', 500))
-
+    if (error) throw fail(error.message, 500)
     return withCORS(ok(data))
   } catch {
     return withCORS(fail('Unexpected error', 500))

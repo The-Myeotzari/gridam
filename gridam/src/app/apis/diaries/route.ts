@@ -1,3 +1,4 @@
+// TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { getDiaryServer } from '@/features/feed/api/get-diary.server'
 import { createSchema } from '@/types/zod/apis/diaries'
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
     const body = await req.json()
 
     const parsed = createSchema.safeParse(body)
@@ -32,10 +34,11 @@ export async function POST(req: NextRequest) {
       .insert({
         user_id: user.id,
         content,
-        date,
+        date, // 제거 필요 - created_at과 동일
         emoji,
         image_url: imageUrl ?? null,
-        status: 'draft',
+        status: 'published',
+        published_at: new Date().toISOString(),
       })
       .select('id')
       .single()
@@ -45,7 +48,7 @@ export async function POST(req: NextRequest) {
     if (meta) {
       const { error: metaErr } = await supabase.from('metadata').insert({
         diary_id: diary.id,
-        date,
+        date, // 제거 필요 - created_at과 동일
         timezone: meta.timezone, // 시간대
       })
       if (metaErr) throw fail(metaErr.message, 500)
