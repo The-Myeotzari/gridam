@@ -8,10 +8,11 @@ import Form from 'next/form'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useFormState } from 'react-dom'
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect } from 'react'
 import Toast from '@/components/ui/toast'
 import { email } from 'zod'
 import { toast } from '@/store/toast-store'
+import { MESSAGES } from '@/constants/messages'
 
 interface ForgotPasswordProps {
   isSubmitted: boolean //URL 쿼리에서 해석된 값
@@ -31,19 +32,23 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotPass
 
   // 에러 토스트
   useEffect(() => {
-    if (error) {
-      toast.error(error)
+    if (state.error) {
+      toast.error(state.error)
     }
-  }, [error])
+  }, [state.error])
   //state.error는 api요청 실패 시 에러 메시지를 담고, 성공 시에는 'redirect가 발생함.
   // ✅ 여기에서 클라이언트 검증 + 서버 액션 래핑
   const [state, formAction] = useActionState(
     async (prevState: { error: string }, formData: FormData) => {
-      const emailValue = String(formData.get('email') || '')
+      const emailValue = (formData.get('email') || '') as string
 
+      if (!emailValue) {
+        toast.error(MESSAGES.AUTH.ERROR.EMPTY_EMAIL)
+        return { error: MESSAGES.AUTH.ERROR.EMPTY_EMAIL }
+      }
       if (!EMAIL_REGEX.test(emailValue)) {
-        const msg = '올바른 이메일 형식이 아닙니다.'
-        toast.error(msg)
+        toast.error(MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT)
+        return { error: MESSAGES.AUTH.ERROR.EMPTY_EMAIL }
       }
 
       return await forgetAction(prevState, formData)
