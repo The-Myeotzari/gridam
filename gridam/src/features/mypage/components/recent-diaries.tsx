@@ -19,7 +19,6 @@ export default function RecentDiaries({ diaries }: RecentDiariesProps) {
 
   const handleDelete = async () => {
     // 실제 삭제 API 호출
-    console.log('삭제 모달 오픈')
   }
 
   return (
