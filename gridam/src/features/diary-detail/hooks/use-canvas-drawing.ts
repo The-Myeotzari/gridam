@@ -1,16 +1,56 @@
 'use client'
 
-import { useCanvasStore, useSetCanvas } from '@/features/diary-detail/store/canvas-store'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-export function useCanvasDrawing() {
+export function useCanvasDrawing(initialImage?: string | null) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const isDrawingRef = useRef(false)
 
-  const { color, isEraser, toggleEraser, setColor, pushSnapshot, undo, clearHistory } =
-    useCanvasStore()
+  // 상태
+  const [canvasImage, setCanvasImage] = useState<string | null>(null)
+  const [color, setColor] = useState('var(--color-canva-red)')
+  const [isEraser, setIsEraser] = useState(false)
+  const [history, setHistory] = useState<ImageData[]>([])
+  const maxHistory = 50
 
+  const toggleEraser = () => setIsEraser((v) => !v)
+
+  // 저장
+  const saveCanvasImage = useCallback(() => {
+    const canvas = canvasRef.current
+    if (canvas) setCanvasImage(canvas.toDataURL('image/png'))
+  }, [])
+
+  // snapshot 저장
+  const pushSnapshot = useCallback((snap: ImageData) => {
+    setHistory((prev) => {
+      const next = [...prev, snap]
+      if (next.length > maxHistory) next.shift()
+      return next
+    })
+  }, [])
+
+  // undo
+  const handleUndo = useCallback(() => {
+    setHistory((prev) => {
+      if (prev.length <= 1) return prev
+
+      const next = prev.slice(0, -1)
+      const last = next[next.length - 1]
+
+      const ctx = ctxRef.current
+      if (ctx && last) ctx.putImageData(last, 0, 0)
+
+      saveCanvasImage()
+      return next
+    })
+  }, [saveCanvasImage])
+
+  // clear
+  const clearHistory = () => setHistory([])
+
+  // css 색상 해석
   const resolveColor = useCallback((input: string): string => {
     if (!input.startsWith('var(')) return input
     const name = input.slice(4, -1).trim()
@@ -22,8 +62,9 @@ export function useCanvasDrawing() {
     (e: React.PointerEvent<HTMLCanvasElement>) => {
       const ctx = ctxRef.current
       if (!ctx) return
-      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+
       isDrawingRef.current = true
+      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
 
       if (isEraser) {
         ctx.globalCompositeOperation = 'destination-out'
@@ -45,6 +86,7 @@ export function useCanvasDrawing() {
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     const ctx = ctxRef.current
     if (!ctx || !isDrawingRef.current) return
+
     const { offsetX, offsetY } = e.nativeEvent
     ctx.lineTo(offsetX, offsetY)
     ctx.stroke()
@@ -52,37 +94,23 @@ export function useCanvasDrawing() {
 
   const onPointerUpOrLeave = useCallback(
     (e?: React.PointerEvent<HTMLCanvasElement>) => {
-      const c = canvasRef.current
+      const canvas = canvasRef.current
       const ctx = ctxRef.current
-      if (!c || !ctx || !isDrawingRef.current) return
-      if (e) (e.target as HTMLElement).releasePointerCapture(e.pointerId)
+      if (!canvas || !ctx || !isDrawingRef.current) return
+
       isDrawingRef.current = false
+      if (e) (e.target as HTMLElement).releasePointerCapture(e.pointerId)
+
       ctx.closePath()
-      const snap = ctx.getImageData(0, 0, c.width, c.height)
+
+      const snap = ctx.getImageData(0, 0, canvas.width, canvas.height)
       pushSnapshot(snap)
+      saveCanvasImage()
     },
-    [pushSnapshot]
+    [pushSnapshot, saveCanvasImage]
   )
 
-  // undo/clear
-  const handleUndo = useCallback(() => {
-    const ctx = ctxRef.current
-    const c = canvasRef.current
-    if (!c || !ctx) return
-    const last = undo()
-    if (last) ctx.putImageData(last, 0, 0)
-  }, [undo])
-
-  const clearCanvas = useCallback(() => {
-    const c = canvasRef.current
-    const ctx = ctxRef.current
-    if (!c || !ctx) return
-    ctx.clearRect(0, 0, c.width, c.height)
-    clearHistory()
-    const blank = ctx.getImageData(0, 0, c.width, c.height)
-    pushSnapshot(blank)
-  }, [clearHistory, pushSnapshot])
-
+  // setup
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -105,53 +133,63 @@ export function useCanvasDrawing() {
     ctxRef.current = ctx
   }, [])
 
+  // 초기 세팅 1번 캔버스 만들기
   useEffect(() => {
     setupCanvas()
-    {
-      const c = canvasRef.current
-      const ctx = ctxRef.current
-      if (c && ctx) {
-        const snap = ctx.getImageData(0, 0, c.width, c.height)
-        pushSnapshot(snap)
-      }
-    }
 
-    const onResize = () => {
-      const c = canvasRef.current
-      const ctx = ctxRef.current
-      if (!c || !ctx) return
-      const prev = ctx.getImageData(0, 0, c.width, c.height)
-      setupCanvas()
-      try {
-        ctxRef.current?.putImageData(prev, 0, 0)
-      } catch {
-        const blank = ctx.getImageData(0, 0, c.width, c.height)
-        pushSnapshot(blank)
-      }
-    }
-
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [pushSnapshot, setupCanvas])
-
-  const setCanvas = useSetCanvas()
-  const getCanvasImage = () => {
     const canvas = canvasRef.current
-    const canvasImage = canvas ? canvas.toDataURL('image/png') : null
-    setCanvas(canvasImage)
-  }
+    const ctx = ctxRef.current
+    if (canvas && ctx) {
+      const snap = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      pushSnapshot(snap)
+    }
+  }, [setupCanvas, pushSnapshot])
+
+  // 캔버스 만들어진 이후에 세팅 진행
+  useEffect(() => {
+    if (!initialImage) return
+
+    const canvas = canvasRef.current
+    const ctx = ctxRef.current
+    if (!canvas || !ctx) return
+
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src = initialImage
+
+    img.onload = () => {
+      const canvas = canvasRef.current
+      const ctx = ctxRef.current
+      if (!canvas || !ctx) return
+
+      const cssW = canvas.clientWidth
+      const cssH = canvas.clientHeight
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(img, 0, 0, cssW, cssH)
+    }
+  }, [initialImage, canvasRef.current])
 
   return {
     canvasRef,
+    canvasImage,
+    setCanvasImage,
+
+    // 상태
     color,
     isEraser,
+    history,
+
+    // 액션
     setColor,
     toggleEraser,
     handleUndo,
-    clearCanvas,
+    clearHistory,
+    saveCanvasImage,
+
+    // 그림 이벤트
     onPointerDown,
     onPointerMove,
     onPointerUpOrLeave,
-    getCanvasImage,
   }
 }

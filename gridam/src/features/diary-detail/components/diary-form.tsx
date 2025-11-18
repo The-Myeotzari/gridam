@@ -6,14 +6,13 @@ import { MESSAGES } from '@/constants/messages'
 import { postDiaryAction } from '@/features/diary-detail/api/action/post-diary-action'
 import { usePostDiary } from '@/features/diary-detail/api/queries/use-post-diary'
 import { usePostDiaryImage } from '@/features/diary-detail/api/queries/use-post-diary-image'
+import { useUpdateDiary } from '@/features/diary-detail/api/queries/use-update-diary'
 import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-container'
 import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
-import { useCanvas, useSetCanvas } from '@/features/diary-detail/store/canvas-store'
+import { useDiaryForm } from '@/features/diary-detail/hooks/use-diary-form'
 import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect } from 'react'
-import { useUpdateDiary } from '../api/queries/use-update-diary'
-import { useDiaryForm } from '../hooks/use-diary-form'
+import { useCallback, useEffect, useState } from 'react'
 
 type props = {
   dateValue: string
@@ -35,9 +34,7 @@ export default function DiaryForm({
   const router = useRouter()
 
   const { date, text, setText, setDate } = useDiaryForm()
-
-  const setCanvas = useSetCanvas()
-  const canvas = useCanvas()
+  const [canvas, setCanvas] = useState<string | null>(initialImage ?? null)
 
   const { mutate: createDiary, isPending: createPending } = usePostDiary()
   const { mutateAsync: uploadImage, isPending: uploadPending } = usePostDiaryImage()
@@ -45,13 +42,8 @@ export default function DiaryForm({
 
   useEffect(() => {
     setDate(dateValue)
-    if (initialContent) {
-      setText(initialContent)
-    }
-    if (initialImage) {
-      setCanvas(initialImage)
-    }
-  }, [dateValue, initialContent, initialImage, setDate, setText, setCanvas])
+    if (initialContent) setText(initialContent)
+  }, [dateValue, initialContent, setDate, setText])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,6 +61,7 @@ export default function DiaryForm({
     await postDiaryAction({
       date,
       text,
+      canvas: canvas ?? '',
       weather,
       createIsPending: createPending,
       uploadIsPending: uploadPending,
@@ -102,7 +95,7 @@ export default function DiaryForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <CanvasContainer initialImage={initialImage} />
+      <CanvasContainer initialImage={initialImage} onChange={(img) => setCanvas(img)} />
 
       <section className="p-5">
         <Textarea value={text} onChange={(v) => setText(v)} />
