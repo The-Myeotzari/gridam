@@ -1,5 +1,4 @@
 import { useCanvasStore } from '@/features/diary-detail/store/canvas-store'
-import { useWriteStore } from '@/features/diary-detail/store/write-store'
 import type { CreateDiaryPayload, DiaryImageData } from '@/features/diary-detail/types/diary'
 import { getDataURLToBlob } from '@/utils/get-data-url-to-blob'
 
@@ -10,6 +9,7 @@ type UploadImageArgs = {
 
 type PostDiaryActionParams = {
   date: string
+  text: string
   weather: string
   createIsPending: boolean
   uploadIsPending: boolean
@@ -19,6 +19,7 @@ type PostDiaryActionParams = {
 
 export async function postDiaryAction({
   date,
+  text,
   weather,
   createIsPending,
   uploadIsPending,
@@ -27,7 +28,6 @@ export async function postDiaryAction({
 }: PostDiaryActionParams) {
   if (createIsPending || uploadIsPending) return
 
-  const textState = useWriteStore.getState()
   const canvasState = useCanvasStore.getState()
 
   let imageUrl: string | null = null
@@ -42,7 +42,7 @@ export async function postDiaryAction({
   }
 
   createDiary({
-    content: textState.text,
+    content: text,
     date,
     imageUrl,
     emoji: weather,

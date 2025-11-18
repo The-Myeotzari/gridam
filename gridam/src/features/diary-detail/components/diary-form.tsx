@@ -9,16 +9,15 @@ import { usePostDiaryImage } from '@/features/diary-detail/api/queries/use-post-
 import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-container'
 import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
 import { useCanvas, useSetCanvas } from '@/features/diary-detail/store/canvas-store'
-import { useSetDate, useSetText, useText } from '@/features/diary-detail/store/write-store'
 import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { useUpdateDiary } from '../api/queries/use-update-diary'
+import { useDiaryForm } from '../hooks/use-diary-form'
 
 type props = {
   dateValue: string
   weather: string
-
   isEdit?: boolean
   diaryId?: string
   initialContent?: string
@@ -35,10 +34,9 @@ export default function DiaryForm({
 }: props) {
   const router = useRouter()
 
-  const setDate = useSetDate()
-  const setText = useSetText()
+  const { date, text, setText, setDate } = useDiaryForm()
+
   const setCanvas = useSetCanvas()
-  const text = useText()
   const canvas = useCanvas()
 
   const { mutate: createDiary, isPending: createPending } = usePostDiary()
@@ -69,7 +67,8 @@ export default function DiaryForm({
     }
 
     await postDiaryAction({
-      date: dateValue,
+      date,
+      text,
       weather,
       createIsPending: createPending,
       uploadIsPending: uploadPending,
