@@ -1,10 +1,15 @@
+'use client'
+
 import Button from '@/components/ui/button'
 import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
 import { MESSAGES } from '@/constants/messages'
+import { useDeleteDiary } from '@/features/feed/api/queries/use-delete-diary'
 import { modalStore } from '@/store/modal-store'
 import { useCallback } from 'react'
 
 export default function useDeleteDiaryModal(diaryId: string) {
+  const { mutateAsync } = useDeleteDiary()
+
   const openDeleteModal = useCallback(() => {
     modalStore.open((close) => (
       <>
@@ -20,10 +25,10 @@ export default function useDeleteDiaryModal(diaryId: string) {
           <span onClick={close}>
             <Button label={MESSAGES.COMMON.CANCEL_BUTTON} />
           </span>
-          <span
-            onClick={() => {
-              console.log(diaryId, ' 삭제하기!')
 
+          <span
+            onClick={async () => {
+              await mutateAsync(diaryId)
               close()
             }}
           >
@@ -36,7 +41,7 @@ export default function useDeleteDiaryModal(diaryId: string) {
         </ModalFooter>
       </>
     ))
-  }, [diaryId])
+  }, [diaryId, mutateAsync])
 
   return openDeleteModal
 }
