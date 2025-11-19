@@ -1,4 +1,4 @@
-import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
+import DiaryFormButton from '@/features/diary/components/diary-form-button'
 import { MESSAGES } from '@/shared/constants/messages'
 
 type props = {
@@ -6,13 +6,11 @@ type props = {
   onClick: () => void
 }
 
-// 임시 저장 버튼 여기에 추가할까....
-// 임시 수정의 경우도 여기인거 같은데..
-export default function DiarySaveButton({ isPending, onClick }: props) {
+export default function DiaryUpdateButton({ isPending, onClick }: props) {
   return (
     <span onClick={onClick}>
       <DiaryFormButton
-        label={MESSAGES.COMMON.SAVE_BUTTON}
+        label={MESSAGES.COMMON.UPDATE_BUTTON}
         type="submit"
         variant="blue"
         isPending={isPending}

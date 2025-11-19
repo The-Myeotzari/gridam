@@ -1,4 +1,4 @@
-import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
+import DiaryFormButton from '@/features/diary/components/diary-form-button'
 import { MESSAGES } from '@/shared/constants/messages'
 import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
 import { modalStore } from '@/store/modal-store'

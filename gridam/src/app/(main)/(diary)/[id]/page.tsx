@@ -1,20 +1,7 @@
-import DiaryForm from '@/features/diary-detail/components/diary-form'
-import DiaryLayout from '@/features/diary-detail/components/diary-layout'
-import { MESSAGES } from '@/shared/constants/messages'
+import { getDiary } from '@/app/(main)/(diary)/[id]/action'
+import DiaryForm from '@/features/diary/components/diary-form'
+import DiaryLayout from '@/features/diary/components/diary-layout'
 import { formatDate } from '@/shared/utils/format-date'
-import getSupabaseServer from '@/shared/utils/supabase/server'
-import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
-
-async function getDiary(id: string) {
-  const supabase = getSupabaseServer()
-  const { data, error } = await (await supabase).from('diaries').select('*').eq('id', id).single()
-  if (error) throw new Error(MESSAGES.DIARY.ERROR.READ)
-  if (data?.image_url) {
-    const signed = await withSignedImageUrls(await supabase, [data])
-    return signed[0]
-  }
-  return data
-}
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

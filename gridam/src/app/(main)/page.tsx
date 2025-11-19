@@ -1,43 +1,26 @@
-import { getDiaryServer } from '@/features/feed/api/get-diary.server'
+import { fetchDiaryPage } from '@/app/(main)/action'
 import FeedList from '@/features/feed/components/feed-list'
-import Month from '@/features/feed/components/month'
-import { type DiarySearchParams, resolveYearMonth } from '@/features/feed/utils/diary-date'
-import { QUERY_KEYS } from '@/shared/constants/query-key'
+import { resolveYearMonth } from '@/features/feed/utils/diary-date'
 import Button from '@/shared/ui/button'
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
 
-type Props = {
-  searchParams: Promise<DiarySearchParams>
+type PageProps = {
+  searchParams: Promise<Record<string, string | undefined>>
 }
 
-export default async function Home({ searchParams }: Props) {
+export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams
   const { year, month } = resolveYearMonth(params)
 
-  const { items, nextCursor, hasMore } = await getDiaryServer({ year, month })
-
-  const queryClient = new QueryClient()
-  queryClient.setQueryData(QUERY_KEYS.DIARY.LIST(year, month), {
-    pages: [{ items, nextCursor, hasMore }],
-    pageParams: [null],
-  })
-
-  const dehydratedState = dehydrate(queryClient)
+  const firstPage = await fetchDiaryPage({ year, month, cursor: null })
 
   return (
     <div className="flex flex-col gap-4 p-4 mt-10 text-center">
-      <div className="mb-8 text-center animate-fade-in">
-        <h1 className="font-bold text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
-        <p className="font-bold text-xl text-muted-foreground">모두의 하루를 담은 그림 일기</p>
-      </div>
+      <h1 className="font-bold text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
+      <p className="font-bold text-xl text-muted-foreground">모두의 하루를 담은 그림 일기</p>
 
-      <Month year={year} month={month} />
-
-      <HydrationBoundary state={dehydratedState}>
-        <FeedList year={year} month={month} initialDiaries={items} />
-      </HydrationBoundary>
+      <FeedList year={year} month={month} initialPage={firstPage} />
 
       <Link href="/write">
         <Button
