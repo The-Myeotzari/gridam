@@ -2,16 +2,16 @@
 // 어떻게 최소한의 클라이언트로 만들지
 
 import Textarea from '@/components/ui/textarea'
-import { MESSAGES } from '@/constants/messages'
 import { postDiaryAction } from '@/features/diary-detail/api/action/post-diary-action'
 import { usePostDiary } from '@/features/diary-detail/api/queries/use-post-diary'
 import { usePostDiaryImage } from '@/features/diary-detail/api/queries/use-post-diary-image'
 import { useUpdateDiary } from '@/features/diary-detail/api/queries/use-update-diary'
 import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-container'
-import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
 import { useDiaryForm } from '@/features/diary-detail/hooks/use-diary-form'
 import { useEffect, useState } from 'react'
 import DiaryCancelButton from './buttons/diary-cancel-button'
+import DiarySaveButton from './buttons/diary-save-button'
+import DiaryUpdateButton from './buttons/diary-update-button'
 
 type props = {
   dateValue: string
@@ -79,13 +79,11 @@ export default function DiaryForm({
       <div className="text-center mb-4">
         <DiaryCancelButton />
 
-        <DiaryFormButton
-          label={isEdit ? MESSAGES.COMMON.UPDATE_BUTTON : MESSAGES.COMMON.SAVE_BUTTON}
-          type="submit"
-          variant="blue"
-          isPending={createPending || uploadPending || updatePending}
-          className="ml-2"
-        />
+        {isEdit ? (
+          <DiaryUpdateButton updatePending={updatePending} uploadPending={uploadPending} />
+        ) : (
+          <DiarySaveButton createPending={createPending} uploadPending={uploadPending} />
+        )}
       </div>
     </form>
   )
