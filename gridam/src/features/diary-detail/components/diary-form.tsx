@@ -1,17 +1,17 @@
 'use client'
-// 어떻게 최소한의 클라이언트로 만들지
 
+import { saveDiaryAction, updateDiaryAction } from '@/app/(main)/(diary)/write/action'
 import DiaryCancelButton from '@/features/diary-detail/components/buttons/diary-cancel-button'
 import DiarySaveButton from '@/features/diary-detail/components/buttons/diary-save-button'
 import DiaryUpdateButton from '@/features/diary-detail/components/buttons/diary-update-button'
 import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-container'
-import { useDiaryForm } from '@/features/diary-detail/hooks/use-diary-form'
-import { useDiarySaveButton } from '@/features/diary-detail/hooks/use-diary-save-button'
-import { useDiaryUpdateButton } from '@/features/diary-detail/hooks/use-diary-update-button'
+import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
-import { useEffect, useState } from 'react'
+import { toast } from '@/store/toast-store'
+import { useRouter } from 'next/navigation'
+import { useOptimistic, useState, useTransition } from 'react'
 
-type props = {
+type DiaryFormProps = {
   dateValue: string
   weather?: string
   isEdit?: boolean
@@ -27,53 +27,86 @@ export default function DiaryForm({
   diaryId,
   initialContent,
   initialImage,
-}: props) {
-  const { date, text, setText, setDate } = useDiaryForm()
+}: DiaryFormProps) {
+  const router = useRouter()
+
+  const [text, setText] = useState(initialContent ?? '')
   const [canvas, setCanvas] = useState<string | null>(initialImage ?? null)
 
-  const saveButton = useDiarySaveButton()
-  const updateButton = useDiaryUpdateButton()
+  const [optimisticText, updateOptimisticText] = useOptimistic<string, string>(
+    text,
+    (_, next) => next
+  )
 
-  useEffect(() => {
-    setDate(dateValue)
-    if (initialContent) setText(initialContent)
-  }, [dateValue, initialContent, setDate, setText])
+  const [isPending, startTransition] = useTransition()
+
+  const handleSave = () => {
+    startTransition(async () => {
+      try {
+        updateOptimisticText(text)
+
+        const res = await saveDiaryAction({
+          date: dateValue,
+          content: text,
+          imageUrl: canvas,
+          emoji: weather,
+          meta: {
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
+        })
+
+        if (res.ok) {
+          toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
+          router.push('/')
+        } else {
+          toast.error(MESSAGES.DIARY.ERROR.CREATE)
+        }
+      } catch (e) {
+        toast.error(MESSAGES.DIARY.ERROR.CREATE)
+      }
+    })
+  }
+
+  const handleUpdate = () => {
+    if (!diaryId) return
+
+    startTransition(async () => {
+      try {
+        updateOptimisticText(text)
+
+        const res = await updateDiaryAction({
+          id: diaryId,
+          content: text,
+          imageUrl: canvas,
+        })
+
+        if (res.ok) {
+          toast.success(MESSAGES.DIARY.SUCCESS.UPDATE)
+          router.push('/')
+        } else {
+          toast.error(MESSAGES.DIARY.ERROR.UPDATE)
+        }
+      } catch (e) {
+        toast.error(MESSAGES.DIARY.ERROR.UPDATE)
+      }
+    })
+  }
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <CanvasContainer initialImage={initialImage} onChange={(img) => setCanvas(img)} />
+      <CanvasContainer initialImage={initialImage} onChange={setCanvas} />
 
       <section className="p-5">
-        <Textarea value={text} onChange={(v) => setText(v)} />
+        <Textarea value={optimisticText} onChange={(v) => setText(v)} />
       </section>
 
       <div className="text-center mb-4">
         <DiaryCancelButton />
 
-        {/* 개선 필요 */}
         {isEdit && diaryId ? (
-          <DiaryUpdateButton
-            isPending={updateButton.isPending}
-            onClick={() =>
-              updateButton.update({
-                id: diaryId,
-                text,
-                canvas,
-              })
-            }
-          />
+          <DiaryUpdateButton isPending={isPending} onClick={handleUpdate} />
         ) : (
-          <DiarySaveButton
-            isPending={saveButton.isPending}
-            onClick={() =>
-              saveButton.saveDiary({
-                date,
-                text,
-                canvas,
-                weather,
-              })
-            }
-          />
+          <DiarySaveButton isPending={isPending} onClick={handleSave} />
         )}
       </div>
     </form>
