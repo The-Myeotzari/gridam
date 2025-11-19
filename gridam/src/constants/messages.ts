@@ -72,5 +72,6 @@ export const MESSAGES = {
     CANCEL_BUTTON: '취소하기',
     SAVE_BUTTON: '저장하기',
     UPDATE_BUTTON: '수정하기',
+    DELETE_BUTTON: '삭제하기',
   },
 } as const
