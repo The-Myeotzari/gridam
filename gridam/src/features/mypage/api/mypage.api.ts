@@ -18,7 +18,10 @@ export async function getUserData() {
     .from('diaries')
     .select('id, image_url, emoji, date, content, created_at')
     .eq('user_id', userId)
-    .order('created_at', { ascending: false })
+    .eq('status', 'published')
+    .not('published_at', 'is', null)
+    .is('deleted_at', null)
+    .order('date', { ascending: false })
 
   if (error || !diaries) {
     return { ok: false, message: `일기 집계에 실패했습니다` }
@@ -65,5 +68,3 @@ export async function getUserData() {
     },
   }
 }
-
-// 게시물 삭제
