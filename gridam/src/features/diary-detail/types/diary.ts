@@ -8,6 +8,12 @@ export interface CreateDiaryPayload {
   } | null
 }
 
+export type UpdateDiaryPayload = {
+  id: string
+  content: string
+  imageUrl: string | null
+}
+
 export interface DiaryImageData {
   path: string
   url: string | null
