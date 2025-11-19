@@ -1,14 +1,14 @@
 'use client'
 
-import Button from '@/components/ui/button'
-import { modalStore } from '@/store/modal-store'
-import { Key, LogOut } from 'lucide-react'
+import { useLogout } from '@/features/mypage/api/queries/use-logout'
 import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
-import { useRouter } from 'next/navigation'
-import { useLogout } from '../api/queries/use-logout'
+import { MESSAGES } from '@/shared/constants/messages'
+import Button from '@/shared/ui/button'
+import { modalStore } from '@/store/modal-store'
 import { toast } from '@/store/toast-store'
-import { MESSAGES } from '@/constants/messages'
 import { AxiosError } from 'axios'
+import { Key, LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function MyPageButtons() {
   const router = useRouter()
@@ -22,7 +22,8 @@ export default function MyPageButtons() {
         router.refresh()
       },
       onError: (err) => {
-        const message = err instanceof AxiosError ? err.response?.data.message : MESSAGES.AUTH.ERROR.LOGOUT
+        const message =
+          err instanceof AxiosError ? err.response?.data.message : MESSAGES.AUTH.ERROR.LOGOUT
         toast.error(message)
       },
     })
@@ -42,9 +43,9 @@ export default function MyPageButtons() {
           variant="roundedBasic"
         />
       </span>
-      <span onClick={handleLogout} className={isPending ? "pointer-events-none opacity-50" : ""}>
+      <span onClick={handleLogout} className={isPending ? 'pointer-events-none opacity-50' : ''}>
         <Button
-          type='button'
+          type="button"
           label={
             <>
               <LogOut />

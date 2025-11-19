@@ -1,7 +1,6 @@
 'use client'
 // 어떻게 최소한의 클라이언트로 만들지
 
-import Textarea from '@/components/ui/textarea'
 import DiaryCancelButton from '@/features/diary-detail/components/buttons/diary-cancel-button'
 import DiarySaveButton from '@/features/diary-detail/components/buttons/diary-save-button'
 import DiaryUpdateButton from '@/features/diary-detail/components/buttons/diary-update-button'
@@ -9,6 +8,7 @@ import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-co
 import { useDiaryForm } from '@/features/diary-detail/hooks/use-diary-form'
 import { useDiarySaveButton } from '@/features/diary-detail/hooks/use-diary-save-button'
 import { useDiaryUpdateButton } from '@/features/diary-detail/hooks/use-diary-update-button'
+import Textarea from '@/shared/ui/textarea'
 import { useEffect, useState } from 'react'
 
 type props = {

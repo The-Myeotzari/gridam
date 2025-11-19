@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom'
 import RecentDiaries from '@/features/mypage/components/recent-diaries'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 
 // Card 컴포넌트 mock
-jest.mock('@/components/ui/card', () => ({
+jest.mock('@/shared/ui/card', () => ({
   Card: ({ children, hoverable, ...props }: any) => (
     <div data-testid="card" {...props}>
       {children}
@@ -34,7 +34,7 @@ jest.mock('@/components/ui/card', () => ({
 }))
 
 // DropBox mock
-jest.mock('@/components/ui/dropbox', () => (props: any) => (
+jest.mock('@/shared/ui/dropbox', () => (props: any) => (
   <div data-testid="dropbox">dropbox-{props.id}</div>
 ))
 
@@ -59,7 +59,7 @@ describe('RecentDiaries', () => {
     // 일기 내용
     expect(screen.getByText('오늘의 일기')).toBeInTheDocument()
     const img = screen.getByAltText('날씨')
-    expect(img).toBeInTheDocument();
+    expect(img).toBeInTheDocument()
     expect(screen.getByText('13:09')).toBeInTheDocument()
     expect(screen.getByText('2025.11.13')).toBeInTheDocument()
     expect(screen.getByText('목요일')).toBeInTheDocument()
@@ -71,8 +71,6 @@ describe('RecentDiaries', () => {
   it('일기가 없을 때 빈 상태 문구를 표시한다', () => {
     render(<RecentDiaries diaries={[]} />)
 
-    expect(
-      screen.getByText('아직 작성한 일기가 없어요.')
-    ).toBeInTheDocument()
+    expect(screen.getByText('아직 작성한 일기가 없어요.')).toBeInTheDocument()
   })
 })

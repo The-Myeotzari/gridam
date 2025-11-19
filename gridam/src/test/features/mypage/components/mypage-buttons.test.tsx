@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import '@testing-library/jest-dom'
 import MyPageButtons from '@/features/mypage/components/mypage-buttons'
-import { ButtonProps } from '@/components/ui/button'
+import { ButtonProps } from '@/shared/ui/button'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import '@testing-library/jest-dom'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 const pushMock = jest.fn()
 jest.mock('next/navigation', () => ({
@@ -24,7 +24,7 @@ jest.mock('lucide-react', () => ({
   LogOut: () => <svg data-testid="logout-icon" />,
 }))
 
-jest.mock('@/components/ui/button', () => {
+jest.mock('@/shared/ui/button', () => {
   return function ButtonMock(props: ButtonProps) {
     return (
       <button type={props.type} className={props.className}>
@@ -43,9 +43,7 @@ jest.mock('@/features/mypage/components/change-password-modal', () => {
 // 🔹 공용 render 헬퍼
 function renderWithClient(ui: React.ReactElement) {
   const queryClient = new QueryClient()
-  return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
-  )
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>)
 }
 
 describe('MyPageButtons', () => {

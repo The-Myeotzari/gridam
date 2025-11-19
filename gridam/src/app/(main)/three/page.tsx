@@ -1,9 +1,9 @@
 'use client'
 
+import ThreeFireworks from '@/shared/ui/three/three-firewors'
+import PostitMesh from '@/shared/ui/three/three-postit'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
-import ThreeFireworks from '@/components/three/three-firewors'
-import PostitMesh from '@/components/three/three-postit'
 
 export default function CelebrationPostit() {
   return (

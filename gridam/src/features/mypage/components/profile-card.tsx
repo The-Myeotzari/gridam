@@ -1,4 +1,4 @@
-import { Card, CardBody } from '@/components/ui/card'
+import { Card, CardBody } from '@/shared/ui/card'
 
 interface ProfileCardProps {
   email: string
@@ -6,7 +6,7 @@ interface ProfileCardProps {
   createdAt: string
 }
 
-interface ProfileField{
+interface ProfileField {
   label: string
   value: string
 }

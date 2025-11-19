@@ -1,5 +1,5 @@
-import Button, { ButtonProps } from '@/components/ui/button'
-import cn from '@/utils/cn'
+import Button, { ButtonProps } from '@/shared/ui/button'
+import cn from '@/shared/utils/cn'
 
 type WriteButtonProps = {
   isPending?: boolean

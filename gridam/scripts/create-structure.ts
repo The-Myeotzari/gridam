@@ -3,24 +3,25 @@ import path from 'path'
 
 const ROOT = path.join(process.cwd(), 'src')
 
+// TODO: 2차 개발 기간에 구조 개편하면서 개선 필요
 // 생성할 폴더 목록
 const folders: string[] = [
-  'app',
-  'components/common',
-  'components/ui',
-  'components/three/object',
-  'features',
-  'font',
-  'hooks',
-  'providers',
-  'store',
-  'types/zod',
-  'utils',
-  'lib',
-  'test/components/three',
-  'test/features/auth',
-  'test/hooks',
-  'test/utils',
+  // 'app',
+  // 'components/common',
+  // 'components/ui',
+  // 'components/three/object',
+  // 'features',
+  // 'font',
+  // 'hooks',
+  // 'providers',
+  // 'store',
+  // 'types/zod',
+  // 'utils',
+  // 'lib',
+  // 'test/components/three',
+  // 'test/features/auth',
+  // 'test/hooks',
+  // 'test/utils',
 ]
 
 function ensureDir(dirPath: string) {

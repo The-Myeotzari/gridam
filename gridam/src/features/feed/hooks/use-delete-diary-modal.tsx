@@ -1,9 +1,9 @@
 'use client'
 
-import Button from '@/components/ui/button'
-import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
-import { MESSAGES } from '@/constants/messages'
 import { useDeleteDiary } from '@/features/feed/api/queries/use-delete-diary'
+import { MESSAGES } from '@/shared/constants/messages'
+import Button from '@/shared/ui/button'
+import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
 import { modalStore } from '@/store/modal-store'
 import { useCallback } from 'react'
 

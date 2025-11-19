@@ -1,8 +1,8 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { MESSAGES } from '@/constants/messages'
-import { DraftCreateSchema } from '@/types/zod/apis/draft-schema'
-import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
+import { MESSAGES } from '@/shared/constants/messages'
+import { DraftCreateSchema } from '@/shared/types/zod/apis/draft-schema'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 import { ZodError } from 'zod'
 

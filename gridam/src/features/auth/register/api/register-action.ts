@@ -1,11 +1,11 @@
-import { QueryClient } from '@tanstack/react-query'
-import { RegisterFormData } from '../types/register'
-import { QUERY_KEYS } from '@/constants/query-key'
+import { MESSAGES } from '@/shared/constants/messages'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
 import { toast } from '@/store/toast-store'
-import { MESSAGES } from '@/constants/messages'
-import { registerUser } from './register.api'
-import { UseFormReset } from 'react-hook-form'
+import { QueryClient } from '@tanstack/react-query'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { UseFormReset } from 'react-hook-form'
+import { RegisterFormData } from '../types/register'
+import { registerUser } from './register.api'
 
 interface deps {
   queryClient: QueryClient

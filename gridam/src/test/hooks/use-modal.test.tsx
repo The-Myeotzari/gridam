@@ -1,7 +1,6 @@
-import React from 'react'
-import { renderHook, act } from '@testing-library/react'
+import { useModal } from '@/shared/hooks/use-modal'
 import '@testing-library/jest-dom'
-import { useModal } from '@/hooks/use-modal'
+import { act, renderHook } from '@testing-library/react'
 
 // 1) 모달 스토어 모킹
 jest.mock('@/store/modal-store', () => ({

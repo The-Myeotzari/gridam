@@ -1,29 +1,21 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
 import { useChangePassword } from '@/features/mypage/api/queries/use-change-password'
+import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
 import { toast } from '@/store/toast-store'
+import '@testing-library/jest-dom'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 // Button / Input / Label / Modal mock들
-jest.mock('@/components/ui/button', () => (props: any) => (
-  <button
-    type={props.type}
-    className={props.className}
-    onClick={props.onClick}
-  >
+jest.mock('@/shared/ui/button', () => (props: any) => (
+  <button type={props.type} className={props.className} onClick={props.onClick}>
     {props.label}
   </button>
 ))
 
-jest.mock('@/components/ui/input', () => (props: any) => (
-  <input {...props} />
-))
+jest.mock('@/shared/ui/input', () => (props: any) => <input {...props} />)
 
-jest.mock('@/components/ui/label', () => (props: any) => (
-  <label {...props}>{props.children}</label>
-))
+jest.mock('@/shared/ui/label', () => (props: any) => <label {...props}>{props.children}</label>)
 
-jest.mock('@/components/ui/modal/modal', () => ({
+jest.mock('@/shared/ui/modal/modal', () => ({
   ModalHeader: (props: any) => (
     <header>
       {props.cardTitle}
@@ -71,9 +63,7 @@ describe('ChangePasswordModal', () => {
     render(<ChangePasswordModal close={closeMock} />)
 
     expect(screen.getByText('비밀번호 변경')).toBeInTheDocument()
-    expect(
-      screen.getByText('새로운 비밀번호를 입력해주세요')
-    ).toBeInTheDocument()
+    expect(screen.getByText('새로운 비밀번호를 입력해주세요')).toBeInTheDocument()
 
     // 레이블
     expect(screen.getByText('현재 비밀번호')).toBeInTheDocument()
@@ -112,11 +102,11 @@ describe('ChangePasswordModal', () => {
     render(<ChangePasswordModal close={closeMock} />)
 
     const currentPasswordInput = screen.getByLabelText('현재 비밀번호')
-    const newPasswordInput     = screen.getByLabelText('새 비밀번호')
+    const newPasswordInput = screen.getByLabelText('새 비밀번호')
     const confirmPasswordInput = screen.getByLabelText('새 비밀번호 확인')
 
     fireEvent.change(currentPasswordInput, { target: { value: 'currentPass123' } })
-    fireEvent.change(newPasswordInput,     { target: { value: 'newPass123!' } })
+    fireEvent.change(newPasswordInput, { target: { value: 'newPass123!' } })
     fireEvent.change(confirmPasswordInput, { target: { value: 'newPass123!' } })
 
     fireEvent.click(screen.getByText('변경하기'))

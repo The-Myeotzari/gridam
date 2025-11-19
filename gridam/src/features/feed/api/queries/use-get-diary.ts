@@ -1,6 +1,6 @@
-import { QUERY_KEYS } from '@/constants/query-key'
 import { getDiary } from '@/features/feed/api//get-diary.api'
 import type { Diary } from '@/features/feed/types/feed'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 type UseGetDiaryParams = {
