@@ -32,6 +32,7 @@ export const MESSAGES = {
       REGISTER_TOO_MANY_REQUEST: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
       EMAIL_VERIFICATION_REQUEST_FAILED:
         '이메일 인증 요청에 실패하셨습니다. 잠시 후 다시 시도해주세요 ',
+      EMPTY_PASSWORD: '비밀번호를 입력해주세요.',
     },
   },
 

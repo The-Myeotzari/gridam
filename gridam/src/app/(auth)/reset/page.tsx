@@ -1,18 +1,17 @@
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
-import { resetAction } from '@/features/auth/reset/api/reset-action'
-import Button from '@/shared/ui/button'
 import { Card } from '@/shared/ui/card'
-import Input from '@/shared/ui/input'
-import Label from '@/shared/ui/label'
 import Link from 'next/link'
 import ResetForm from './reset-form'
 
 type PageProps = {
-  params: Promise<{ token: string }>
+  searchParams: Promise<{
+    code?: string | ''
+  }>
 }
 
-export default async function ResetPasswordPage({ params }: PageProps) {
-  const { token } = await params
+export default async function ResetPasswordPage({ searchParams }: PageProps) {
+  const { code } = await searchParams
+  const token = code ? code : ''
 
   return (
     <div className="flex-1 flex item-center justify-center">

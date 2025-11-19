@@ -1,15 +1,16 @@
 'use client'
-import Button from '@/components/ui/button'
-import Input from '@/components/ui/input'
-import Label from '@/components/ui/label'
+import Button from '@/shared/ui/button'
+import Input from '@/shared/ui/input'
+import Label from '@/shared/ui/label'
 import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
 import Form from 'next/form'
 import Link from 'next/link'
 import { startTransition, useActionState } from 'react'
-import Toast from '@/components/ui/toast'
+import Toast from '@/shared/ui/toast'
 import { toast } from '@/store/toast-store'
-import { MESSAGES } from '@/constants/messages'
+
 import ForgotButton from './forgot-button'
+import { MESSAGES } from '@/shared/constants/messages'
 
 interface ForgotState {
   isSubmitted: boolean //URL 쿼리에서 해석된 값

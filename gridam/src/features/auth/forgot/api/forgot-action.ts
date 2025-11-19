@@ -1,12 +1,11 @@
-import { MESSAGES } from '@/constants/messages'
-import { api } from '@/lib/api'
-import { AxiosError } from 'axios'
+import { MESSAGES } from '@/shared/constants/messages'
+import axios, { AxiosError } from 'axios'
 
 export async function forgetAction(prevState: { error: string | null }, formData: FormData) {
   const email = formData.get('email') as string
 
   try {
-    const res = await api.post(`/auth/reset/request`, { email })
+    const res = await axios.post(`/apis/auth/reset/request`, { email })
     return { error: null }
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

@@ -1,12 +1,7 @@
-import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
-import ForgotSubmitButton from '@/features/auth/forgot/components/forgot-submit-button'
-import Button from '@/shared/ui/button'
 import { Card } from '@/shared/ui/card'
-import Input from '@/shared/ui/input'
-import Label from '@/shared/ui/label'
-import Form from 'next/form'
-import Link from 'next/link'
+import ForgotPassword from './forgot-password'
+import { Suspense } from 'react'
 
 type PageProps = {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>

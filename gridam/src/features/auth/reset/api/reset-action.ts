@@ -1,22 +1,20 @@
 'use server'
 
-import { MESSAGES } from '@/constants/messages'
-import { api } from '@/lib/api'
+import { MESSAGES } from '@/shared/constants/messages'
 import axios, { AxiosError } from 'axios'
-import { error } from 'console'
 
 export async function resetAction(formData: FormData) {
-  console.log('✅ resetAction 호출됨')
-  console.log('📦 formData 내용:', Object.fromEntries(formData.entries()))
-
+  // console.log('resetAction 호출됨')
+  // console.log('formData 내용:', Object.fromEntries(formData.entries()))
+  // console.log(resetAction)
   const token = formData.get('token')
   const password = formData.get('password')
-  const confirmPassword = formData.get('comfirmPassword')
+  const confirmPassword = formData.get('confirmPassword')
 
   try {
-    const response = await axios.post('apis/auth/reset/complete', {
+    const response = await axios.post('/apis/auth/reset', {
       token,
-      password,
+      newPassword: password,
       confirmPassword,
     })
     console.log('응답', response)
