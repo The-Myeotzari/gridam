@@ -1,4 +1,4 @@
-import { mapWeatherIdToIcon } from '@/utils/map-weather-to-icon'
+import { mapWeatherIdToIcon } from '@/features/weather/utils/map-weather-to-icon'
 import Image from 'next/image'
 
 type Props = {

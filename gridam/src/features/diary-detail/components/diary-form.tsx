@@ -1,4 +1,5 @@
 'use client'
+// 어떻게 최소한의 클라이언트로 만들지
 
 import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
 import Textarea from '@/components/ui/textarea'
@@ -6,19 +7,17 @@ import { MESSAGES } from '@/constants/messages'
 import { postDiaryAction } from '@/features/diary-detail/api/action/post-diary-action'
 import { usePostDiary } from '@/features/diary-detail/api/queries/use-post-diary'
 import { usePostDiaryImage } from '@/features/diary-detail/api/queries/use-post-diary-image'
+import { useUpdateDiary } from '@/features/diary-detail/api/queries/use-update-diary'
 import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-container'
 import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
-import { useCanvas, useSetCanvas } from '@/features/diary-detail/store/canvas-store'
-import { useSetDate, useSetText, useText } from '@/features/diary-detail/store/write-store'
+import { useDiaryForm } from '@/features/diary-detail/hooks/use-diary-form'
 import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect } from 'react'
-import { useUpdateDiary } from '../api/queries/use-update-diary'
+import { useCallback, useEffect, useState } from 'react'
 
 type props = {
   dateValue: string
-  weather: string
-
+  weather?: string
   isEdit?: boolean
   diaryId?: string
   initialContent?: string
@@ -35,11 +34,8 @@ export default function DiaryForm({
 }: props) {
   const router = useRouter()
 
-  const setDate = useSetDate()
-  const setText = useSetText()
-  const setCanvas = useSetCanvas()
-  const text = useText()
-  const canvas = useCanvas()
+  const { date, text, setText, setDate } = useDiaryForm()
+  const [canvas, setCanvas] = useState<string | null>(initialImage ?? null)
 
   const { mutate: createDiary, isPending: createPending } = usePostDiary()
   const { mutateAsync: uploadImage, isPending: uploadPending } = usePostDiaryImage()
@@ -47,13 +43,8 @@ export default function DiaryForm({
 
   useEffect(() => {
     setDate(dateValue)
-    if (initialContent) {
-      setText(initialContent)
-    }
-    if (initialImage) {
-      setCanvas(initialImage)
-    }
-  }, [dateValue, initialContent, initialImage, setDate, setText, setCanvas])
+    if (initialContent) setText(initialContent)
+  }, [dateValue, initialContent, setDate, setText])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,8 +60,11 @@ export default function DiaryForm({
     }
 
     await postDiaryAction({
-      date: dateValue,
-      weather,
+      date,
+      text,
+      canvas: canvas ?? '',
+      // 예외처리 어떻게 할지 고민 필요 - 날씨 데이터 조회 실패하면 이미지 없이? 아니면 기본이미지?
+      weather: weather ?? '/fallback-weather.png',
       createIsPending: createPending,
       uploadIsPending: uploadPending,
       createDiary,
@@ -103,7 +97,7 @@ export default function DiaryForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <CanvasContainer initialImage={initialImage} />
+      <CanvasContainer initialImage={initialImage} onChange={(img) => setCanvas(img)} />
 
       <section className="p-5">
         <Textarea value={text} onChange={(v) => setText(v)} />
@@ -111,11 +105,11 @@ export default function DiaryForm({
 
       <div className="text-center mb-4">
         <span onClick={handleCancel} className="mr-2">
-          <DiaryFormButton label="취소" type="button" />
+          <DiaryFormButton label={MESSAGES.COMMON.CANCEL_BUTTON} type="button" />
         </span>
 
         <DiaryFormButton
-          label={isEdit ? '수정하기' : '저장하기'}
+          label={isEdit ? MESSAGES.COMMON.UPDATE_BUTTON : MESSAGES.COMMON.SAVE_BUTTON}
           type="submit"
           variant="blue"
           isPending={createPending || uploadPending || updatePending}

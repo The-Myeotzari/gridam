@@ -1,3 +1,4 @@
+import { MESSAGES } from '@/constants/messages'
 import DiaryForm from '@/features/diary-detail/components/diary-form'
 import DiaryLayout from '@/features/diary-detail/components/diary-layout'
 import { formatDate } from '@/utils/format-date'
@@ -7,7 +8,7 @@ import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
 async function getDiary(id: string) {
   const supabase = getSupabaseServer()
   const { data, error } = await (await supabase).from('diaries').select('*').eq('id', id).single()
-  if (error) throw new Error(error.message)
+  if (error) throw new Error(MESSAGES.DIARY.ERROR.READ)
   if (data?.image_url) {
     const signed = await withSignedImageUrls(await supabase, [data])
     return signed[0]
@@ -21,13 +22,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const dateValue = diary.date
   const formattedDate = formatDate(dateValue)
+  // 날씨 예외처리 고민 필요 - 기본이미지 출력?
   const weatherIcon = diary.emoji ?? '/fallback-weather.png'
 
   return (
     <DiaryLayout date={formattedDate} weatherIcon={weatherIcon}>
       <DiaryForm
         dateValue={dateValue}
-        weather={weatherIcon}
         isEdit={true}
         diaryId={diary.id}
         initialContent={diary.content}

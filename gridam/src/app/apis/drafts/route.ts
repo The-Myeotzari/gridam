@@ -4,6 +4,7 @@ import { MESSAGES } from '@/constants/messages'
 import { DraftCreateSchema } from '@/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
 // 임시저장 목록 전체 조회
 export async function GET() {
@@ -22,13 +23,16 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      if (error.code === '42501') return withCORS(fail('FORBIDDEN', 403))
-      return withCORS(fail('INTERNAL_ERROR', 500))
+      return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
     }
 
     return withCORS(ok(data?.[0] ?? null))
-  } catch {
-    return withCORS(fail('INTERNAL_ERROR', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
   }
 }
 
@@ -36,11 +40,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
     const body = await req.json()
 
     const parsed = DraftCreateSchema.safeParse(body)
-    if (!parsed.success) return withCORS(fail('Invalid payload', 422))
+    if (!parsed.success) return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE_NO_DATA, 500))
 
     const { content, date, emoji, imageUrl, meta } = parsed.data
 
@@ -58,7 +62,7 @@ export async function POST(req: NextRequest) {
       .select('id')
       .single()
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE, 500)
 
     if (meta) {
       const { error: metaErr } = await supabase.from('metadata').insert({
@@ -66,12 +70,16 @@ export async function POST(req: NextRequest) {
         date, // 제거 필요 - created_at과 동일
         timezone: meta.timezone, // 시간대
       })
-      if (metaErr) throw fail(metaErr.message, 500)
+      if (metaErr) throw fail(MESSAGES.DIARY.ERROR.META, 500)
     }
 
     return withCORS(ok({ id: diary.id }, 201))
-  } catch (e) {
-    return withCORS(fail('INTERNAL_ERROR', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE, 500))
   }
 }
 
