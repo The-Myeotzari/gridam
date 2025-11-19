@@ -1,4 +1,3 @@
-// TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/constants/messages'
 import { Params } from '@/types/params'
@@ -112,10 +111,9 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .from('diaries')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)
-      .is('deleted_at', null)
 
     if (error) throw fail(MESSAGES.DIARY.ERROR.DELETE, 500)
-    return withCORS(ok(null, 204))
+    return withCORS(ok(null, 200))
   } catch (err) {
     if (err instanceof ZodError) {
       const firstIssue = err.issues[0]
