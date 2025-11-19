@@ -5,21 +5,21 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-} from '@/components/ui/card'
-import Button from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import cn from '@/utils/cn'
+} from '@/shared/ui/card'
+import Button from '@/shared/ui/button'
+import { Label } from '@/shared/ui/label'
+import cn from '@/shared/utils/cn'
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react'
 
 type DiaryExportCardProps = {
   year: number
   month: number // 1 ~ 12
   diaryCount: number
-  isExporting?: boolean
+  isLoading?: boolean
   onPrevYear?: () => void
   onNextYear?: () => void
   onSelectMonth?: (month: number) => void
-  onExport?: () => void
+  onPreview?: () => void
 }
 
 const MONTH_LABELS: string[] = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
@@ -28,14 +28,14 @@ export default function DiaryExportCard({
   year,
   month,
   diaryCount,
-  isExporting = false,
+  isLoading = false,
   onPrevYear,
   onNextYear,
   onSelectMonth,
-  onExport,
+  onPreview,
 }: DiaryExportCardProps) {
   const hasDiaries = diaryCount > 0
-  const exportDisabled = !hasDiaries || isExporting
+  const exportDisabled = !hasDiaries || isLoading
 
   return (
     <Card className="w-full">
@@ -66,7 +66,7 @@ export default function DiaryExportCard({
                 disabled={!onPrevYear}
                 aria-label="이전 연도"
               >
-                <ChevronLeft className='size-4'/>
+                <ChevronLeft className='size-4' />
               </button>
               <span className="px-1 text-xs sm:text-sm font-medium">
                 {year}년
@@ -82,7 +82,7 @@ export default function DiaryExportCard({
                 disabled={!onNextYear}
                 aria-label="다음 연도"
               >
-                <ChevronRight className='size-4'/>
+                <ChevronRight className='size-4' />
               </button>
             </div>
           </div>
@@ -95,22 +95,27 @@ export default function DiaryExportCard({
                 const isSelected = value === month
 
                 return (
-                  <button
+                  <span
                     key={value}
-                    type="button"
                     onClick={() => onSelectMonth?.(value)}
                     className={cn(
                       'h-8 sm:h-9 rounded-md border text-xs sm:text-sm transition-colors',
-                      isSelected
-                        ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                        : 'border-border bg-background text-foreground hover:bg-muted',
-                      !onSelectMonth && 'cursor-default hover:bg-background',
                     )}
-                    disabled={!onSelectMonth}
-                    aria-pressed={isSelected}
                   >
-                    {label}
-                  </button>
+                    <Button
+                      type="button"
+                      className={cn(
+                        'w-full',
+                        isSelected
+                          ? 'border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary' 
+                          : 'border-border bg-background text-foreground hover:bg-muted',
+                        !onSelectMonth && 'cursor-default hover:bg-background',
+                      )}
+                      disabled={!onSelectMonth}
+                      aria-pressed={isSelected}
+                      label={label}
+                    />
+                  </span>
                 )
               })}
             </div>
@@ -135,13 +140,14 @@ export default function DiaryExportCard({
             </>
           )}
         </p>
-
-        <Button
-          type="button"
-          className="h-9 sm:h-10 w-full sm:w-auto px-4"
-          disabled={exportDisabled}
-          label={isExporting ? 'PDF 생성 중…' : 'PDF 미리보기'}
-        />
+        <span onClick={onPreview} className={exportDisabled ? 'pointer-events-none opacity-50' : ''}>
+          <Button
+            type="button"
+            className="h-9 sm:h-10 w-full sm:w-auto px-4"
+            disabled={exportDisabled}
+            label={isLoading ? '불러오는 중…' : 'PDF 미리보기'}
+          />
+        </span>
       </CardFooter>
     </Card>
   )
