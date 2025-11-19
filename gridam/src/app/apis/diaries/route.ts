@@ -1,8 +1,11 @@
+// TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/constants/messages'
 import { getDiaryServer } from '@/features/feed/api/get-diary.server'
 import { createSchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -19,47 +22,65 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
     const body = await req.json()
 
     const parsed = createSchema.safeParse(body)
-    if (!parsed.success) throw fail(parsed.error.message, 422)
+    if (!parsed.success) throw fail(MESSAGES.DIARY.ERROR.CREATE_NO_DATA, 422)
 
     const { content, date, emoji, imageUrl, meta } = parsed.data
 
-    // 1) Create diary
+    // 중복체크
+    const start = new Date(`${date}T00:00:00.000Z`).toISOString()
+    const end = new Date(`${date}T23:59:59.999Z`).toISOString()
+
+    const { data: existingDiary, error: existingError } = await supabase
+      .from('diaries')
+      .select('id')
+      .eq('user_id', user.id)
+      .gte('created_at', start)
+      .lte('created_at', end)
+      .maybeSingle()
+
+    if (existingError) {
+      throw fail(MESSAGES.DIARY.ERROR.READ, 500)
+    }
+    if (existingDiary) {
+      return withCORS(fail(MESSAGES.DIARY.ERROR.CREATE_OVER, 409))
+    }
+
     const { data: diary, error } = await supabase
       .from('diaries')
       .insert({
         user_id: user.id,
         content,
-        date,
+        date, // 제거 필요 - created_at과 동일
         emoji,
         image_url: imageUrl ?? null,
-        status: 'draft',
+        status: 'published',
+        published_at: new Date().toISOString(),
       })
       .select('id')
       .single()
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.CREATE, 500)
 
     if (meta) {
       const { error: metaErr } = await supabase.from('metadata').insert({
         diary_id: diary.id,
-        date,
+        date, // 제거 필요 - created_at과 동일
         timezone: meta.timezone, // 시간대
       })
-      if (metaErr) throw fail(metaErr.message, 500)
+      if (metaErr) throw fail(MESSAGES.DIARY.ERROR.META, 500)
     }
 
     return withCORS(ok({ id: diary.id }, 201))
-  } catch (err: unknown) {
-    if (err instanceof NextResponse) {
-      return withCORS(err)
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
     }
-    if (err instanceof Error) {
-      return withCORS(fail(err.message, 500))
-    }
-    return withCORS(fail('Unknown error', 500))
+    return withCORS(fail(MESSAGES.DIARY.ERROR.CREATE, 500))
   }
 }
 

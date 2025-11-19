@@ -54,7 +54,7 @@ export default function FeedList({ year, month, initialDiaries }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 sm:w-2xl sm:mx-auto">
       {diaries.map((diary, index) => (
         <FeedCard key={diary.id} diary={diary} isFirst={index === 0} />
       ))}

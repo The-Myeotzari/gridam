@@ -1,5 +1,6 @@
 'use client'
 
+import { MESSAGES } from '@/constants/messages'
 import { QUERY_KEYS } from '@/constants/query-key'
 import { postDiary } from '@/features/diary-detail/api/post-diary.api'
 import type { CreateDiaryPayload } from '@/features/diary-detail/types/diary'
@@ -29,13 +30,13 @@ export function usePostDiary() {
         queryKey: QUERY_KEYS.DIARY.LIST(year, month),
       })
 
-      toast.success('일기가 저장되었습니다!')
+      toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
       router.push('/')
     },
 
     onError: (error) => {
-      console.error('일기 저장 중 에러 발생(usePostDiary):', error)
-      toast.error('일기 저장 중 오류가 발생했습니다.')
+      console.error(MESSAGES.DIARY.ERROR.CREATE, error)
+      toast.error(MESSAGES.DIARY.ERROR.CREATE)
     },
   })
 }

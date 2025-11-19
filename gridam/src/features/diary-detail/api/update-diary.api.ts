@@ -31,6 +31,5 @@ export async function updateDiary({
   await api.patch(`/diaries/${id}`, {
     content: text,
     imageUrl,
-    // status: 'published',
   })
 }

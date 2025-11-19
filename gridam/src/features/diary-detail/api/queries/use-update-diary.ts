@@ -1,5 +1,6 @@
 'use client'
 
+import { MESSAGES } from '@/constants/messages'
 import { QUERY_KEYS } from '@/constants/query-key'
 import { updateDiary } from '@/features/diary-detail/api/update-diary.api'
 import { toast } from '@/store/toast-store'
@@ -26,13 +27,13 @@ export function useUpdateDiary() {
         queryKey: QUERY_KEYS.DIARY.DETAIL(variables.id),
       })
 
-      toast.success('일기가 수정되었습니다!')
+      toast.success(MESSAGES.DIARY.SUCCESS.UPDATE)
       router.push(`/`)
     },
 
     onError: (error) => {
-      console.error('일기 수정 실패:', error)
-      toast.error('일기 수정 중 오류가 발생했습니다.')
+      console.error(MESSAGES.DIARY.ERROR.UPDATE, error)
+      toast.error(MESSAGES.DIARY.ERROR.UPDATE)
     },
   })
 }
