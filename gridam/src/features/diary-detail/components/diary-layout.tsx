@@ -9,17 +9,20 @@ type DiaryLayoutProps = {
 export default function DiaryLayout({ date, weatherIcon, children }: DiaryLayoutProps) {
   return (
     <div className="max-w-4xl mx-auto border-2 border-black bg-(--color-cream-white)">
-      <section className="flex items-center justify-between p-5 border-b border-black">
+      <div className="flex items-center justify-between p-5 border-b border-black">
         <div className="font-bold text-md sm:text-xl">{date}</div>
 
-        <section className="flex items-center leading-9 gap-2">
-          {typeof weatherIcon === 'string' ? (
-            <Image src={weatherIcon} alt="weather icon" width={36} height={36} />
-          ) : (
-            weatherIcon
-          )}
-        </section>
-      </section>
+        {weatherIcon && (
+          <div className="flex items-center leading-9 gap-2">
+            <span className="font-bold text-md hidden sm:block">날씨</span>
+            {typeof weatherIcon === 'string' ? (
+              <Image src={weatherIcon} alt="weather icon" width={36} height={36} />
+            ) : (
+              weatherIcon
+            )}
+          </div>
+        )}
+      </div>
 
       {children}
     </div>
