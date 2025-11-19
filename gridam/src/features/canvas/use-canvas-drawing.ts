@@ -148,6 +148,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
   // 캔버스 만들어진 이후에 세팅 진행
   useEffect(() => {
     if (!initialImage) return
+    if (!canvasRef.current) return
 
     const canvas = canvasRef.current
     const ctx = ctxRef.current
@@ -168,7 +169,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(img, 0, 0, cssW, cssH)
     }
-  }, [initialImage, canvasRef.current])
+  }, [initialImage])
 
   return {
     canvasRef,

@@ -75,40 +75,37 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
     [updateOptimisticItems]
   )
 
-  const openDeleteModal = useCallback(
-    (id: string) => {
-      modalStore.open((close) => (
-        <>
-          <ModalHeader>정말 삭제할까요?</ModalHeader>
-          <ModalBody className="p-6 text-slate-600">
-            삭제 후에는 되돌릴 수 없습니다.
-            <br />
-            해당 그림일기를 삭제하시겠습니까?
-          </ModalBody>
-          <ModalFooter className="p-4 flex justify-end gap-2">
-            <span onClick={close}>
-              <Button label={MESSAGES.COMMON.CANCEL_BUTTON} />
-            </span>
-            <span
-              onClick={() => {
-                startTransition(async () => {
-                  await handleDelete(id)
-                  close()
-                })
-              }}
-            >
-              <Button
-                type="submit"
-                label={MESSAGES.COMMON.DELETE_BUTTON}
-                className="bg-(--color-background) text-destructive border-destructive hover:bg-destructive hover:text-(--color-destructive-foreground)"
-              />
-            </span>
-          </ModalFooter>
-        </>
-      ))
-    },
-    [pages]
-  )
+  const openDeleteModal = (id: string) => {
+    modalStore.open((close) => (
+      <>
+        <ModalHeader>정말 삭제할까요?</ModalHeader>
+        <ModalBody className="p-6 text-slate-600">
+          삭제 후에는 되돌릴 수 없습니다.
+          <br />
+          해당 그림일기를 삭제하시겠습니까?
+        </ModalBody>
+        <ModalFooter className="p-4 flex justify-end gap-2">
+          <span onClick={close}>
+            <Button label={MESSAGES.COMMON.CANCEL_BUTTON} />
+          </span>
+          <span
+            onClick={() => {
+              startTransition(async () => {
+                await handleDelete(id)
+                close()
+              })
+            }}
+          >
+            <Button
+              type="submit"
+              label={MESSAGES.COMMON.DELETE_BUTTON}
+              className="bg-(--color-background) text-destructive border-destructive hover:bg-destructive hover:text-(--color-destructive-foreground)"
+            />
+          </span>
+        </ModalFooter>
+      </>
+    ))
+  }
 
   if (isError && pages.length === 0) {
     return <FeedListError onRetry={() => refresh()} />
