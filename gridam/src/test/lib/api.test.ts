@@ -1,4 +1,4 @@
-import { api } from '@/lib/api'
+import { api } from '@/shared/lib/api'
 import { AxiosError } from 'axios'
 import MockAdapter from 'axios-mock-adapter'
 

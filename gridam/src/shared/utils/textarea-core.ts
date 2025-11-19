@@ -1,6 +1,6 @@
 // 입력값을 정규화하고, 그래핌 단위로 셀(격자) 데이터를 생성하는 유틸
 
-import { clamp, sanitize, splitGraphemes } from '@/utils/text-utils'
+import { clamp, sanitize, splitGraphemes } from '@/shared/utils/text-utils'
 
 // 원시 문자열을 정제(sanitize)하고 최대 길이(max)만큼 잘라 정규화
 export function normalizeValue(raw: string, max: number) {

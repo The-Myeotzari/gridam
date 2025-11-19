@@ -1,7 +1,7 @@
 'use client'
 
-import { QUERY_KEYS } from '@/constants/query-key'
-import { api } from '@/lib/api'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
+import { api } from '@/shared/lib/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export function useLogout() {
@@ -13,6 +13,6 @@ export function useLogout() {
     onSuccess: () => {
       // 유저 관련 캐시 비우고 싶으면
       queryClient.clear()
-    }
+    },
   })
 }

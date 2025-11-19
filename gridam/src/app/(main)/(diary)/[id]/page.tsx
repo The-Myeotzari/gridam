@@ -1,9 +1,9 @@
-import { MESSAGES } from '@/constants/messages'
 import DiaryForm from '@/features/diary-detail/components/diary-form'
 import DiaryLayout from '@/features/diary-detail/components/diary-layout'
-import { formatDate } from '@/utils/format-date'
-import getSupabaseServer from '@/utils/supabase/server'
-import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
+import { MESSAGES } from '@/shared/constants/messages'
+import { formatDate } from '@/shared/utils/format-date'
+import getSupabaseServer from '@/shared/utils/supabase/server'
+import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 
 async function getDiary(id: string) {
   const supabase = getSupabaseServer()

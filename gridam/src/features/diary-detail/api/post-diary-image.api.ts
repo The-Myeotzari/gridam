@@ -1,5 +1,5 @@
-import { api } from '@/lib/api'
-import { getDataURLToBlob } from '@/utils/get-data-url-to-blob'
+import { api } from '@/shared/lib/api'
+import { getDataURLToBlob } from '@/shared/utils/get-data-url-to-blob'
 
 export async function postDiaryImage(image: string) {
   const blob = await getDataURLToBlob(image)

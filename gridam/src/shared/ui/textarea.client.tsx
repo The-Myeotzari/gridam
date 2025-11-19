@@ -1,9 +1,9 @@
 'use client'
 
-import { useCaretAutoScroll } from '@/hooks/use-caret-auto-scroll'
-import { gridStyle, heights } from '@/utils/grid'
-import { handleInputOnce, propagateChange } from '@/utils/textarea-actions'
-import { buildCells, normalizeValue } from '@/utils/textarea-core'
+import { useCaretAutoScroll } from '@/shared/hooks/use-caret-auto-scroll'
+import { gridStyle, heights } from '@/shared/utils/grid'
+import { handleInputOnce, propagateChange } from '@/shared/utils/textarea-actions'
+import { buildCells, normalizeValue } from '@/shared/utils/textarea-core'
 import { useEffect, useMemo, useRef, useState } from 'react'
 /**
  * Props

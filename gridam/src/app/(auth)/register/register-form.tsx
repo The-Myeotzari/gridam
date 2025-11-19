@@ -1,14 +1,14 @@
 'use client'
-import { CardBody } from '@/components/ui/card'
-import { FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
-import { MESSAGES } from '@/constants/messages'
-import { useQueryClient, useMutation } from '@tanstack/react-query'
-import { toast } from '@/store/toast-store'
-import Button from '@/components/ui/button'
+import registerAction from '@/features/auth/register/api/register-action'
 import RegisterInput from '@/features/auth/register/components/register-input'
 import { RegisterFormData } from '@/features/auth/register/types/register'
+import { MESSAGES } from '@/shared/constants/messages'
+import Button from '@/shared/ui/button'
+import { CardBody } from '@/shared/ui/card'
+import { toast } from '@/store/toast-store'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import registerAction from '@/features/auth/register/api/register-action'
+import { FieldErrors, SubmitHandler, useForm } from 'react-hook-form'
 
 //유효성 검사 - 비밀번호, 이메일, 닉네임
 const PASSWORD_REGEX =

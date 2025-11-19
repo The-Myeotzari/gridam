@@ -1,4 +1,4 @@
-import getSupabaseServer from '@/utils/supabase/server'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 import { type EmailOtpType } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { type NextRequest } from 'next/server'

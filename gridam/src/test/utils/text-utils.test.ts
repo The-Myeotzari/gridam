@@ -1,4 +1,4 @@
-import { clamp, graphemeFromUtf16Index, sanitize, splitGraphemes } from '@/utils/text-utils'
+import { clamp, graphemeFromUtf16Index, sanitize, splitGraphemes } from '@/shared/utils/text-utils'
 
 describe('sanitize', () => {
   test('replaces CR/LF/TAB with single spaces and collapses runs', () => {

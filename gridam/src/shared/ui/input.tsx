@@ -1,4 +1,4 @@
-import cn from '@/utils/cn'
+import cn from '@/shared/utils/cn'
 import * as React from 'react'
 
 type SizeStyle = 'default' | 'sm' | 'md' | 'lg'

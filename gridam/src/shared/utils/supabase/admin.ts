@@ -1,12 +1,13 @@
-import type { Database } from '@/types/database.types'
+import type { Database } from '@/shared/types/database.types'
 import { createServerClient } from '@supabase/ssr'
-import { cookies, headers } from 'next/headers'
+import { cookies } from 'next/headers'
 
-export default async function getSupabaseServer() {
+export default async function getSupabaseAdmin() {
   const cookieStore = await cookies()
+
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_SECRET_API_KEY!,
     {
       cookies: {
         getAll() {
@@ -25,14 +26,5 @@ export default async function getSupabaseServer() {
         },
       },
     }
-  )
-}
-
-export async function getOrigin(): Promise<string> {
-  const h = await headers()
-  return (
-    h.get('origin') ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    'http://localhost:3000'
   )
 }

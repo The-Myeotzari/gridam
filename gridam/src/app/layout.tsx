@@ -1,12 +1,12 @@
 import '@/app/globals.css'
-import ModalRoot from '@/components/ui/modal/modal-root.client'
-import Toast from '@/components/ui/toast'
 import QueryProvider from '@/providers/query-providers'
+import ModalRoot from '@/shared/ui/modal/modal-root.client'
+import Toast from '@/shared/ui/toast'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 
 const zenSerif = localFont({
-  src: '../font/ZEN-SERIF-TTF-Regular.woff2',
+  src: '../shared/font/ZEN-SERIF-TTF-Regular.woff2',
   variable: '--font-zen-serif',
 })
 

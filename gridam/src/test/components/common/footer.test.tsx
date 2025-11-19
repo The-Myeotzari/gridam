@@ -1,4 +1,4 @@
-import Footer from '@/components/common/footer'
+import Footer from '@/shared/ui/footer'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 

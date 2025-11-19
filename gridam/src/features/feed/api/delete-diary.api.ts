@@ -1,5 +1,5 @@
-import { MESSAGES } from '@/constants/messages'
-import { api } from '@/lib/api'
+import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/api'
 
 export async function deleteDiary(diaryId: string) {
   const res = await api.delete(`/diaries/${diaryId}`)

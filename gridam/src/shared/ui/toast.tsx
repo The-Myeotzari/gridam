@@ -1,8 +1,8 @@
 'use client'
 
+import type { Toast } from '@/shared/types/toast.type'
+import cn from '@/shared/utils/cn'
 import { useToast } from '@/store/toast-store'
-import cn from '@/utils/cn'
-import type { Toast } from '@/utils/type'
 import { AlertCircleIcon, CheckCircle2Icon } from 'lucide-react'
 
 export default function Toast() {
@@ -21,12 +21,11 @@ export default function Toast() {
             'flex items-center gap-2'
           )}
         >
-          {t.type === 'success'
-            ?
-            <CheckCircle2Icon className='size-6 text-white fill-black' />
-            :
-            <AlertCircleIcon className='size-6 text-white fill-black' />
-          }
+          {t.type === 'success' ? (
+            <CheckCircle2Icon className="size-6 text-white fill-black" />
+          ) : (
+            <AlertCircleIcon className="size-6 text-white fill-black" />
+          )}
           {/* 메시지 텍스트 */}
           <span className="text-sm">{t.message}</span>
         </div>

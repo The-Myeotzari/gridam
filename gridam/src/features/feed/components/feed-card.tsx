@@ -1,7 +1,7 @@
-import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
-import DropBox from '@/components/ui/dropbox'
 import { default as useDeleteDiaryModal } from '@/features/feed/hooks/use-delete-diary-modal'
 import type { Diary } from '@/features/feed/types/feed'
+import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
+import DropBox from '@/shared/ui/dropbox'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 

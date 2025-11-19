@@ -1,6 +1,6 @@
-import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
-import { MESSAGES } from '@/constants/messages'
 import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
+import { MESSAGES } from '@/shared/constants/messages'
+import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
 import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'

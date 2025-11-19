@@ -1,5 +1,5 @@
-import { MESSAGES } from '@/constants/messages'
-import getSupabaseServer from '@/utils/supabase/server'
+import { MESSAGES } from '@/shared/constants/messages'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 
 // 사용자 통합 정보 조회 함수
 export async function getUserData() {

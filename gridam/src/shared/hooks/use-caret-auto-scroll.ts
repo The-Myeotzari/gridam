@@ -1,6 +1,6 @@
 'use client'
 
-import { graphemeFromUtf16Index, splitGraphemes } from '../utils/text-utils'
+import { graphemeFromUtf16Index, splitGraphemes } from '@/shared/utils/text-utils'
 
 /**
  * useCaretAutoScroll

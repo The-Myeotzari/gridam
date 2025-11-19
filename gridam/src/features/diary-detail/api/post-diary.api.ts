@@ -1,6 +1,6 @@
-import { MESSAGES } from '@/constants/messages'
 import type { CreateDiaryPayload } from '@/features/diary-detail/types/diary'
-import { api } from '@/lib/api'
+import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/api'
 
 export interface CreateDiaryResponse {
   data: { id: string } & CreateDiaryPayload

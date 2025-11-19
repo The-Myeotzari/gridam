@@ -1,8 +1,8 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { MESSAGES } from '@/constants/messages'
-import { Params } from '@/types/params'
-import { updateSchema } from '@/types/zod/apis/diaries'
-import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
+import { MESSAGES } from '@/shared/constants/messages'
+import { Params } from '@/shared/types/params'
+import { updateSchema } from '@/shared/types/zod/apis/diaries'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 import { ZodError } from 'zod'
 

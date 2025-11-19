@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react'
+import { type DropBoxItem } from '@/shared/ui/dropbox-labels'
+import DropBoxClient from '@/shared/ui/dropbox.client'
 import { EllipsisVertical, SquarePen, Trash2 } from 'lucide-react'
-import DropBoxClient from '@/components/ui/dropbox.client'
-import { type DropBoxItem } from '@/components/ui/dropbox-labels'
+import type { ReactNode } from 'react'
 
 type Action<T> = (arg: T) => Promise<void> | void
 

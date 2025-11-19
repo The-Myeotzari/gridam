@@ -1,9 +1,9 @@
 'use client'
 
-import { MESSAGES } from '@/constants/messages'
-import { QUERY_KEYS } from '@/constants/query-key'
 import { postDiary } from '@/features/diary-detail/api/post-diary.api'
 import type { CreateDiaryPayload } from '@/features/diary-detail/types/diary'
+import { MESSAGES } from '@/shared/constants/messages'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
 import { toast } from '@/store/toast-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'

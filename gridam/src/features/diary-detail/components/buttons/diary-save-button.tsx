@@ -1,5 +1,5 @@
-import { MESSAGES } from '@/constants/messages'
 import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
+import { MESSAGES } from '@/shared/constants/messages'
 
 type props = {
   isPending: boolean

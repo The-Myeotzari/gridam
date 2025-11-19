@@ -1,9 +1,9 @@
 'use client'
 
+import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
+import cn from '@/shared/utils/cn'
 import { ComponentPropsWithRef, ReactNode, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Card, CardHeader, CardBody, CardFooter } from '@/components/ui/card'
-import cn from '@/utils/cn'
 
 type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
@@ -101,10 +101,7 @@ export function Modal({
   const modalContent = (
     <>
       {/* Backdrop - 뒤 콘텐츠가 흐릿하게 보임 */}
-      <div
-        className="fixed inset-0 z-99 bg-black/80"
-        onClick={handleBackdropClick}
-      />
+      <div className="fixed inset-0 z-99 bg-black/80" onClick={handleBackdropClick} />
 
       <div
         className="fixed inset-0 z-100 flex items-center justify-center pointer-events-none"
@@ -130,6 +127,4 @@ export function Modal({
   return createPortal(modalContent, document.body)
 }
 
-export { CardHeader as ModalHeader }
-export { CardBody as ModalBody }
-export { CardFooter as ModalFooter }
+export { CardBody as ModalBody, CardFooter as ModalFooter, CardHeader as ModalHeader }

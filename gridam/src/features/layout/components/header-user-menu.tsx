@@ -1,6 +1,6 @@
 'use client'
 
-import DropBox from '@/components/ui/dropbox'
+import DropBox from '@/shared/ui/dropbox'
 import { useRouter } from 'next/navigation'
 
 export default function HeaderUserMenu() {

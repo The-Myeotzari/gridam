@@ -1,7 +1,7 @@
-import { MESSAGES } from '@/constants/messages'
-import { api } from '@/lib/api'
-import { AxiosError } from 'axios'
 import { RegisterFormData } from '@/features/auth/register/types/register'
+import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/api'
+import { AxiosError } from 'axios'
 // api 불러오기
 export async function registerUser(data: Omit<RegisterFormData, 'comfirmPassword'>) {
   try {

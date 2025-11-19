@@ -1,7 +1,7 @@
 'use client'
 
+import DropBoxLabels, { type DropBoxItem } from '@/shared/ui/dropbox-labels'
 import { useEffect, useRef, useState, useTransition } from 'react'
-import DropBoxLabels, { type DropBoxItem } from '@/components/ui/dropbox-labels'
 
 type DropBoxActionItem = DropBoxItem<{ id: string }>
 

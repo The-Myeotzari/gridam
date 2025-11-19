@@ -4,7 +4,7 @@ import { fetchWeather } from '@/features/weather/api/weather.api'
 import WeatherIcon from '@/features/weather/components/weather-icon'
 import { getCoordsFromCookies } from '@/features/weather/utils/get-coords-from-cookies'
 import { mapWeatherIdToIcon } from '@/features/weather/utils/map-weather-to-icon'
-import { formatDate } from '@/utils/format-date'
+import { formatDate } from '@/shared/utils/format-date'
 import { cookies } from 'next/headers'
 
 export default async function Page() {

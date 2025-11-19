@@ -1,9 +1,9 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
-import { api } from '@/lib/api'
 import { ChangePasswordState } from '@/features/mypage/types/mypage'
-import { QUERY_KEYS } from '@/constants/query-key'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
+import { api } from '@/shared/lib/api'
+import { useMutation } from '@tanstack/react-query'
 
 type ChangePasswordPayload = {
   password: string

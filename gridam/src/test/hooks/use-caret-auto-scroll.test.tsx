@@ -1,4 +1,4 @@
-import { useCaretAutoScroll } from '@/hooks/use-caret-auto-scroll'
+import { useCaretAutoScroll } from '@/shared/hooks/use-caret-auto-scroll'
 import '@testing-library/jest-dom'
 import { act, renderHook } from '@testing-library/react'
 

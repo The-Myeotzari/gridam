@@ -1,4 +1,4 @@
-import cn from '@/utils/cn'
+import cn from '@/shared/utils/cn'
 import { ComponentPropsWithRef, ReactNode } from 'react'
 
 type Align = 'vertical' | 'horizontal'

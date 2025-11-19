@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui/card'
+import { Card } from '@/shared/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
 import LoginForm from './login-form'

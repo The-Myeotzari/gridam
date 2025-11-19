@@ -1,9 +1,9 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { MESSAGES } from '@/constants/messages'
 import { getDiaryServer } from '@/features/feed/api/get-diary.server'
-import { createSchema } from '@/types/zod/apis/diaries'
-import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
+import { MESSAGES } from '@/shared/constants/messages'
+import { createSchema } from '@/shared/types/zod/apis/diaries'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 import { ZodError } from 'zod'
 

@@ -1,23 +1,27 @@
 'use client'
 
-import Input from "@/components/ui/input";
-import Label from "@/components/ui/label";
-import { ModalBody, ModalHeader } from "@/components/ui/modal/modal";
-import { ChangePasswordFormSchema } from "@/types/zod/apis/auth";
-import { X } from "lucide-react";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import { useChangePassword } from "@/features/mypage/api/queries/use-change-password";
-import { toast } from "@/store/toast-store";
-import { MESSAGES } from "@/constants/messages";
-import Button from "@/components/ui/button";
-import { AxiosError } from "axios";
+import { useChangePassword } from '@/features/mypage/api/queries/use-change-password'
+import { MESSAGES } from '@/shared/constants/messages'
+import { ChangePasswordFormSchema } from '@/shared/types/zod/apis/auth'
+import Button from '@/shared/ui/button'
+import Input from '@/shared/ui/input'
+import Label from '@/shared/ui/label'
+import { ModalBody, ModalHeader } from '@/shared/ui/modal/modal'
+import { toast } from '@/store/toast-store'
+import { AxiosError } from 'axios'
+import { X } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import z from 'zod'
 
 type ChangePasswordForm = z.infer<typeof ChangePasswordFormSchema>
 
 export default function ChangePasswordModal({ close }: { close: () => void }) {
-  const { register, formState: { isSubmitting }, handleSubmit, reset } = useForm<ChangePasswordForm>()
-
+  const {
+    register,
+    formState: { isSubmitting },
+    handleSubmit,
+    reset,
+  } = useForm<ChangePasswordForm>()
 
   // TODO: 비밀번호 변경 API 연동, 유효성 검사
   const { mutateAsync, isPending } = useChangePassword()
@@ -36,7 +40,8 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
       reset()
       close()
     } catch (err) {
-      const message = err instanceof AxiosError ? err.response?.data.message : MESSAGES.AUTH.ERROR.PASSWORD_RESET
+      const message =
+        err instanceof AxiosError ? err.response?.data.message : MESSAGES.AUTH.ERROR.PASSWORD_RESET
       toast.error(message)
     }
   }
@@ -46,46 +51,54 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
   return (
     <>
       <ModalHeader
-        align='horizontal'
-        cardTitle={<h1 className='text-2xl font-bold'>비밀번호 변경</h1>}
-        cardDescription='새로운 비밀번호를 입력해주세요'
-        right={<X className='absolute top-6 right-6 size-4 cursor-pointer' onClick={() => close()} />}
+        align="horizontal"
+        cardTitle={<h1 className="text-2xl font-bold">비밀번호 변경</h1>}
+        cardDescription="새로운 비밀번호를 입력해주세요"
+        right={
+          <X className="absolute top-6 right-6 size-4 cursor-pointer" onClick={() => close()} />
+        }
       />
       <ModalBody>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-          <Label htmlFor='current-password' className='font-bold'>현재 비밀번호</Label>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Label htmlFor="current-password" className="font-bold">
+            현재 비밀번호
+          </Label>
           <Input
-            id='current-password'
-            type='password'
-            className='w-full'
+            id="current-password"
+            type="password"
+            className="w-full"
             placeholder="• • • • • • • •"
             {...register('password')}
           />
-          <Label htmlFor='new-password' className='font-bold'>새 비밀번호</Label>
+          <Label htmlFor="new-password" className="font-bold">
+            새 비밀번호
+          </Label>
           <Input
-            id='new-password'
-            type='password'
-            className='w-full'
+            id="new-password"
+            type="password"
+            className="w-full"
             placeholder="• • • • • • • •"
             disabled={isSubmitting}
             {...register('newPassword')}
           />
-          <Label htmlFor='confirm-new-password' className='font-bold'>새 비밀번호 확인</Label>
+          <Label htmlFor="confirm-new-password" className="font-bold">
+            새 비밀번호 확인
+          </Label>
           <Input
-            id='confirm-new-password'
-            type='password'
-            className='w-full'
+            id="confirm-new-password"
+            type="password"
+            className="w-full"
             placeholder="• • • • • • • •"
             disabled={isSubmitting}
             {...register('confirmPassword')}
           />
-          <span className={loading ? "pointer-events-none opacity-50" : ""}>
+          <span className={loading ? 'pointer-events-none opacity-50' : ''}>
             <Button
               type="submit"
-              variant='gradient'
+              variant="gradient"
               label={loading ? '변경 중...' : '변경하기'}
-              size='lg'
-              className='w-full'
+              size="lg"
+              className="w-full"
             />
           </span>
         </form>

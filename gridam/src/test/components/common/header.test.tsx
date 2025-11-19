@@ -1,4 +1,4 @@
-import Header from '@/components/common/header'
+import Header from '@/shared/ui/header'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 

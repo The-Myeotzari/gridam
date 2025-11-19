@@ -1,6 +1,6 @@
 'use client'
 
-import { Toast } from '@/utils/type'
+import { Toast } from '@/shared/types/toast.type'
 import { create } from 'zustand'
 
 type ToastState = {
@@ -34,5 +34,5 @@ export const useToast = create<ToastState>((set, get) => ({
 // 전역 호출 헬퍼
 export const toast = {
   success: (msg: string) => useToast.getState().add({ message: msg, type: 'success' }),
-  error: (msg: string) => useToast.getState().add({ message: msg, type: 'error' })
+  error: (msg: string) => useToast.getState().add({ message: msg, type: 'error' }),
 }

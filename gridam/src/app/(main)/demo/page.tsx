@@ -1,4 +1,4 @@
-import DropBox, { type DropBoxActionItem } from '@/components/ui/dropbox'
+import DropBox, { type DropBoxActionItem } from '@/shared/ui/dropbox'
 import { SquarePen, Trash2 } from 'lucide-react'
 
 export default async function Page() {

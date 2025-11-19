@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader } from '@/components/ui/card'
+import { Card, CardBody, CardHeader } from '@/shared/ui/card'
 import Link from 'next/link'
 
 export default function Page() {

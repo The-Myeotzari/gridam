@@ -1,12 +1,12 @@
 'use client'
 
-import { MESSAGES } from '@/constants/messages'
 import { useIntersection } from '@/features/feed//hooks/use-intersection'
 import { useGetDiary } from '@/features/feed/api/queries/use-get-diary'
 import FeedCard from '@/features/feed/components/feed-card'
 import FeedCardSkeleton from '@/features/feed/components/feed-card-skeleton'
 import FeedListError from '@/features/feed/components/feed-list-error'
 import type { Diary } from '@/features/feed/types/feed'
+import { MESSAGES } from '@/shared/constants/messages'
 
 type Props = {
   year: string

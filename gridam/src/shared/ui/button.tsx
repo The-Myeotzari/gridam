@@ -1,4 +1,4 @@
-import cn from '@/utils/cn'
+import cn from '@/shared/utils/cn'
 import React from 'react'
 
 //색상, 크기 옵션의 타입 지정

@@ -1,9 +1,9 @@
 'use client'
 
-import { MESSAGES } from '@/constants/messages'
-import { QUERY_KEYS } from '@/constants/query-key'
 import { deleteDiary } from '@/features/feed/api/delete-diary.api'
 import { resolveYearMonth } from '@/features/feed/utils/diary-date'
+import { MESSAGES } from '@/shared/constants/messages'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
 import { toast } from '@/store/toast-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'

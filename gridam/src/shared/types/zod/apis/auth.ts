@@ -1,4 +1,4 @@
-import { MESSAGES } from '@/constants/messages'
+import { MESSAGES } from '@/shared/constants/messages'
 import { z } from 'zod'
 
 export const PASSWORD_REGEX: RegExp = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\;/']).+$/

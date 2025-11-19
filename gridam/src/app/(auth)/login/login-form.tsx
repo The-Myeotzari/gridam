@@ -1,12 +1,12 @@
 'use client'
 
 import { loginAction } from '@/features/auth/login/api/login-action'
-import Input from '@/components/ui/input'
-import Button from '@/components/ui/button'
-import SocialLoginButtons from './login-button'
+import Button from '@/shared/ui/button'
+import Input from '@/shared/ui/input'
 import { toast } from '@/store/toast-store'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import SocialLoginButtons from './login-button'
 
 export default function LoginForm() {
   const router = useRouter()

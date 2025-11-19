@@ -1,7 +1,7 @@
-import { MESSAGES } from '@/constants/messages'
 import type { DiaryPage, GetDiaryParams } from '@/features/feed/types/feed'
-import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
-import { withSignedImageUrls } from '@/utils/supabase/with-signed-image-urls'
+import { MESSAGES } from '@/shared/constants/messages'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 
 const DEFAULT_LIMIT = 5
 

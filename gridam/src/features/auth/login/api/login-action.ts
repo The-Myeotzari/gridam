@@ -1,5 +1,5 @@
-import { LoginSchema } from '@/types/zod/apis/auth'
-import { MESSAGES } from '@/constants/messages'
+import { MESSAGES } from '@/shared/constants/messages'
+import { LoginSchema } from '@/shared/types/zod/apis/auth'
 
 export type LoginResult = {
   ok: boolean

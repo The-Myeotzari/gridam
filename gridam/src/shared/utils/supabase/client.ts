@@ -1,5 +1,5 @@
-import type { Database } from '@/types/database.types'
-import type { TypedSupabaseClient } from '@/utils/type'
+import type { Database } from '@/shared/types/database.types'
+import type { TypedSupabaseClient } from '@/shared/types/toast.type'
 import { createBrowserClient } from '@supabase/ssr'
 import { useMemo } from 'react'
 
