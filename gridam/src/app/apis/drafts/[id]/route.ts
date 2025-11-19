@@ -74,41 +74,41 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // 임시저장 삭제
-export async function DELETE(_req: NextRequest, { params }: Params) {
-  try {
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+// export async function DELETE(_req: NextRequest, { params }: Params) {
+//   try {
+//     const { supabase, user } = await getAuthenticatedUser()
+//     if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
-    const { id } = await params
+//     const { id } = await params
 
-    const { data: existing, error: fetchErr } = await supabase
-      .from('diaries')
-      .select('id, user_id, deleted_at')
-      .eq('id', id)
-      .single()
+//     const { data: existing, error: fetchErr } = await supabase
+//       .from('diaries')
+//       .select('id, user_id, deleted_at')
+//       .eq('id', id)
+//       .single()
 
-    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
-    if (!existing) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
-    if (existing.deleted_at) {
-      // 이미 삭제됨
-      return withCORS(ok(MESSAGES.DIARY.ERROR.DRAFT_DELETE_OVER, 204))
-    }
+//     if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
+//     if (!existing) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
+//     if (existing.deleted_at) {
+//       // 이미 삭제됨
+//       return withCORS(ok(MESSAGES.DIARY.ERROR.DRAFT_DELETE_OVER, 204))
+//     }
 
-    const { error } = await supabase
-      .from('diaries')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
-      .is('deleted_at', null)
+//     const { error } = await supabase
+//       .from('diaries')
+//       .update({ deleted_at: new Date().toISOString() })
+//       .eq('id', id)
+//       .is('deleted_at', null)
 
-    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500)
-    return withCORS(ok(null, 204))
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
-    }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500))
-  }
-}
+//     if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500)
+//     return withCORS(ok(null, 204))
+//   } catch (err) {
+//     if (err instanceof ZodError) {
+//       const firstIssue = err.issues[0]
+//       return fail(firstIssue.message, 400)
+//     }
+//     return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500))
+//   }
+// }
 
 export { OPTIONS } from '@/app/apis/_lib/http'

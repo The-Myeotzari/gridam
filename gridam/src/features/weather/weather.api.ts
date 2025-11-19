@@ -1,5 +1,7 @@
+import 'server-only'
+
 // OpenWeather weather.id 매핑 (참고: https://openweathermap.org/weather-conditions)
-export function mapWeatherIdToIcon(id: number): string {
+function mapWeatherIdToIcon(id: number): string {
   // 2xx 천둥번개
   if (id >= 200 && id < 300) return '/icon/thunderstorm.svg'
   // 3xx 이슬비/소나기
@@ -18,4 +20,29 @@ export function mapWeatherIdToIcon(id: number): string {
   if (id === 803 || id === 804) return '/icon/broken-clouds.svg'
 
   return '/icon/clear sky.svg'
+}
+
+export async function fetchWeather(lat: number, lon: number) {
+  const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_KEY
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`
+
+  const res = await fetch(url, {
+    cache: 'no-store',
+  })
+
+  if (!res.ok) throw new Error('날씨 정보를 불러오지 못했습니다.')
+
+  const data = await res.json()
+
+  const id = data.weather[0].id
+  const description = data.weather[0].description
+
+  const iconSrc = mapWeatherIdToIcon(id)
+
+  return {
+    id,
+    description,
+    iconSrc,
+    raw: data,
+  }
 }

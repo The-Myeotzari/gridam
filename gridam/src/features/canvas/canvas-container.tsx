@@ -1,8 +1,8 @@
 'use client'
 
-import { CanvasToolbar } from '@/features/diary-detail/components/canvas/canvas-toolbar'
-import { CanvasView } from '@/features/diary-detail/components/canvas/canvas-view'
-import { useCanvasDrawing } from '@/features/diary-detail/hooks/use-canvas-drawing'
+import { CanvasToolbar } from '@/features/canvas/canvas-toolbar'
+import { CanvasView } from '@/features/canvas/canvas-view'
+import { useCanvasDrawing } from '@/features/canvas/use-canvas-drawing'
 import { memo, useEffect } from 'react'
 
 function CanvasContainer({
