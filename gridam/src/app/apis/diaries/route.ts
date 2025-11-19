@@ -1,23 +1,22 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { getDiaryServer } from '@/features/feed/api/get-diary.server'
 import { MESSAGES } from '@/shared/constants/messages'
 import { createSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 import { ZodError } from 'zod'
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
+// export async function GET(req: NextRequest) {
+//   const { searchParams } = new URL(req.url)
 
-  return Response.json(
-    await getDiaryServer({
-      year: searchParams.get('year')!,
-      month: searchParams.get('month')!,
-      cursor: searchParams.get('cursor'),
-    })
-  )
-}
+//   return Response.json(
+//     await getDiaryServer({
+//       year: searchParams.get('year')!,
+//       month: searchParams.get('month')!,
+//       cursor: searchParams.get('cursor'),
+//     })
+//   )
+// }
 
 export async function POST(req: NextRequest) {
   try {
