@@ -1,4 +1,4 @@
-import { api } from '@/shared/lib/api'
+import axios from 'axios'
 
 type props = {
   id: string
@@ -7,7 +7,7 @@ type props = {
 }
 
 export async function updateDiary({ id, text, imageUrl }: props) {
-  await api.patch(`/diaries/${id}`, {
+  await axios.patch(`/apis/diaries/${id}`, {
     content: text,
     imageUrl,
   })

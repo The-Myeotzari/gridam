@@ -1,12 +1,12 @@
-import { api } from '@/shared/lib/api'
 import { getDataURLToBlob } from '@/shared/utils/get-data-url-to-blob'
+import axios from 'axios'
 
 export async function postDiaryImage(image: string) {
   const blob = await getDataURLToBlob(image)
   const formData = new FormData()
   formData.append('file', blob, 'canvas.png')
 
-  const res = await api.post('/uploads', formData)
+  const res = await axios.post('/apis/uploads', formData)
 
   if (!res.data?.data?.url) {
     console.error('[postDiaryImage] 업로드 실패: url 없음', res.data)

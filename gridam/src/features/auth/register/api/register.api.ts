@@ -1,11 +1,11 @@
 import { RegisterFormData } from '@/features/auth/register/types/register'
 import { MESSAGES } from '@/shared/constants/messages'
-import { api } from '@/shared/lib/api'
-import { AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios'
+
 // api 불러오기
 export async function registerUser(data: Omit<RegisterFormData, 'comfirmPassword'>) {
   try {
-    const res = await api.post('/auth/register', data)
+    const res = await axios.post('/apis/auth/register', data)
     return res.data
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

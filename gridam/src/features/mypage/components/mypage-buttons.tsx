@@ -1,5 +1,6 @@
 'use client'
 
+import { useLogout } from '@/features/mypage/api/queries/use-logout'
 import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
@@ -8,7 +9,6 @@ import { toast } from '@/store/toast-store'
 import { AxiosError } from 'axios'
 import { Key, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useLogout } from '../api/queries/use-logout'
 
 export default function MyPageButtons() {
   const router = useRouter()
