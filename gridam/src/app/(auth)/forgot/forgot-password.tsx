@@ -3,16 +3,13 @@ import Button from '@/components/ui/button'
 import Input from '@/components/ui/input'
 import Label from '@/components/ui/label'
 import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
-import ForgotSubmitButton from '@/features/auth/forgot/components/forgot-submit-button'
 import Form from 'next/form'
 import Link from 'next/link'
-import { useActionState } from 'react'
+import { startTransition, useActionState } from 'react'
 import Toast from '@/components/ui/toast'
-
 import { toast } from '@/store/toast-store'
 import { MESSAGES } from '@/constants/messages'
-
-import { useRouter } from 'next/navigation'
+import ForgotButton from './forgot-button'
 
 interface ForgotState {
   isSubmitted: boolean //URL 쿼리에서 해석된 값
@@ -23,12 +20,15 @@ interface ForgotState {
 const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
 
 export default function ForgotPassword({ isSubmitted, email, error }: ForgotState) {
-  //state.error는 api요청 실패 시 에러 메시지를 담고, 성공 시에는 'redirect가 발생함.
-  // ✅ 여기에서 클라이언트 검증 + 서버 액션 래핑
-  const router = useRouter()
   const [state, formAction] = useActionState<ForgotState, FormData>(
     async (prevState, formData: FormData) => {
+      const isReset = formData.get('reset') === 'true'
       const emailValue = (formData.get('email') || '') as string
+      const result = await forgetAction(prevState, formData)
+
+      if (isReset) {
+        return { error: null, isSubmitted: false, email: '' }
+      }
       if (!emailValue) {
         toast.error(MESSAGES.AUTH.ERROR.EMPTY_EMAIL)
         return { ...prevState, error: MESSAGES.AUTH.ERROR.EMPTY_EMAIL, isSubmitted: false }
@@ -38,11 +38,9 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotStat
         return { ...prevState, error: MESSAGES.AUTH.ERROR.EMPTY_EMAIL, isSubmitted: false }
       }
 
-      const result = await forgetAction(prevState, formData)
-
       if (result.error) {
         toast.error(MESSAGES.AUTH.ERROR.EMAIL_VERIFICATION_REQUEST_FAILED)
-        // router.push(`/reset`)
+
         return {
           ...prevState,
           error: MESSAGES.AUTH.ERROR.EMAIL_VERIFICATION_REQUEST_FAILED,
@@ -58,7 +56,11 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotStat
     },
     { error: null, isSubmitted: false, email: '' }
   )
-
+  const resetForm = () => {
+    const data = new FormData()
+    data.append('reset', 'true')
+    formAction(data)
+  }
   return (
     <>
       <Toast />
@@ -81,8 +83,7 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotStat
               <p className="text-sm text-destructive font-handwritten">{state.error}</p>
             ) : null}
           </div>
-
-          <ForgotSubmitButton className="w-full font-handwritten text-xl rounded-full h-12 bg-linear-to-r from-primary to-secondary hover:opacity-90" />
+          <ForgotButton />
         </Form>
       ) : (
         <div className="space-y-6">
@@ -97,17 +98,17 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotStat
             <p className="font-handwritten text-sm text-muted-foreground">
               이메일을 받지 못하셨나요?
             </p>
-            <Link href={`/forgot`}>
-              <Button
-                type="button"
-                variant="gradient"
-                label="다시 시도하기"
-                className="font-handwritten text-base rounded-full"
-                onClick={() => {
-                  router.refresh()
-                }}
-              />
-            </Link>
+            <Button
+              type="submit"
+              variant="gradient"
+              label="다시 시도하기"
+              className="font-handwritten text-base rounded-full"
+              onClick={() => {
+                startTransition(() => {
+                  resetForm()
+                })
+              }}
+            />
           </div>
         </div>
       )}
