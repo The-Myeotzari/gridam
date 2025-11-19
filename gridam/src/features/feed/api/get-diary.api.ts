@@ -1,4 +1,4 @@
-import type { DiaryPage } from '@/features/feed/types/feed'
+import type { DiaryPage } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 
 interface Params {

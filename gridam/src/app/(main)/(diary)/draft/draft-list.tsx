@@ -1,6 +1,6 @@
 'use client'
 
-import { Diary } from '@/features/feed/types/feed'
+import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'

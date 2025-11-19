@@ -1,6 +1,6 @@
 'use server'
 
-import { Diary } from '@/features/feed/types/feed'
+import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
