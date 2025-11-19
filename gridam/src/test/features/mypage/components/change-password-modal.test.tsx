@@ -1,5 +1,5 @@
 import { useChangePassword } from '@/features/mypage/api/queries/use-change-password'
-import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
+import ChangePasswordModal from '@/features/mypage/components/change-password/change-password-modal'
 import { toast } from '@/store/toast-store'
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
