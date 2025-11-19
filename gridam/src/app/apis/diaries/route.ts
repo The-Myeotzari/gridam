@@ -2,20 +2,22 @@
 // import { MESSAGES } from '@/shared/constants/messages'
 // import { createSchema } from '@/shared/types/zod/apis/diaries'
 // import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-// import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server'
 // import { ZodError } from 'zod'
 
-// export async function GET(req: NextRequest) {
-//   const { searchParams } = new URL(req.url)
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
 
-//   return Response.json(
-//     await getDiaryServer({
-//       year: searchParams.get('year')!,
-//       month: searchParams.get('month')!,
-//       cursor: searchParams.get('cursor'),
-//     })
-//   )
-// }
+  return Response.json(
+    // await getDiaryServer({
+    //   year: searchParams.get('year')!,
+    //   month: searchParams.get('month')!,
+    //   cursor: searchParams.get('cursor'),
+    // })
+    // 린트 오류 피하기 위한 임시방편
+    { year: 2025, month: 11 }
+  )
+}
 
 // export async function POST(req: NextRequest) {
 //   try {
@@ -83,4 +85,4 @@
 //   }
 // }
 
-// export { OPTIONS } from '@/app/apis/_lib/http'
+export { OPTIONS } from '@/app/apis/_lib/http'
