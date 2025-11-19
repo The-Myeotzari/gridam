@@ -1,12 +1,5 @@
-import Button from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import Input from '@/components/ui/input'
-import Label from '@/components/ui/label'
-import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
-import ForgotSubmitButton from '@/features/auth/forgot/components/forgot-submit-button'
-import Form from 'next/form'
-import Link from 'next/link'
 import { Suspense } from 'react'
 import ForgotPassword from './forgot-password'
 
