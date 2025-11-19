@@ -6,29 +6,29 @@ import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 import { ZodError } from 'zod'
 
-export async function GET(_req: NextRequest, { params }: Params) {
-  try {
-    const { id } = await params
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+// export async function GET(_req: NextRequest, { params }: Params) {
+//   try {
+//     const { id } = await params
+//     const { supabase, user } = await getAuthenticatedUser()
+//     if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
-    const { data, error } = await supabase
-      .from('diaries')
-      .select('*')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .single()
-    if (error) throw fail(MESSAGES.DIARY.ERROR.READ, 505)
+//     const { data, error } = await supabase
+//       .from('diaries')
+//       .select('*')
+//       .eq('id', id)
+//       .eq('user_id', user.id)
+//       .single()
+//     if (error) throw fail(MESSAGES.DIARY.ERROR.READ, 505)
 
-    return withCORS(ok(data))
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
-    }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.READ, 500))
-  }
-}
+//     return withCORS(ok(data))
+//   } catch (err) {
+//     if (err instanceof ZodError) {
+//       const firstIssue = err.issues[0]
+//       return fail(firstIssue.message, 400)
+//     }
+//     return withCORS(fail(MESSAGES.DIARY.ERROR.READ, 500))
+//   }
+// }
 
 type DiaryPatch = {
   content?: string
