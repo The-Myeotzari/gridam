@@ -23,8 +23,8 @@ export default function ProfileCard({ email, nickname, createdAt }: ProfileCardP
       <CardBody className="flex flex-col gap-2">
         {fields.map(({ label, value }) => (
           <div key={label}>
-            <p className="text-muted-foreground">{label}</p>
-            <p className="text-xl">{value}</p>
+            <p className="text-sm sm:text-base text-muted-foreground">{label}</p>
+            <p className="text-lg sm:text-xl">{value}</p>
           </div>
         ))}
       </CardBody>

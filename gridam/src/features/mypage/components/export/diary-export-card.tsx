@@ -9,7 +9,7 @@ import {
 import Button from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import cn from '@/utils/cn'
-import { FileDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react'
 
 type DiaryExportCardProps = {
   year: number
@@ -41,8 +41,8 @@ export default function DiaryExportCard({
     <Card className="w-full">
       <CardHeader
         cardImage={<FileDown />}
-        cardTitle={<span className='text-xl text-center'>월별 일기 내보내기</span>}
-        cardDescription='선택한 달의 일기를 한 번에 PDF로 저장할 수 있어요.'
+        cardTitle={<span className='text-lg sm:text-xl text-center'>월별 일기 내보내기</span>}
+        cardDescription={<span className='text-sm'>선택한 달의 일기를 한 번에 PDF로 저장할 수 있어요.</span>}
       />
 
       <CardBody className="space-y-3 sm:space-y-4">
@@ -66,7 +66,7 @@ export default function DiaryExportCard({
                 disabled={!onPrevYear}
                 aria-label="이전 연도"
               >
-                ‹
+                <ChevronLeft className='size-4'/>
               </button>
               <span className="px-1 text-xs sm:text-sm font-medium">
                 {year}년
@@ -82,7 +82,7 @@ export default function DiaryExportCard({
                 disabled={!onNextYear}
                 aria-label="다음 연도"
               >
-                ›
+                <ChevronRight className='size-4'/>
               </button>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function DiaryExportCard({
               })}
             </div>
 
-            <p className="mt-2 text-[11px] sm:text-xs text-muted-foreground">
+            <p className="mt-4 text-[11px] sm:text-xs text-muted-foreground">
               연도를 바꾸고, 내보낼 달을 선택해 주세요.
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function DiaryExportCard({
           type="button"
           className="h-9 sm:h-10 w-full sm:w-auto px-4"
           disabled={exportDisabled}
-          label={isExporting ? '내보내는 중…' : 'PDF로 내보내기'}
+          label={isExporting ? 'PDF 생성 중…' : 'PDF 미리보기'}
         />
       </CardFooter>
     </Card>
