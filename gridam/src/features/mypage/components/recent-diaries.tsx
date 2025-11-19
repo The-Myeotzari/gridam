@@ -19,13 +19,14 @@ export default function RecentDiaries({ diaries }: RecentDiariesProps) {
 
   const handleDelete = async () => {
     // 실제 삭제 API 호출
+    console.log('삭제 모달 오픈')
   }
 
   return (
     <Card>
       <CardHeader
         align="horizontal"
-        cardTitle="최근 일기"
+        cardTitle={<span className='text-lg sm:text-xl'>최근 일기</span>}
         cardDescription={<span className='text-sm'>최근에 작성한 일기 목록</span>}
         className='text-xl'
       />
@@ -39,21 +40,23 @@ export default function RecentDiaries({ diaries }: RecentDiariesProps) {
           >
             <CardHeader
               align="horizontal"
-              cardImage={<Image src={diary.emoji} alt='날씨' width={40} height={40} />}
-              cardTitle={diary.date}
-              cardDescription={diary.weekday}
+              cardImage={
+                <div className='p-1 rounded-full bg-primary/20'>
+                  <Image src={diary.emoji} alt='날씨' width={40} height={40} />
+                </div>
+              }
+              cardTitle={<span className='text-sm sm:text-base'>{diary.date}</span>}
+              cardDescription={<span className='text-sm sm:text-base'>{diary.weekday}</span>}
               right={<DropBox
                 id={diary.id}
                 onEdit={() => handleEdit(diary.id)}
-                onDelete={() => {
-                  console.log('삭제 모달 오픈')
-                }}
+                onDelete={() => handleDelete()}
               />}
               iconSize="sm"
             />
             <CardBody className="flex flex-col gap-1 pt-1">
-              <p className="truncate">{diary.content}</p>
-              <span className="text-sm text-muted-foreground">
+              <p className="text-sm sm:text-base truncate">{diary.content}</p>
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {diary.time}
               </span>
             </CardBody>
