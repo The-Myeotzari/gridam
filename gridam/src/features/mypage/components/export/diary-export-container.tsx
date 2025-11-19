@@ -2,56 +2,64 @@
 
 import { useState } from 'react'
 import DiaryExportCard from '@/features/mypage/components/export/diary-export-card'
+import { useMonthlyDiaries } from '@/features/mypage/api/queries/use-monthly-diaries'
+import { modalStore } from '@/store/modal-store'
+import { DiaryExportPreviewModal } from '@/features/mypage/components/export/diary-export-preview-modal'
+import { Diary } from '@/features/feed/types/feed'
 
-type DiaryExportCardContainerProps = {
+type MyPageDiaryExportContainerProps = {
   initialYear: number
   initialMonth: number
-  initialDiaryCount: number
+  initialMonthly: {
+    year: number
+    month: number
+    diaries: Diary[]
+  }
 }
 
-export default function DiaryExportCardContainer({
+export default function DiaryExportContainer({
   initialYear,
   initialMonth,
-  initialDiaryCount,
-}: DiaryExportCardContainerProps) {
+  initialMonthly,
+}: MyPageDiaryExportContainerProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
-  const [diaryCount, setDiaryCount] = useState(initialDiaryCount)
-  const [isExporting, setIsExporting] = useState(false)
 
-  // TODO: React Query로 교체 가능
-  const refetchDiaryCount = async (nextYear: number, nextMonth: number) => {
-    // const res = await fetch(`/apis/diaries/count?year=${nextYear}&month=${nextMonth}`)
-    // const data = await res.json()
-    // setDiaryCount(data.count)
-  }
+    const { data, isLoading } = useMonthlyDiaries(year, month, {
+    initialData:
+      year === initialYear && month === initialMonth
+        ? initialMonthly
+        : undefined,
+  })
 
-  const handlePrevYear = async () => {
+  const diaries = data?.diaries ?? []
+  const diaryCount = diaries.length
+
+  const handlePrevYear = () => {
     const nextYear = year - 1
     setYear(nextYear)
-    await refetchDiaryCount(nextYear, month)
   }
 
-  const handleNextYear = async () => {
+  const handleNextYear = () => {
     const nextYear = year + 1
     setYear(nextYear)
-    await refetchDiaryCount(nextYear, month)
   }
 
-  const handleSelectMonth = async (nextMonth: number) => {
+  const handleSelectMonth = (nextMonth: number) => {
     setMonth(nextMonth)
-    await refetchDiaryCount(year, nextMonth)
   }
 
-  const handleExport = async () => {
-    try {
-      setIsExporting(true)
-      // TODO: PDF export API 호출
-      // const res = await fetch(`/apis/diaries/export-pdf`, { method: 'POST', body: JSON.stringify({ year, month }) })
-      // blob 받아서 다운로드 처리 or 서버에서 바로 다운로드 응답
-    } finally {
-      setIsExporting(false)
-    }
+  const handleOpenPreview = () => {
+    if (!data || diaryCount === 0) return
+
+    modalStore.open((close) => (
+      <DiaryExportPreviewModal
+        year={year}
+        month={month}
+        diaries={diaries}
+        onClose={close}
+      />
+    ))
   }
 
   return (
@@ -59,11 +67,11 @@ export default function DiaryExportCardContainer({
       year={year}
       month={month}
       diaryCount={diaryCount}
-      isExporting={isExporting}
+      isLoading={isLoading}
       onPrevYear={handlePrevYear}
       onNextYear={handleNextYear}
       onSelectMonth={handleSelectMonth}
-      onExport={handleExport}
+      onPreview={handleOpenPreview}
     />
   )
 }

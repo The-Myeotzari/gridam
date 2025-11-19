@@ -2,7 +2,7 @@
 
 import { Card, CardBody, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'
-import { RecentDiary } from '../types/mypage'
+import { RecentDiary } from '@/features/mypage/types/mypage'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 
