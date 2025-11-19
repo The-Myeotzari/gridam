@@ -1,19 +1,15 @@
 'use client'
 // 어떻게 최소한의 클라이언트로 만들지
 
-import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
 import Textarea from '@/components/ui/textarea'
-import { MESSAGES } from '@/constants/messages'
-import { postDiaryAction } from '@/features/diary-detail/api/action/post-diary-action'
-import { usePostDiary } from '@/features/diary-detail/api/queries/use-post-diary'
-import { usePostDiaryImage } from '@/features/diary-detail/api/queries/use-post-diary-image'
-import { useUpdateDiary } from '@/features/diary-detail/api/queries/use-update-diary'
+import DiaryCancelButton from '@/features/diary-detail/components/buttons/diary-cancel-button'
+import DiarySaveButton from '@/features/diary-detail/components/buttons/diary-save-button'
+import DiaryUpdateButton from '@/features/diary-detail/components/buttons/diary-update-button'
 import CanvasContainer from '@/features/diary-detail/components/canvas/canvas-container'
-import DiaryFormButton from '@/features/diary-detail/components/diary-form-button'
 import { useDiaryForm } from '@/features/diary-detail/hooks/use-diary-form'
-import { modalStore } from '@/store/modal-store'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useDiarySaveButton } from '@/features/diary-detail/hooks/use-diary-save-button'
+import { useDiaryUpdateButton } from '@/features/diary-detail/hooks/use-diary-update-button'
+import { useEffect, useState } from 'react'
 
 type props = {
   dateValue: string
@@ -32,71 +28,19 @@ export default function DiaryForm({
   initialContent,
   initialImage,
 }: props) {
-  const router = useRouter()
-
   const { date, text, setText, setDate } = useDiaryForm()
   const [canvas, setCanvas] = useState<string | null>(initialImage ?? null)
 
-  const { mutate: createDiary, isPending: createPending } = usePostDiary()
-  const { mutateAsync: uploadImage, isPending: uploadPending } = usePostDiaryImage()
-  const { mutate: updateDiaryMutate, isPending: updatePending } = useUpdateDiary()
+  const saveButton = useDiarySaveButton()
+  const updateButton = useDiaryUpdateButton()
 
   useEffect(() => {
     setDate(dateValue)
     if (initialContent) setText(initialContent)
   }, [dateValue, initialContent, setDate, setText])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (isEdit && diaryId) {
-      updateDiaryMutate({
-        id: diaryId,
-        text,
-        canvas,
-        uploadImage,
-      })
-      return
-    }
-
-    await postDiaryAction({
-      date,
-      text,
-      canvas: canvas ?? '',
-      // 예외처리 어떻게 할지 고민 필요 - 날씨 데이터 조회 실패하면 이미지 없이? 아니면 기본이미지?
-      weather: weather ?? '/fallback-weather.png',
-      createIsPending: createPending,
-      uploadIsPending: uploadPending,
-      createDiary,
-      uploadImage,
-    })
-  }
-
-  const handleCancel = useCallback(() => {
-    modalStore.open((close) => (
-      <>
-        <ModalHeader>{MESSAGES.DIARY.CANCEL.TITLE}</ModalHeader>
-        <ModalBody className="p-6 text-slate-600">{MESSAGES.DIARY.CANCEL.DESCRIPTION}</ModalBody>
-        <ModalFooter className="p-4 flex justify-end gap-2">
-          <button className="border px-3 py-2 rounded" onClick={close}>
-            {MESSAGES.COMMON.CANCEL}
-          </button>
-          <button
-            className="bg-black text-white px-3 py-2 rounded"
-            onClick={() => {
-              router.back()
-              close()
-            }}
-          >
-            {MESSAGES.COMMON.CONFIRM}
-          </button>
-        </ModalFooter>
-      </>
-    ))
-  }, [router])
-
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={(e) => e.preventDefault()}>
       <CanvasContainer initialImage={initialImage} onChange={(img) => setCanvas(img)} />
 
       <section className="p-5">
@@ -104,17 +48,33 @@ export default function DiaryForm({
       </section>
 
       <div className="text-center mb-4">
-        <span onClick={handleCancel} className="mr-2">
-          <DiaryFormButton label={MESSAGES.COMMON.CANCEL_BUTTON} type="button" />
-        </span>
+        <DiaryCancelButton />
 
-        <DiaryFormButton
-          label={isEdit ? MESSAGES.COMMON.UPDATE_BUTTON : MESSAGES.COMMON.SAVE_BUTTON}
-          type="submit"
-          variant="blue"
-          isPending={createPending || uploadPending || updatePending}
-          className="ml-2"
-        />
+        {/* 개선 필요 */}
+        {isEdit && diaryId ? (
+          <DiaryUpdateButton
+            isPending={updateButton.isPending}
+            onClick={() =>
+              updateButton.update({
+                id: diaryId,
+                text,
+                canvas,
+              })
+            }
+          />
+        ) : (
+          <DiarySaveButton
+            isPending={saveButton.isPending}
+            onClick={() =>
+              saveButton.saveDiary({
+                date,
+                text,
+                canvas,
+                weather,
+              })
+            }
+          />
+        )}
       </div>
     </form>
   )
