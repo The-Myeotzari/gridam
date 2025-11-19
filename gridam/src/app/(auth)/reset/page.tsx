@@ -1,9 +1,9 @@
-import Button from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import Input from '@/components/ui/input'
-import Label from '@/components/ui/label'
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
 import { resetAction } from '@/features/auth/reset/api/reset-action'
+import Button from '@/shared/ui/button'
+import { Card } from '@/shared/ui/card'
+import Input from '@/shared/ui/input'
+import Label from '@/shared/ui/label'
 import Link from 'next/link'
 import ResetForm from './reset-form'
 

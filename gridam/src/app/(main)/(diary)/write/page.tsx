@@ -1,10 +1,10 @@
-import { fetchWeather } from '@/features/diary-detail/api/weather.api'
 import DiaryForm from '@/features/diary-detail/components/diary-form'
 import DiaryLayout from '@/features/diary-detail/components/diary-layout'
-import WeatherIcon from '@/features/diary-detail/components/weather/weather-icon'
-import { formatDate } from '@/utils/format-date'
-import { getCoordsFromCookies } from '@/utils/get-coords-from-cookies'
-import { mapWeatherIdToIcon } from '@/utils/map-weather-to-icon'
+import { fetchWeather } from '@/features/weather/api/weather.api'
+import WeatherIcon from '@/features/weather/components/weather-icon'
+import { getCoordsFromCookies } from '@/features/weather/utils/get-coords-from-cookies'
+import { mapWeatherIdToIcon } from '@/features/weather/utils/map-weather-to-icon'
+import { formatDate } from '@/shared/utils/format-date'
 import { cookies } from 'next/headers'
 
 export default async function Page() {

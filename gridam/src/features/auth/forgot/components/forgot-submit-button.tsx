@@ -1,7 +1,7 @@
 'use client'
 
-import Button from '@/components/ui/button'
-import cn from '@/utils/cn'
+import Button from '@/shared/ui/button'
+import cn from '@/shared/utils/cn'
 import { ComponentProps } from 'react'
 import { useFormStatus } from 'react-dom'
 

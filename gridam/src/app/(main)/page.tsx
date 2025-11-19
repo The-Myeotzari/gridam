@@ -1,9 +1,9 @@
-import Button from '@/components/ui/button'
-import { QUERY_KEYS } from '@/constants/query-key'
 import { getDiaryServer } from '@/features/feed/api/get-diary.server'
 import FeedList from '@/features/feed/components/feed-list'
 import Month from '@/features/feed/components/month'
 import { type DiarySearchParams, resolveYearMonth } from '@/features/feed/utils/diary-date'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
+import Button from '@/shared/ui/button'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -29,10 +29,8 @@ export default async function Home({ searchParams }: Props) {
   return (
     <div className="flex flex-col gap-4 p-4 mt-10 text-center">
       <div className="mb-8 text-center animate-fade-in">
-        <h1 className="font-handwritten text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
-        <p className="font-handwritten text-xl text-muted-foreground">
-          모두의 하루를 담은 그림 일기
-        </p>
+        <h1 className="font-bold text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
+        <p className="font-bold text-xl text-muted-foreground">모두의 하루를 담은 그림 일기</p>
       </div>
 
       <Month year={year} month={month} />

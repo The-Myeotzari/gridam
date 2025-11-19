@@ -1,4 +1,4 @@
-import { getCSSColor } from '@/utils/get-css-color'
+import { getCSSColor } from '@/shared/utils/get-css-color'
 import * as THREE from 'three'
 
 describe('getCSSColor', () => {

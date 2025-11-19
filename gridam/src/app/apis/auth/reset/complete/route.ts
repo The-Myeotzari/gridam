@@ -1,7 +1,7 @@
 import { fail, ok } from '@/app/apis/_lib/http'
-import { MESSAGES } from '@/constants/messages'
-import { ResetCompleteSchema } from '@/types/zod/apis/auth'
-import getSupabaseServer from '@/utils/supabase/server'
+import { MESSAGES } from '@/shared/constants/messages'
+import { ResetCompleteSchema } from '@/shared/types/zod/apis/auth'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {

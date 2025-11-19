@@ -1,4 +1,4 @@
-import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
+import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 
 type Props = {
   isFirst?: boolean

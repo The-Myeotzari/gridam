@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom'
 import ProfileCard from '@/features/mypage/components/profile-card'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 
 // Card 컴포넌트 mock
-jest.mock('@/components/ui/card', () => ({
+jest.mock('@/shared/ui/card', () => ({
   Card: ({ children, ...props }: any) => (
     <div data-testid="card" {...props}>
       {children}

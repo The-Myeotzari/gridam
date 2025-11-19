@@ -1,9 +1,9 @@
-import { ChangePasswordFormSchema } from "@/types/zod/apis/auth"
-import getSupabaseServer from "@/utils/supabase/server"
-import { NextRequest } from "next/server"
-import { ZodError } from "zod"
-import { fail, ok } from "@/app/apis/_lib/http"
-import { MESSAGES } from "@/constants/messages"
+import { fail, ok } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/shared/constants/messages'
+import { ChangePasswordFormSchema } from '@/shared/types/zod/apis/auth'
+import getSupabaseServer from '@/shared/utils/supabase/server'
+import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,9 +1,9 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
-import { api } from '@/lib/api'
 import { ChangePasswordState } from '@/features/mypage/types/mypage'
-import { QUERY_KEYS } from '@/constants/query-key'
+import { QUERY_KEYS } from '@/shared/constants/query-key'
+import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
 
 type ChangePasswordPayload = {
   password: string
@@ -15,7 +15,7 @@ export function useChangePassword() {
   return useMutation({
     mutationKey: QUERY_KEYS.AUTH.CHANGE_PASSWORD,
     mutationFn: async (payload: ChangePasswordPayload) => {
-      const res = await api.post('/auth/change-password', payload)
+      const res = await axios.post('/apis/auth/change-password', payload)
       return res.data as ChangePasswordState
     },
   })

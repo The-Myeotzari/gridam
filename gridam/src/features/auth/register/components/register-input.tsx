@@ -1,5 +1,5 @@
-import Input from '@/components/ui/input'
-import { FieldValues, RegisterOptions, UseFormRegister, Path } from 'react-hook-form'
+import Input from '@/shared/ui/input'
+import { FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
 
 interface RegisterInputProps<TFormValues extends FieldValues> {
   label: string

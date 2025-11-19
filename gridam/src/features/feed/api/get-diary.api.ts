@@ -1,5 +1,5 @@
-import { MESSAGES } from '@/constants/messages'
 import type { DiaryPage } from '@/features/feed/types/feed'
+import { MESSAGES } from '@/shared/constants/messages'
 
 interface Params {
   year: string

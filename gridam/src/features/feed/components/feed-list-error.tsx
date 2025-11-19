@@ -1,7 +1,7 @@
 'use client'
 
-import Button from '@/components/ui/button'
-import { MESSAGES } from '@/constants/messages'
+import { MESSAGES } from '@/shared/constants/messages'
+import Button from '@/shared/ui/button'
 
 type Props = {
   onRetry: () => void

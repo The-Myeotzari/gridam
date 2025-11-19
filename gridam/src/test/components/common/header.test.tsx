@@ -1,12 +1,14 @@
-import Header from '@/components/common/header'
+import Header from '@/shared/ui/header'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 
+// next/image mock
 jest.mock('next/image', () => (props: any) => {
   const { src, alt, ...rest } = props
   return <img src={src} alt={alt} {...rest} />
 })
 
+// next/link mock
 jest.mock('next/link', () => {
   return ({ href, children, ...rest }: any) => (
     <a href={href} {...rest}>
@@ -15,13 +17,21 @@ jest.mock('next/link', () => {
   )
 })
 
-jest.mock('@/components/common/header-navlink', () => {
+// HeaderNavLink mock
+jest.mock('@/features/layout/components/header-navlink', () => {
   return function MockNavLink({ href, label }: { href: string; label: string }) {
     return (
       <a href={href} data-testid={`nav-${label}`}>
         {label}
       </a>
     )
+  }
+})
+
+// HeaderUserMenu mock
+jest.mock('@/features/layout/components/header-user-menu', () => {
+  return function MockUserMenu() {
+    return <div data-testid="user-menu">USER_MENU</div>
   }
 })
 
@@ -40,10 +50,14 @@ describe('Header', () => {
     expect(logoImg).toHaveAttribute('src', '/favicon.ico')
   })
 
-  it('네비게이션 링크와 사용자명을 렌더링한다', () => {
+  it('네비게이션 링크를 렌더링한다', () => {
     render(<Header />)
     expect(screen.getByTestId('nav-피드')).toHaveAttribute('href', '/')
-    expect(screen.getByTestId('nav-마이페이지')).toHaveAttribute('href', '/mypage')
-    expect(screen.getByText('별빛나눔')).toBeInTheDocument()
+    expect(screen.getByTestId('nav-캘린더')).toHaveAttribute('href', '/calendar')
+  })
+
+  it('사용자 메뉴를 렌더링한다', () => {
+    render(<Header />)
+    expect(screen.getByTestId('user-menu')).toBeInTheDocument()
   })
 })

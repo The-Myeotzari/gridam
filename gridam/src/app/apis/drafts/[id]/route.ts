@@ -1,17 +1,18 @@
+// TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { Params } from '@/types/params'
-import { DraftUpdateSchema } from '@/types/zod/apis/draft-schema'
-import getSupabaseServer from '@/utils/supabase/server'
+import { MESSAGES } from '@/shared/constants/messages'
+import { Params } from '@/shared/types/params'
+import { DraftUpdateSchema } from '@/shared/types/zod/apis/draft-schema'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
+// 임시저장 글 1개 조회
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
-    const supabase = await getSupabaseServer()
-
-    const { data: auth } = await supabase.auth.getUser()
-    const user = auth.user
-    if (!user) return withCORS(fail('Auth required', 401))
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { data, error } = await supabase
       .from('diaries')
@@ -21,82 +22,92 @@ export async function GET(_req: NextRequest, { params }: Params) {
       .eq('status', 'draft')
       .is('deleted_at', null)
       .single()
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
 
-    if (error?.code === 'PGRST116') return withCORS(fail('Draft not found', 404))
-    if (error) {
-      console.error('[diaries select] error:', error) // ← code / message 확인
-      return withCORS(fail('Query failed', 500))
-    }
     return withCORS(ok(data))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
   }
 }
 
+// 임시저장한 내용 수정 - 발행 안된 게시글 기준으로만 가능
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+
     const { id } = await params
-    const supabase = await getSupabaseServer()
+    const body = await req.json()
 
-    const {
-      data: { user },
-      error: authErr,
-    } = await supabase.auth.getUser()
-    if (authErr || !user) return withCORS(fail('UNAUTHORIZED', 401))
+    const parsed = DraftUpdateSchema.safeParse(body)
+    if (!parsed.success) throw fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_DATA, 500)
 
-    const json = await req.json().catch(() => ({}))
-    const parsed = DraftUpdateSchema.safeParse(json)
-    if (!parsed.success) return withCORS(fail('VALIDATION_ERROR', 422))
+    const { content, imageUrl } = parsed.data
 
-    const patch: Record<string, unknown> = {}
-    if (parsed.data.content !== undefined) patch.content = parsed.data.content
-    if (parsed.data.image !== undefined) patch.image_url = parsed.data.image
-    if (parsed.data.emoji !== undefined) patch.emoji = parsed.data.emoji
+    const patch = {
+      ...(content !== undefined && { content }),
+      ...(imageUrl !== undefined && { image_url: imageUrl }),
+    }
 
     const { data, error } = await supabase
       .from('diaries')
       .update(patch)
       .eq('id', id)
       .eq('user_id', user.id)
-      .eq('status', 'draft')
       .select('*')
       .single()
 
-    if (error?.code === 'PGRST116') return withCORS(fail('NOT_FOUND', 404))
-    if (error) {
-      if (error.code === '42501') return withCORS(fail('FORBIDDEN', 403))
-      return withCORS(fail('INTERNAL_ERROR', 500))
-    }
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500)
 
     return withCORS(ok(data))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500))
   }
 }
 
+// 임시저장 삭제
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    const { id } = await params
-    const supabase = await getSupabaseServer()
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
-    const {
-      data: { user },
-      error: authErr,
-    } = await supabase.auth.getUser()
-    if (authErr || !user) return withCORS(fail('UNAUTHORIZED', 401))
+    const { id } = await params
+
+    const { data: existing, error: fetchErr } = await supabase
+      .from('diaries')
+      .select('id, user_id, deleted_at')
+      .eq('id', id)
+      .single()
+
+    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
+    if (!existing) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
+    if (existing.deleted_at) {
+      // 이미 삭제됨
+      return withCORS(ok(MESSAGES.DIARY.ERROR.DRAFT_DELETE_OVER, 204))
+    }
 
     const { error } = await supabase
       .from('diaries')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)
-      .eq('user_id', user.id)
-      .eq('status', 'draft')
+      .is('deleted_at', null)
 
-    if (error?.code === 'PGRST116') return withCORS(fail('Draft not found', 404))
-    if (error) return withCORS(fail('Soft delete failed', 500))
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500)
     return withCORS(ok(null, 204))
-  } catch {
-    return withCORS(fail('Unexpected error', 500))
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500))
   }
 }
 

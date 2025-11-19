@@ -1,6 +1,7 @@
-import { Card, CardBody, CardFooter, CardHeader } from '@/components/ui/card'
-import DropBox from '@/components/ui/dropbox'
+import { default as useDeleteDiaryModal } from '@/features/feed/hooks/use-delete-diary-modal'
 import type { Diary } from '@/features/feed/types/feed'
+import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
+import DropBox from '@/shared/ui/dropbox'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
@@ -13,14 +14,8 @@ export default function FeedCard({ diary, isFirst }: props) {
   const router = useRouter()
   const hasEmoji = typeof diary.emoji === 'string' && diary.emoji.trim() !== ''
 
-  const handleEdit = () => {
-    // 다이어리 수정 페이지 이동
-    router.push(`/${diary.id}`)
-  }
-
-  const handleDelete = async () => {
-    // 실제 삭제 API 호출
-  }
+  const handleEdit = () => router.push(`/${diary.id}`)
+  const openDeleteModal = useDeleteDiaryModal(diary.id)
 
   return (
     <Card>
@@ -42,13 +37,7 @@ export default function FeedCard({ diary, isFirst }: props) {
           )
         }
         right={
-          <DropBox
-            id={diary.id}
-            onEdit={() => handleEdit()}
-            onDelete={() => {
-              console.log('삭제 모달 오픈')
-            }}
-          />
+          <DropBox id={diary.id} onEdit={() => handleEdit()} onDelete={() => openDeleteModal()} />
         }
         cardTitle={diary.date}
         align="horizontal"

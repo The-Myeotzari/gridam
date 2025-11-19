@@ -1,8 +1,8 @@
-import { Card, CardHeader, CardFooter } from '@/components/ui/card'
-import RegisterForm from './register-form'
+import { Card, CardFooter, CardHeader } from '@/shared/ui/card'
+import Toast from '@/shared/ui/toast'
 import Image from 'next/image'
 import Link from 'next/link'
-import Toast from '@/components/ui/toast'
+import RegisterForm from './register-form'
 
 export default function Page() {
   return (

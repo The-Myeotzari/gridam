@@ -1,12 +1,12 @@
 'use client'
 
-import { MESSAGES } from '@/constants/messages'
-import { useGetDiary } from '@/features/feed//api/use-get-diary'
 import { useIntersection } from '@/features/feed//hooks/use-intersection'
+import { useGetDiary } from '@/features/feed/api/queries/use-get-diary'
 import FeedCard from '@/features/feed/components/feed-card'
 import FeedCardSkeleton from '@/features/feed/components/feed-card-skeleton'
 import FeedListError from '@/features/feed/components/feed-list-error'
 import type { Diary } from '@/features/feed/types/feed'
+import { MESSAGES } from '@/shared/constants/messages'
 
 type Props = {
   year: string
@@ -54,7 +54,7 @@ export default function FeedList({ year, month, initialDiaries }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 sm:w-2xl sm:mx-auto">
       {diaries.map((diary, index) => (
         <FeedCard key={diary.id} diary={diary} isFirst={index === 0} />
       ))}

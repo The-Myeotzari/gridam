@@ -1,5 +1,5 @@
-import Footer from '@/components/common/footer'
-import Header from '@/components/common/header'
+import Footer from '@/shared/ui/footer'
+import Header from '@/shared/ui/header'
 import { ReactNode } from 'react'
 
 export default function Layout({ children }: { children: ReactNode }) {

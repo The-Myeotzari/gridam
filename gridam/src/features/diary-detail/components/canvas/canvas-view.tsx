@@ -1,6 +1,6 @@
 'use client'
 
-import cn from '@/utils/cn'
+import cn from '@/shared/utils/cn'
 import React from 'react'
 
 type Props = {
@@ -18,10 +18,8 @@ export function CanvasView({
   onPointerMove,
   onPointerUpOrLeave,
   className,
-  height = 40,
+  height = 45,
 }: Props) {
-  if (!canvasRef) return null
-
   return (
     <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm">
       <canvas

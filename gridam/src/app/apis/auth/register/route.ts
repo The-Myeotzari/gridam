@@ -1,8 +1,8 @@
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { MESSAGES } from '@/constants/messages'
-import { SignUpSchema } from '@/types/zod/apis/auth'
-import getSupabaseAdmin from '@/utils/supabase/admin'
-import getSupabaseServer, { getOrigin } from '@/utils/supabase/server'
+import { MESSAGES } from '@/shared/constants/messages'
+import { SignUpSchema } from '@/shared/types/zod/apis/auth'
+import getSupabaseAdmin from '@/shared/utils/supabase/admin'
+import getSupabaseServer, { getOrigin } from '@/shared/utils/supabase/server'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {

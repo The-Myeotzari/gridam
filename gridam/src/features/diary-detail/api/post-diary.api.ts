@@ -1,5 +1,6 @@
 import type { CreateDiaryPayload } from '@/features/diary-detail/types/diary'
-import { api } from '@/lib/api'
+import { MESSAGES } from '@/shared/constants/messages'
+import axios from 'axios'
 
 export interface CreateDiaryResponse {
   data: { id: string } & CreateDiaryPayload
@@ -7,10 +8,10 @@ export interface CreateDiaryResponse {
 }
 
 export async function postDiary(payload: CreateDiaryPayload) {
-  const res = await api.post<CreateDiaryResponse>('/diaries', payload)
+  const res = await axios.post<CreateDiaryResponse>('/apis/diaries', payload)
   const body = res.data
   if (!body.ok) {
-    throw new Error('일기 저장에 실패했습니다.')
+    throw new Error(MESSAGES.DIARY.ERROR.CREATE)
   }
   return body.data
 }
