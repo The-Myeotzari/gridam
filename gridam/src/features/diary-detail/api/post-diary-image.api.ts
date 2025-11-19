@@ -1,20 +1,20 @@
-import { MESSAGES } from '@/constants/messages'
-import type { DiaryImageData } from '@/features/diary-detail/types/diary'
 import { api } from '@/lib/api'
+import { getDataURLToBlob } from '@/utils/get-data-url-to-blob'
 
-interface UploadDiaryImageResponse {
-  data: DiaryImageData
-}
-
-export async function postDiaryImage(image: Blob, filename?: string): Promise<DiaryImageData> {
+export async function postDiaryImage(image: string) {
+  const blob = await getDataURLToBlob(image)
   const formData = new FormData()
-  formData.append('file', image)
-  if (filename) {
-    formData.append('filename', filename)
+  formData.append('file', blob, 'canvas.png')
+
+  const res = await api.post('/uploads', formData)
+
+  if (!res.data?.data?.url) {
+    console.error('[postDiaryImage] 업로드 실패: url 없음', res.data)
+    throw new Error('이미지 URL을 받지 못했습니다.')
   }
-  const res = await api.post<UploadDiaryImageResponse>('/uploads', formData)
-  if (res.status < 200 || res.status >= 300) {
-    throw new Error(MESSAGES.DIARY.ERROR.IMAGE)
+
+  return {
+    path: res.data.data.path,
+    url: res.data.data.url,
   }
-  return res.data.data
 }
