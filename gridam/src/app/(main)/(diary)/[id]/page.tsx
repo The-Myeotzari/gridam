@@ -1,6 +1,6 @@
 import { getDiary } from '@/app/(main)/(diary)/[id]/action'
-import DiaryForm from '@/features/diary-detail/components/diary-form'
-import DiaryLayout from '@/features/diary-detail/components/diary-layout'
+import DiaryForm from '@/features/diary/components/diary-form'
+import DiaryLayout from '@/features/diary/components/diary-layout'
 import { formatDate } from '@/shared/utils/format-date'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

@@ -1,5 +1,5 @@
-import DiaryForm from '@/features/diary-detail/components/diary-form'
-import DiaryLayout from '@/features/diary-detail/components/diary-layout'
+import DiaryForm from '@/features/diary/components/diary-form'
+import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/weather/weather-icon'
 import { fetchWeather } from '@/features/weather/weather.api'
 import { formatDate } from '@/shared/utils/format-date'
