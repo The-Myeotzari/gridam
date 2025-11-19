@@ -1,6 +1,6 @@
 'use client'
 
-import { loginAction } from '@/features/auth/login/api/login-action'
+import { loginAction } from '@/app/(auth)/login/login.action'
 import Button from '@/shared/ui/button'
 import Input from '@/shared/ui/input'
 import { toast } from '@/store/toast-store'
