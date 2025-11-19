@@ -1,13 +1,38 @@
 'use client'
 
 import { Diary } from '@/features/feed/types/feed'
+import { MESSAGES } from '@/shared/constants/messages'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'
 import { formatDate } from '@/shared/utils/format-date'
+import { toast } from '@/store/toast-store'
+import { useOptimistic, useState, useTransition } from 'react'
+import { deleteDraftAction } from './actions'
 
 export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] }) {
+  const [isPending, startTransition] = useTransition()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const [drafts, optimisticDelete] = useOptimistic<Diary[], string>(
+    initialDrafts,
+    (state, idToDelete) => state.filter((item) => item.id !== idToDelete)
+  )
+
   const handleDelete = (id: string) => {
-    // 삭제 처리 로직
+    optimisticDelete(id)
+    setDeletingId(id)
+
+    startTransition(async () => {
+      try {
+        await deleteDraftAction(id)
+        toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
+      } catch (err) {
+        toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
+        optimisticDelete(null as any)
+      } finally {
+        setDeletingId(null)
+      }
+    })
   }
 
   const handleEdit = () => {
@@ -16,39 +41,40 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
 
   return (
     <div>
-      {initialDrafts.length === 0 && <p>임시 글이 없습니다.</p>}
-      <div className="flex flex-col gap-4 p-4 mt-10 text-center">
-        <div className="mb-8 text-center animate-fade-in">
-          <h1 className="font-bold text-4xl mb-2 text-navy-gray">임시 글 목록</h1>
-          <p className="font-bold text-xl text-muted-foreground">
-            작성 중이던 일기를 불러올 수 있어요
-          </p>
-        </div>
-        {initialDrafts.map((diary) => (
-          <div className="flex flex-col gap-4 sm:w-xl md:w-2xl mx-auto" key={diary.id}>
-            <Card>
-              <CardHeader
-                cardTitle={diary.date}
-                right={
-                  <DropBox
-                    id={diary.id}
-                    onEdit={() => handleEdit()}
-                    onDelete={() => handleDelete(diary.id)}
-                  />
-                }
-                align="horizontal"
-                className="text-muted-foreground text-left"
-              />
-              <CardBody className="text-left text-muted-foreground text-sm line-clamp-3">
-                {diary.content}
-              </CardBody>
-              <CardFooter className="text-muted-foreground text-sm">
-                저장: {formatDate(diary.updated_at)}
-              </CardFooter>
-            </Card>
-          </div>
-        ))}
-      </div>
+      {drafts.length === 0 && <p>임시 글이 없습니다.</p>}
+      {drafts.map((diary) => {
+        const isDeleting = isPending && deletingId === diary.id
+        return (
+          <Card
+            key={diary.id}
+            // TODO: 추후 스피너로 교체 필요
+            className={`
+              flex flex-col gap-4 sm:w-xl md:w-2xl mx-auto mb-4
+              transition-opacity duration-300 ${
+                isDeleting ? 'opacity-50 pointer-events-none' : ''
+              }`}
+          >
+            <CardHeader
+              cardTitle={diary.date}
+              right={
+                <DropBox
+                  id={diary.id}
+                  onEdit={() => handleEdit()}
+                  onDelete={() => handleDelete(diary.id)}
+                />
+              }
+              align="horizontal"
+              className="text-muted-foreground text-left"
+            />
+            <CardBody className="text-left text-muted-foreground text-sm line-clamp-3">
+              {diary.content}
+            </CardBody>
+            <CardFooter className="text-muted-foreground text-sm">
+              저장: {formatDate(diary.updated_at)}
+            </CardFooter>
+          </Card>
+        )
+      })}
     </div>
   )
 }
