@@ -3,7 +3,7 @@
 import Button from '@/components/ui/button'
 import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
 import { MESSAGES } from '@/constants/messages'
-import { useDeleteDiary } from '@/features/feed/api/use-delete-diary'
+import { useDeleteDiary } from '@/features/feed/api/queries/use-delete-diary'
 import { modalStore } from '@/store/modal-store'
 import { useCallback } from 'react'
 

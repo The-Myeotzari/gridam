@@ -2,11 +2,11 @@
 
 import { MESSAGES } from '@/constants/messages'
 import { QUERY_KEYS } from '@/constants/query-key'
+import { deleteDiary } from '@/features/feed/api/delete-diary.api'
 import { resolveYearMonth } from '@/features/feed/utils/diary-date'
 import { toast } from '@/store/toast-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
-import { deleteDiary } from './delete-diary.api'
 
 export function useDeleteDiary() {
   const queryClient = useQueryClient()
