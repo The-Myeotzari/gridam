@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
       .eq('user_id', user.id)
       .gte('created_at', start)
       .lte('created_at', end)
+      .is('deleted_at', null)
       .maybeSingle()
 
     if (existingError) {
