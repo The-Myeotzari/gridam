@@ -5,6 +5,7 @@ import Label from '@/components/ui/label'
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
 import { resetAction } from '@/features/auth/reset/api/reset-action'
 import Link from 'next/link'
+import ResetForm from './reset-form'
 
 type PageProps = {
   params: Promise<{ token: string }>
@@ -18,42 +19,7 @@ export default async function ResetPasswordPage({ params }: PageProps) {
       <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto">
         <AuthHeader title="비밀번호 재설정" subtitle="새 비밀번호를 입력해주세요" />
 
-        <form action={resetAction} className="space-y-6" noValidate>
-          <input type="hidden" name="token" value={token} />
-
-          <div className="space-y-2">
-            <Label htmlFor="password" className="font-handwritten text-lg font-bold">
-              새 비밀번호
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              className="font-handwritten text-lg rounded-xl h-12 w-full"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="font-handwritten text-lg font-bold">
-              비밀번호 확인
-            </Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              className="font-handwritten text-lg rounded-xl h-12 w-full"
-              required
-            />
-          </div>
-
-          <Button
-            type="submit"
-            variant="basic"
-            label="비밀번호 변경"
-            className="w-full font-handwritten text-xl rounded-full h-12 bg-linear-to-r from-primary to-secondary hover:opacity-90"
-          />
-        </form>
+        <ResetForm token={token} />
 
         <div className="mt-6 text-center">
           <div className="font-handwritten text-base text-muted-foreground">
