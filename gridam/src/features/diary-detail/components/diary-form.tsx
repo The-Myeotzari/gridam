@@ -1,4 +1,5 @@
 'use client'
+// 어떻게 최소한의 클라이언트로 만들지
 
 import { ModalBody, ModalFooter, ModalHeader } from '@/components/ui/modal/modal'
 import Textarea from '@/components/ui/textarea'
@@ -16,7 +17,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 type props = {
   dateValue: string
-  weather: string
+  weather?: string
   isEdit?: boolean
   diaryId?: string
   initialContent?: string
@@ -62,7 +63,8 @@ export default function DiaryForm({
       date,
       text,
       canvas: canvas ?? '',
-      weather,
+      // 예외처리 어떻게 할지 고민 필요 - 날씨 데이터 조회 실패하면 이미지 없이? 아니면 기본이미지?
+      weather: weather ?? '/fallback-weather.png',
       createIsPending: createPending,
       uploadIsPending: uploadPending,
       createDiary,
