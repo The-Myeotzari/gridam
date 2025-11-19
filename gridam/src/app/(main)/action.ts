@@ -1,13 +1,27 @@
-import type { DiaryPage, GetDiaryParams } from '@/features/feed/types/feed'
+'use server'
+
+import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
+import { revalidatePath } from 'next/cache'
 
 const DEFAULT_LIMIT = 5
 
-export async function getDiaryServer({ year, month, cursor }: GetDiaryParams): Promise<DiaryPage> {
-  const { supabase, user } = await getAuthenticatedUser()
+export type DiaryPage = {
+  items: Diary[]
+  nextCursor: string | null
+  hasMore: boolean
+}
 
+export async function fetchDiaryPage(params: {
+  year: string
+  month: string
+  cursor: string | null
+  limit?: number
+}): Promise<DiaryPage> {
+  const { year, month, cursor, limit = 10 } = params
+  const { supabase, user } = await getAuthenticatedUser()
   if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
 
   let query = supabase
@@ -28,7 +42,6 @@ export async function getDiaryServer({ year, month, cursor }: GetDiaryParams): P
   if (cursor) {
     query = query.lt('published_at', cursor)
   }
-
   query = query.order('published_at', { ascending: false }).limit(DEFAULT_LIMIT + 1)
 
   const { data, error } = await query
@@ -49,4 +62,29 @@ export async function getDiaryServer({ year, month, cursor }: GetDiaryParams): P
     nextCursor: hasMore ? lastItem.published_at : null,
     hasMore,
   }
+}
+
+export async function deleteDiary(id: string) {
+  const { supabase, user } = await getAuthenticatedUser()
+  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+
+  const { data: existing, error: fetchErr } = await supabase
+    .from('diaries')
+    .select('id, user_id, deleted_at')
+    .eq('id', id)
+    .single()
+
+  if (fetchErr) throw MESSAGES.DIARY.ERROR.READ
+  if (!existing) throw MESSAGES.DIARY.ERROR.READ_NO
+  if (existing.deleted_at) throw MESSAGES.DIARY.ERROR.DELETE_OVER
+
+  const { error } = await supabase
+    .from('diaries')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) throw MESSAGES.DIARY.ERROR.DELETE
+
+  revalidatePath('/')
+  return { ok: true }
 }

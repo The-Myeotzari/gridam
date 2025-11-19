@@ -1,21 +1,22 @@
-import { default as useDeleteDiaryModal } from '@/features/feed/hooks/use-delete-diary-modal'
-import type { Diary } from '@/features/feed/types/feed'
+'use client'
+
+import { Diary } from '@/features/feed/feed.type'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-type props = {
+type FeedCardProps = {
   diary: Diary
   isFirst?: boolean
+  onDelete: (id: string) => void
 }
 
-export default function FeedCard({ diary, isFirst }: props) {
+export default function FeedCard({ diary, isFirst, onDelete }: FeedCardProps) {
   const router = useRouter()
   const hasEmoji = typeof diary.emoji === 'string' && diary.emoji.trim() !== ''
 
   const handleEdit = () => router.push(`/${diary.id}`)
-  const openDeleteModal = useDeleteDiaryModal(diary.id)
 
   return (
     <Card>
@@ -30,15 +31,11 @@ export default function FeedCard({ diary, isFirst }: props) {
             />
           ) : (
             <div className="flex items-center justify-center h-9 w-9 text-xs text-muted-foreground">
-              날씨
-              <br />
-              없음
+              날씨 <br /> 없음
             </div>
           )
         }
-        right={
-          <DropBox id={diary.id} onEdit={() => handleEdit()} onDelete={() => openDeleteModal()} />
-        }
+        right={<DropBox id={diary.id} onEdit={handleEdit} onDelete={() => onDelete(diary.id)} />}
         cardTitle={diary.date}
         align="horizontal"
         className="text-muted-foreground font-semibold"
