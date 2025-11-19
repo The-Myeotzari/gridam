@@ -13,7 +13,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const [drafts, optimisticDelete] = useOptimistic<Diary[], string>(
+  const [drafts, optimisticDelete] = useOptimistic<Diary[], string | null>(
     initialDrafts,
     (state, idToDelete) => state.filter((item) => item.id !== idToDelete)
   )
@@ -28,7 +28,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
         toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
       } catch (err) {
         toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
-        optimisticDelete(null as any)
+        optimisticDelete(null)
       } finally {
         setDeletingId(null)
       }
