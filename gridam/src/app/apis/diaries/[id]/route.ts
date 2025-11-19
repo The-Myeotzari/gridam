@@ -1,15 +1,17 @@
 // TODO: 에러 메시지 전체 검토 필요
 import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/constants/messages'
 import { Params } from '@/types/params'
 import { updateSchema } from '@/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/utils/get-authenticated-user'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { ZodError } from 'zod'
 
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { data, error } = await supabase
       .from('diaries')
@@ -17,17 +19,15 @@ export async function GET(_req: NextRequest, { params }: Params) {
       .eq('id', id)
       .eq('user_id', user.id)
       .single()
-    if (error) throw fail(error.message, 404)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.READ, 505)
 
     return withCORS(ok(data))
-  } catch (err: unknown) {
-    if (err instanceof Response) {
-      return withCORS(err)
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
     }
-    if (err instanceof Error) {
-      return withCORS(fail(err.message, 500))
-    }
-    return withCORS(fail('Unknown error', 500))
+    return withCORS(fail(MESSAGES.DIARY.ERROR.READ, 500))
   }
 }
 
@@ -40,7 +40,7 @@ type DiaryPatch = {
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { id } = await params
     const body = await req.json()
@@ -56,8 +56,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .eq('id', id)
       .single()
 
-    if (fetchErr) throw fail(fetchErr.message, 500)
-    if (!existing) throw fail('Diary not found', 404)
+    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.READ, 500)
+    if (!existing) throw fail(MESSAGES.DIARY.ERROR.READ_NO, 500)
 
     const patch: DiaryPatch = {
       ...(content !== undefined && { content }),
@@ -76,24 +76,22 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .select('*')
       .single()
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.UPDATE, 500)
 
     return withCORS(ok(data))
-  } catch (err: unknown) {
-    if (err instanceof NextResponse) {
-      return withCORS(err)
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
     }
-    if (err instanceof Error) {
-      return withCORS(fail(err.message, 500))
-    }
-    return withCORS(fail('Unknown error', 500))
+    return withCORS(fail(MESSAGES.DIARY.ERROR.UPDATE, 500))
   }
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail('UNAUTHORIZED', 401))
+    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { id } = await params
 
@@ -103,12 +101,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .eq('id', id)
       .single()
 
-    if (fetchErr) throw fail(fetchErr.message, 500)
-    if (!existing) throw fail('Diary not found', 404)
-    if (existing.user_id !== user.id) throw fail('Forbidden', 403)
+    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.READ, 500)
+    if (!existing) throw fail(MESSAGES.DIARY.ERROR.READ_NO, 500)
     if (existing.deleted_at) {
       // 이미 삭제됨
-      return withCORS(ok(null, 204))
+      return withCORS(ok(MESSAGES.DIARY.ERROR.DELETE_OVER, 204))
     }
 
     const { error } = await supabase
@@ -117,16 +114,14 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .eq('id', id)
       .is('deleted_at', null)
 
-    if (error) throw fail(error.message, 500)
+    if (error) throw fail(MESSAGES.DIARY.ERROR.DELETE, 500)
     return withCORS(ok(null, 204))
-  } catch (err: unknown) {
-    if (err instanceof NextResponse) {
-      return withCORS(err)
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
     }
-    if (err instanceof Error) {
-      return withCORS(fail(err.message, 500))
-    }
-    return withCORS(fail('Unknown error', 500))
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DELETE, 500))
   }
 }
 

@@ -1,3 +1,4 @@
+import { MESSAGES } from '@/constants/messages'
 import type { DiaryImageData } from '@/features/diary-detail/types/diary'
 import { api } from '@/lib/api'
 
@@ -13,7 +14,7 @@ export async function postDiaryImage(image: Blob, filename?: string): Promise<Di
   }
   const res = await api.post<UploadDiaryImageResponse>('/uploads', formData)
   if (res.status < 200 || res.status >= 300) {
-    throw new Error('이미지 업로드에 실패했습니다.')
+    throw new Error(MESSAGES.DIARY.ERROR.IMAGE)
   }
   return res.data.data
 }

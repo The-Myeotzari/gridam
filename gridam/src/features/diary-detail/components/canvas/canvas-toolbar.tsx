@@ -1,7 +1,6 @@
 'use client'
 
 import Button from '@/components/ui/button'
-import { useCanvasStore } from '@/features/diary-detail/store/canvas-store'
 import { Trash2, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -14,13 +13,22 @@ const palette = [
 ]
 
 type Props = {
+  color: string
+  isEraser: boolean
+  setColor: (c: string) => void
+  toggleEraser: () => void
   handleUndo: () => void
-  clearCanvas: () => void
+  clearHistory: () => void
 }
 
-export function CanvasToolbar({ handleUndo, clearCanvas }: Props) {
-  const { color, isEraser, toggleEraser, setColor } = useCanvasStore()
-
+export function CanvasToolbar({
+  color,
+  isEraser,
+  setColor,
+  toggleEraser,
+  handleUndo,
+  clearHistory,
+}: Props) {
   const [showPalette, setShowPalette] = useState(false)
 
   const handleColorChange = (c: string) => {
@@ -31,8 +39,8 @@ export function CanvasToolbar({ handleUndo, clearCanvas }: Props) {
   return (
     <div className="w-full flex items-center justify-between gap-3">
       <div className="relative flex items-center gap-2">
-        {/* 모바일 전용 색상 토글 버튼 */}
-        <span onClick={() => setShowPalette((prev) => !prev)} className="sm:hidden">
+        {/* 모바일 전용 색상 토글 */}
+        <span onClick={() => setShowPalette((p) => !p)} className="sm:hidden">
           <Button
             type="button"
             size="icon"
@@ -64,10 +72,10 @@ export function CanvasToolbar({ handleUndo, clearCanvas }: Props) {
                   size="icon"
                   variant="roundedBasic"
                   aria-pressed={active}
+                  isActive={active}
                   label={
                     <span className="block w-5 h-5 rounded-full" style={{ backgroundColor: c }} />
                   }
-                  isActive={active}
                 />
               </span>
             )
@@ -82,7 +90,7 @@ export function CanvasToolbar({ handleUndo, clearCanvas }: Props) {
         <span onClick={handleUndo}>
           <Button type="button" label={<Undo2 size={18} />} />
         </span>
-        <span onClick={clearCanvas}>
+        <span onClick={clearHistory}>
           <Button type="button" label={<Trash2 size={18} />} />
         </span>
       </div>
