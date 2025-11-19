@@ -17,8 +17,7 @@ export async function resetAction(formData: FormData) {
       newPassword: password,
       confirmPassword,
     })
-    console.log('응답', response)
-    return response.data
+    return { success: response?.data.message || MESSAGES.AUTH.SUCCESS.PASSWORD_RESET }
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error('error', error.response?.data || error)
