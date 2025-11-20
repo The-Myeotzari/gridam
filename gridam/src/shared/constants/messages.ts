@@ -39,6 +39,8 @@ export const MESSAGES = {
       UPDATE: '일기가 수정되었습니다!',
       DELETE: '일기가 성공적으로 삭제되었습니다.',
       READ_NO_DATA: '아직 이 달에 작성된 일기가 없어요.',
+      DRAFT_CREATE: '임시 게시글이 저장되었습니다!',
+      DRAFT_UPDATE: '임시 게시글이 수정되었습니다!',
     },
     ERROR: {
       CREATE: '일기 저장에 실패했습니다.',
