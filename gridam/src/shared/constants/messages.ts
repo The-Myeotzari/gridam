@@ -73,5 +73,7 @@ export const MESSAGES = {
     SAVE_BUTTON: '저장하기',
     UPDATE_BUTTON: '수정하기',
     DELETE_BUTTON: '삭제하기',
+    DRAFT_SAVE_BUTTON: '임시 저장',
+    DRAFT_UPDATE_BUTTON: '임시 수정',
   },
 } as const

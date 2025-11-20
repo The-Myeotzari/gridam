@@ -2,9 +2,11 @@
 
 import { saveDiaryAction, updateDiaryAction } from '@/app/(main)/(diary)/write/action'
 import CanvasContainer from '@/features/canvas/canvas-container'
-import DiaryCancelButton from '@/features/diary/components/buttons/diary-cancel-button'
-import DiarySaveButton from '@/features/diary/components/buttons/diary-save-button'
-import DiaryUpdateButton from '@/features/diary/components/buttons/diary-update-button'
+import DiaryFormButtons, {
+  DIARY_STATUS,
+  DiaryStatus,
+} from '@/features/diary/components/diary-form-buttons'
+import { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
 import { toast } from '@/store/toast-store'
@@ -15,23 +17,14 @@ type DiaryFormProps = {
   dateValue: string
   weather?: string
   isEdit?: boolean
-  diaryId?: string
-  initialContent?: string
-  initialImage?: string | null
+  diary?: Diary | null
 }
 
-export default function DiaryForm({
-  dateValue,
-  weather,
-  isEdit = false,
-  diaryId,
-  initialContent,
-  initialImage,
-}: DiaryFormProps) {
+export default function DiaryForm({ dateValue, weather, isEdit = false, diary }: DiaryFormProps) {
   const router = useRouter()
 
-  const [text, setText] = useState(initialContent ?? '')
-  const [canvas, setCanvas] = useState<string | null>(initialImage ?? null)
+  const [text, setText] = useState(diary?.content ?? '')
+  const [canvas, setCanvas] = useState<string | null>(diary?.image_url ?? null)
 
   const [optimisticText, updateOptimisticText] = useOptimistic<string, string>(
     text,
@@ -39,6 +32,12 @@ export default function DiaryForm({
   )
 
   const [isPending, startTransition] = useTransition()
+
+  const status: DiaryStatus = (() => {
+    if (!isEdit) return DIARY_STATUS.NEW
+    if (isEdit && diary?.status === DIARY_STATUS.DRAFT) return DIARY_STATUS.DRAFT
+    return DIARY_STATUS.PUBLISHED
+  })()
 
   const handleSave = () => {
     startTransition(async () => {
@@ -68,14 +67,14 @@ export default function DiaryForm({
   }
 
   const handleUpdate = () => {
-    if (!diaryId) return
+    if (!diary?.id) return
 
     startTransition(async () => {
       try {
         updateOptimisticText(text)
 
         const res = await updateDiaryAction({
-          id: diaryId,
+          id: diary.id,
           content: text,
           imageUrl: canvas,
         })
@@ -92,23 +91,30 @@ export default function DiaryForm({
     })
   }
 
+  const handleDraftSave = () => {
+    console.log('handleDraftSave')
+  }
+
+  const handleDraftUpdate = () => {
+    console.log('handleDraftUpdate')
+  }
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <CanvasContainer initialImage={initialImage} onChange={setCanvas} />
+      <CanvasContainer initialImage={diary?.image_url} onChange={setCanvas} />
 
       <section className="p-5">
         <Textarea value={optimisticText} onChange={(v) => setText(v)} />
       </section>
 
-      <div className="text-center mb-4">
-        <DiaryCancelButton />
-
-        {isEdit && diaryId ? (
-          <DiaryUpdateButton isPending={isPending} onClick={handleUpdate} />
-        ) : (
-          <DiarySaveButton isPending={isPending} onClick={handleSave} />
-        )}
-      </div>
+      <DiaryFormButtons
+        status={status}
+        isPending={isPending}
+        onSave={handleSave}
+        onUpdate={handleUpdate}
+        onTempSave={handleDraftSave}
+        onTempUpdate={handleDraftUpdate}
+      />
     </form>
   )
 }
