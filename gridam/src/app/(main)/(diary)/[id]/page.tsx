@@ -14,13 +14,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <DiaryLayout date={formattedDate} weatherIcon={weatherIcon}>
-      <DiaryForm
-        dateValue={dateValue}
-        isEdit={true}
-        diaryId={diary.id}
-        initialContent={diary.content}
-        initialImage={diary.image_url}
-      />
+      <DiaryForm dateValue={dateValue} isEdit={true} diary={diary} />
     </DiaryLayout>
   )
 }

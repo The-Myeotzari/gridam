@@ -1,15 +1,18 @@
 'use client'
 
+import { deleteDraftAction } from '@/app/(main)/(diary)/draft/actions'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'
 import { formatDate } from '@/shared/utils/format-date'
 import { toast } from '@/store/toast-store'
+import { useRouter } from 'next/navigation'
 import { useOptimistic, useState, useTransition } from 'react'
-import { deleteDraftAction } from './actions'
 
 export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] }) {
+  const router = useRouter()
+
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -35,13 +38,12 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
     })
   }
 
-  const handleEdit = () => {
-    // 수정 처리 로직
-  }
+  const handleEdit = (id: string) => router.push(`/${id}`)
 
   return (
     <div>
       {drafts.length === 0 && <p>임시 글이 없습니다.</p>}
+      {/* TODO: 카드 전용 컴포넌트로 분리하기 */}
       {drafts.map((diary) => {
         const isDeleting = isPending && deletingId === diary.id
         return (
@@ -59,7 +61,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
               right={
                 <DropBox
                   id={diary.id}
-                  onEdit={() => handleEdit()}
+                  onEdit={() => handleEdit(diary.id)}
                   onDelete={() => handleDelete(diary.id)}
                 />
               }
