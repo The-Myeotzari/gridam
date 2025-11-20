@@ -1,5 +1,6 @@
 import { Diary } from '@/features/feed/types/feed'
 import getSupabaseServer from '@/shared/utils/supabase/server'
+import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 
 export async function getMonthlyDiaries({
   year,
@@ -47,10 +48,11 @@ export async function getMonthlyDiaries({
 
   const diaries: Diary[] = data ?? []
 
-  // TODO: image_url 사용해 이미지 가져오기
+  const diariesWithImages: Diary[] = await withSignedImageUrls<Diary>(supabase, diaries)
+  
   return {
     year,
     month,
-    diaries,
+    diaries: diariesWithImages,
   }
 }
