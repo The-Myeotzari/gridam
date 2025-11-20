@@ -42,14 +42,6 @@ export async function updateDiaryAction(form: {
 
   const { id, content, imageUrl } = parsed.data
 
-  let uploadedUrl: string | null = null
-  if (imageUrl && imageUrl.startsWith('data:image')) {
-    const { url } = await uploadDiaryImage(imageUrl, user.id)
-    uploadedUrl = url
-  } else {
-    uploadedUrl = imageUrl ?? null
-  }
-
   const { data: existing, error: fetchErr } = await supabase
     .from('diaries')
     .select('status, published_at')
@@ -58,6 +50,12 @@ export async function updateDiaryAction(form: {
 
   if (fetchErr || !existing) {
     throw new Error(MESSAGES.DIARY.ERROR.READ)
+  }
+
+  let uploadedUrl: string | null = null
+  if (imageUrl) {
+    const { url } = await uploadDiaryImage(imageUrl, user.id)
+    uploadedUrl = url
   }
 
   const patch: DiaryPatch = {

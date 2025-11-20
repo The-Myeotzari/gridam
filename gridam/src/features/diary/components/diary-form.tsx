@@ -39,35 +39,6 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     return DIARY_STATUS.PUBLISHED
   })()
 
-  // const handleSave = () => {
-  //   startTransition(async () => {
-  //     try {
-  //       // diary?.status === DIARY_STATUS.DRAFT 이 true이면 임시저장된 글 발행
-  //       // saveDiaryPublishedAction
-
-  //       // false 일 경우 실행
-  //       const res = await saveDiaryAction({
-  //         date: dateValue,
-  //         content: text,
-  //         imageUrl: canvas,
-  //         emoji: weather,
-  //         meta: {
-  //           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  //         },
-  //       })
-
-  //       if (res.ok) {
-  //         toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
-  //         router.push('/')
-  //       } else {
-  //         toast.error(MESSAGES.DIARY.ERROR.CREATE)
-  //       }
-  //     } catch (e) {
-  //       toast.error(MESSAGES.DIARY.ERROR.CREATE)
-  //     }
-  //   })
-  // }
-
   const handleSave = () => {
     startTransition(async () => {
       try {
@@ -151,7 +122,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
         const res = await updateDiaryAction({
           id: diary.id,
           content: text,
-          imageUrl: canvas,
+          imageUrl: canvas ?? diary.image_url,
         })
 
         if (res.ok) {
