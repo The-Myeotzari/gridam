@@ -10,8 +10,7 @@ type PageProps = {
 }
 
 export default async function ResetPasswordPage({ searchParams }: PageProps) {
-  const { code } = await searchParams
-  const token = code ? code : ''
+  const token = (await (await searchParams).code) ?? ''
 
   return (
     <div className="flex-1 flex item-center justify-center">
