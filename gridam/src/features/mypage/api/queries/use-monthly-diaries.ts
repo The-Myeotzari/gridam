@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/shared/constants/query-key'
 import axios from 'axios'
-import { Diary } from '@/features/feed/types/feed'
+import { Diary } from '@/features/mypage/types/mypage'
 
 type GetMonthlyDiariesResponse = {
   year: number
@@ -21,7 +21,7 @@ export function useMonthlyDiaries(
   options?: UseMonthlyDiariesOptions,
 ) {
   return useQuery<unknown, Error, GetMonthlyDiariesResponse>({
-    queryKey: QUERY_KEYS.DIARY.LIST(year.toString(), month.toString()),
+    queryKey: QUERY_KEYS.DIARY.MONTHLY_EXPORT(year, month),
     queryFn: async () => {
       const res = await axios.get<GetMonthlyDiariesResponse>('/apis/diaries/monthly', {
         params: { year, month },

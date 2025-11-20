@@ -8,7 +8,7 @@ export const QUERY_KEYS = {
     RESET_REQUEST: ['auth', 'reset', 'request'] as const,
     RESET_COMPLETE: ['auth', 'reset', 'complete'] as const,
     ME: ['auth', 'me'] as const,
-    CHANGE_PASSWORD: ['auth', 'change'] as const
+    CHANGE_PASSWORD: ['auth', 'change'] as const,
   },
 
   // Me 관련
@@ -21,6 +21,8 @@ export const QUERY_KEYS = {
     DETAIL: (id: string) => ['diary', id] as const,
     CREATE: ['diary', 'create'] as const,
     UPDATE: ['diary', 'update'] as const,
+    MONTHLY_EXPORT: (year: number, month: number) =>
+      ['diary', 'monthly-export', year, month] as const,
   },
 
   //Drafts 관련
