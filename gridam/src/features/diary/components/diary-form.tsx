@@ -1,5 +1,6 @@
 'use client'
 
+import { saveDiaryDraftAction } from '@/app/(main)/(diary)/draft/actions'
 import { saveDiaryAction, updateDiaryAction } from '@/app/(main)/(diary)/write/action'
 import CanvasContainer from '@/features/canvas/canvas-container'
 import DiaryFormButtons, {
@@ -11,7 +12,7 @@ import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
 import { toast } from '@/store/toast-store'
 import { useRouter } from 'next/navigation'
-import { useOptimistic, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 type DiaryFormProps = {
   dateValue: string
@@ -26,11 +27,6 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
   const [text, setText] = useState(diary?.content ?? '')
   const [canvas, setCanvas] = useState<string | null>(diary?.image_url ?? null)
 
-  const [optimisticText, updateOptimisticText] = useOptimistic<string, string>(
-    text,
-    (_, next) => next
-  )
-
   const [isPending, startTransition] = useTransition()
 
   const status: DiaryStatus = (() => {
@@ -42,8 +38,6 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
   const handleSave = () => {
     startTransition(async () => {
       try {
-        updateOptimisticText(text)
-
         const res = await saveDiaryAction({
           date: dateValue,
           content: text,
@@ -71,8 +65,6 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
     startTransition(async () => {
       try {
-        updateOptimisticText(text)
-
         const res = await updateDiaryAction({
           id: diary.id,
           content: text,
@@ -92,7 +84,28 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
   }
 
   const handleDraftSave = () => {
-    console.log('handleDraftSave')
+    startTransition(async () => {
+      try {
+        const res = await saveDiaryDraftAction({
+          date: dateValue,
+          content: text,
+          imageUrl: canvas,
+          emoji: weather,
+          meta: {
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
+        })
+
+        if (res.ok) {
+          toast.success(MESSAGES.DIARY.SUCCESS.DRAFT_CREATE)
+          router.push('/draft')
+        } else {
+          toast.error(MESSAGES.DIARY.ERROR.DRAFT_CREATE)
+        }
+      } catch (e) {
+        toast.error(MESSAGES.DIARY.ERROR.DRAFT_CREATE)
+      }
+    })
   }
 
   const handleDraftUpdate = () => {
@@ -104,7 +117,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
       <CanvasContainer initialImage={diary?.image_url} onChange={setCanvas} />
 
       <section className="p-5">
-        <Textarea value={optimisticText} onChange={(v) => setText(v)} />
+        <Textarea value={text} onChange={(v) => setText(v)} />
       </section>
 
       <DiaryFormButtons
