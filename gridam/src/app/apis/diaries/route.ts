@@ -18,7 +18,10 @@ export async function GET(req: NextRequest) {
 
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) {
-      return NextResponse.json({ message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER }, { status: 401 })
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
+        { status: 401 }
+      )
     }
 
     let query = supabase
@@ -48,7 +51,7 @@ export async function GET(req: NextRequest) {
     const { data, error } = await query
 
     if (error) {
-      return NextResponse.json({ message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
     }
 
     // 결과 없음
@@ -88,13 +91,19 @@ export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
     if (!user) {
-      return NextResponse.json({ message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER }, { status: 401 })
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
+        { status: 401 }
+      )
     }
 
     const body = await req.json()
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ message: MESSAGES.DIARY.ERROR.CREATE_NO_DATA }, { status: 400 })
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.CREATE_NO_DATA },
+        { status: 400 }
+      )
     }
 
     const { content, date, emoji, imageUrl, meta } = parsed.data
@@ -113,11 +122,14 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (existingError) {
-      return NextResponse.json({ message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
     }
 
     if (existingDiary) {
-      return NextResponse.json({ message: MESSAGES.DIARY.ERROR.CREATE_OVER }, { status: 409 })
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.CREATE_OVER },
+        { status: 409 }
+      )
     }
 
     let uploadedUrl: string | null = null
@@ -141,7 +153,9 @@ export async function POST(req: NextRequest) {
       .select('id')
       .single()
 
-    if (error) throw new Error(MESSAGES.DIARY.ERROR.CREATE)
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.CREATE }, { status: 500 })
+    }
 
     if (meta) {
       await supabase.from('metadata').insert({
