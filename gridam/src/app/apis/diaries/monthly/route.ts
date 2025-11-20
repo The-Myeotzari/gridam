@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     if (!yearParam || !monthParam) {
       return withCORS(
-        fail('year와 month 쿼리 파라미터가 필요합니다.', 400),
+        fail(MESSAGES.DIARY.ERROR.EXPORT_INVALID_DATA, 400),
       )
     }
 
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     if (!Number.isInteger(year) || !Number.isInteger(month)) {
       return withCORS(
-        fail('year와 month는 정수여야 합니다.', 400),
+        fail(MESSAGES.DIARY.ERROR.EXPORT_INVALID_DATA, 400),
       )
     }
 
@@ -38,12 +38,12 @@ export async function GET(req: NextRequest) {
 
     if (error instanceof Error && error.message === 'INVALID_YEAR_MONTH') {
       return withCORS(
-        fail('유효하지 않은 연/월입니다.', 400 ),
+        fail(MESSAGES.DIARY.ERROR.EXPORT_INVALID_DATA, 400),
       )
     }
 
     return withCORS(
-      fail('월별 일기 조회 중 오류가 발생했습니다.', 500),
+      fail(MESSAGES.DIARY.ERROR.READ, 500),
     )
   }
 }

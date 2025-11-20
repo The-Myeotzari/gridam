@@ -59,6 +59,7 @@ export const MESSAGES = {
       DRAFT_READ: '임시 게시글 조회에 실패했습니다.',
       IMAGE: '이미지 업로드에 실패했습니다.',
       WEATHER: '날씨 조회에 실패했습니다.',
+      EXPORT_INVALID_DATA: '유효하지 않은 연/월입니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',
