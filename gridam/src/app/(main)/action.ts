@@ -15,9 +15,12 @@ type FetchDiaryType = {
 }
 
 type FetchDiaryResponseType = {
-  items: Diary[]
-  nextCursor: string | null
-  hasMore: boolean
+  ok: boolean
+  data: {
+    items: Diary[]
+    nextCursor: string | null
+    hasMore: boolean
+  }
 }
 
 export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiaryResponseType> {
@@ -45,10 +48,6 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
       },
     }
   )
-
-  if (!res.ok) {
-    throw new Error(MESSAGES.DIARY.ERROR.READ)
-  }
 
   return res.json()
 }

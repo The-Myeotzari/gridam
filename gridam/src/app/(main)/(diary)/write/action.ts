@@ -1,73 +1,39 @@
 'use server'
 
 import { MESSAGES } from '@/shared/constants/messages'
-import { createSchema } from '@/shared/types/zod/apis/diaries'
 import { DraftCreateSchema } from '@/shared/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { uploadDiaryImage } from '@/shared/utils/uploads/upload-diary-image'
+import { cookies } from 'next/headers'
 
-export async function saveDiaryAction(form: {
+type SaveDiaryAction = {
   date: string
   content: string
   imageUrl: string | null
   emoji: string | undefined
   meta: { timezone: string }
-}) {
-  const { supabase, user } = await getAuthenticatedUser()
-  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+}
 
-  const parsed = createSchema.safeParse(form)
-  if (!parsed.success) throw new Error(MESSAGES.DIARY.ERROR.CREATE_NO_DATA)
+export async function saveDiaryAction(form: SaveDiaryAction) {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
 
-  const { date, content, emoji, imageUrl, meta } = parsed.data
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries`, {
+    method: 'POST',
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: cookieHeader,
+    },
+    body: JSON.stringify(form),
+  })
 
-  let uploadedUrl: string | null = null
-
-  if (imageUrl) {
-    const { url } = await uploadDiaryImage(imageUrl, user.id)
-    uploadedUrl = url
-  }
-
-  const start = new Date(`${date}T00:00:00.000Z`).toISOString()
-  const end = new Date(`${date}T23:59:59.999Z`).toISOString()
-
-  const { data: exist, error: existErr } = await supabase
-    .from('diaries')
-    .select('id')
-    .eq('user_id', user.id)
-    .gte('created_at', start)
-    .lte('created_at', end)
-    .is('deleted_at', null)
-    .maybeSingle()
-
-  if (existErr) throw new Error(MESSAGES.DIARY.ERROR.READ)
-  if (exist) throw new Error(MESSAGES.DIARY.ERROR.CREATE_OVER)
-
-  const { data: diary, error } = await supabase
-    .from('diaries')
-    .insert({
-      user_id: user.id,
-      content,
-      date,
-      emoji,
-      image_url: uploadedUrl,
-      status: 'published',
-      published_at: new Date().toISOString(),
-    })
-    .select('id')
-    .single()
-
-  if (error) throw new Error(MESSAGES.DIARY.ERROR.CREATE)
-
-  if (meta) {
-    await supabase.from('metadata').insert({
-      diary_id: diary.id,
-      date,
-      timezone: meta.timezone,
-    })
-  }
-
-  return { ok: true, id: diary.id }
+  return res.json()
 }
 
 export async function saveDiaryDraftAction(payload: {
