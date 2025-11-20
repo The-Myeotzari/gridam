@@ -1,67 +1,58 @@
 'use server'
 
+import { DEFAULT_LIMIT } from '@/app/apis/diaries/route'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
 
-const DEFAULT_LIMIT = 5
+type FetchDiaryPageType = {
+  year: string
+  month: string
+  cursor: string | null
+  limit?: number
+}
 
-export type DiaryPage = {
+type FetchDiaryPageResponseType = {
   items: Diary[]
   nextCursor: string | null
   hasMore: boolean
 }
 
-export async function fetchDiaryPage(params: {
-  year: string
-  month: string
-  cursor: string | null
-  limit?: number
-}): Promise<DiaryPage> {
-  const { year, month, cursor, limit = 10 } = params
-  const { supabase, user } = await getAuthenticatedUser()
-  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+export async function fetchDiaryPage(
+  params: FetchDiaryPageType
+): Promise<FetchDiaryPageResponseType> {
+  const { year, month, cursor, limit = DEFAULT_LIMIT } = params
 
-  let query = supabase
-    .from('diaries')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('status', 'published')
-    .not('published_at', 'is', null)
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
+  const search = new URLSearchParams()
+  const setParams = new URLSearchParams({ year, month, limit: String(limit) })
+  if (cursor) search.set('cursor', String(cursor))
 
-  if (year && month) {
-    const start = new Date(Number(year), Number(month) - 1, 1).toISOString()
-    const end = new Date(Number(year), Number(month), 1).toISOString()
-    query = query.gte('published_at', start).lt('published_at', end)
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries?${setParams.toString()}`,
+    {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'include',
+      next: { revalidate: 0 },
+      headers: {
+        Cookie: cookieHeader,
+      },
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error(MESSAGES.DIARY.ERROR.READ)
   }
 
-  if (cursor) {
-    query = query.lt('published_at', cursor)
-  }
-  query = query.order('published_at', { ascending: false }).limit(DEFAULT_LIMIT + 1)
-
-  const { data, error } = await query
-  if (error) throw MESSAGES.DIARY.ERROR.READ
-
-  if (!data || data.length === 0) {
-    return { items: [], nextCursor: null, hasMore: false }
-  }
-
-  const hasMore = data.length > DEFAULT_LIMIT
-  const items = hasMore ? data.slice(0, DEFAULT_LIMIT) : data
-
-  const diariesWithSignedUrls = await withSignedImageUrls(supabase, items)
-  const lastItem = items[items.length - 1]
-
-  return {
-    items: diariesWithSignedUrls,
-    nextCursor: hasMore ? lastItem.published_at : null,
-    hasMore,
-  }
+  return res.json()
 }
 
 export async function deleteDiary(id: string) {
