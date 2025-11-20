@@ -7,22 +7,20 @@ import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
-type FetchDiaryPageType = {
+type FetchDiaryType = {
   year: string
   month: string
   cursor: string | null
   limit?: number
 }
 
-type FetchDiaryPageResponseType = {
+type FetchDiaryResponseType = {
   items: Diary[]
   nextCursor: string | null
   hasMore: boolean
 }
 
-export async function fetchDiaryPage(
-  params: FetchDiaryPageType
-): Promise<FetchDiaryPageResponseType> {
+export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiaryResponseType> {
   const { year, month, cursor, limit = DEFAULT_LIMIT } = params
 
   const search = new URLSearchParams()

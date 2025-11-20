@@ -4,7 +4,7 @@ import { deleteDiary, fetchDiaryPage } from '@/app/(main)/action'
 import FeedCard from '@/features/feed/components/feed-card'
 import FeedCardSkeleton from '@/features/feed/components/feed-card-skeleton'
 import FeedListError from '@/features/feed/components/feed-list-error'
-import { Diary, DiaryPage } from '@/features/feed/feed.type'
+import type { Diary, FetchDiaryResponseType } from '@/features/feed/feed.type'
 import { useIntersection } from '@/features/feed/hooks/use-intersection'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
@@ -16,11 +16,11 @@ import { useCallback, useOptimistic, useState, useTransition } from 'react'
 type FeedListProps = {
   year: string
   month: string
-  initialPage: DiaryPage
+  initialPage: FetchDiaryResponseType
 }
 
 export default function FeedList({ year, month, initialPage }: FeedListProps) {
-  const [pages, setPages] = useState<DiaryPage[]>([initialPage])
+  const [pages, setPages] = useState<FetchDiaryResponseType[]>([initialPage])
   const [isError, setIsError] = useState(false)
   const [isFetchingMore, setIsFetchingMore] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -120,11 +120,16 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 sm:w-2xl sm:mx-auto">
+    <div className="flex flex-col gap-4 sm:w-xl md:w-2xl sm:mx-auto">
       {/* TODO: 추후 스피너 컴포넌트로 교체 필요 */}
       {isPending && <div>로딩중입니다</div>}
       {optimisticItems.map((diary, idx) => (
-        <FeedCard key={diary.id} diary={diary} isFirst={idx === 0} onDelete={openDeleteModal} />
+        <FeedCard
+          key={`${diary.id}의 게시글`}
+          diary={diary}
+          isFirst={idx === 0}
+          onDelete={openDeleteModal}
+        />
       ))}
 
       <div ref={ref} className="h-10" />
