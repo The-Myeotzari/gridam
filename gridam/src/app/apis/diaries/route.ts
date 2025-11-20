@@ -2,7 +2,6 @@ import { MESSAGES } from '@/shared/constants/messages'
 import { createSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
-import { uploadDiaryImage } from '@/shared/utils/uploads/upload-diary-image'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const DEFAULT_LIMIT = 5
@@ -132,13 +131,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    let uploadedUrl: string | null = null
-
-    if (imageUrl) {
-      const { url } = await uploadDiaryImage(imageUrl, user.id)
-      uploadedUrl = url
-    }
-
     const { data: diary, error } = await supabase
       .from('diaries')
       .insert({
@@ -146,7 +138,7 @@ export async function POST(req: NextRequest) {
         content,
         date,
         emoji,
-        image_url: uploadedUrl,
+        image_url: imageUrl,
         status: 'published',
         published_at: new Date().toISOString(),
       })
