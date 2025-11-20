@@ -5,7 +5,7 @@ import DiaryExportCard from '@/features/mypage/components/export/diary-export-ca
 import { useMonthlyDiaries } from '@/features/mypage/api/queries/use-monthly-diaries'
 import { modalStore } from '@/store/modal-store'
 import { DiaryExportPreviewModal } from '@/features/mypage/components/export/diary-export-preview-modal'
-import { Diary } from '@/features/feed/types/feed'
+import { Diary } from '@/features/mypage/types/mypage'
 
 type MyPageDiaryExportContainerProps = {
   initialYear: number
@@ -24,8 +24,7 @@ export default function DiaryExportContainer({
 }: MyPageDiaryExportContainerProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
-
-    const { data, isLoading } = useMonthlyDiaries(year, month, {
+  const { data, isLoading } = useMonthlyDiaries(year, month, {
     initialData:
       year === initialYear && month === initialMonth
         ? initialMonthly
