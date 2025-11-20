@@ -1,26 +1,47 @@
 'use server'
 
+import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
-import { updateSchema } from '@/shared/types/zod/apis/diaries'
 import { DraftUpdateSchema } from '@/shared/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 import { uploadDiaryImage } from '@/shared/utils/uploads/upload-diary-image'
+import { cookies } from 'next/headers'
 
 export async function getDiary(id: string) {
-  const { supabase, user } = await getAuthenticatedUser()
-  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+  if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
 
-  const query = supabase.from('diaries').select('*').eq('id', id).single()
-  const { data, error } = await query
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
 
-  if (error) throw new Error(MESSAGES.DIARY.ERROR.READ)
-  if (data?.image_url) {
-    const signed = await withSignedImageUrls(await supabase, [data])
-    return signed[0]
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      Cookie: cookieHeader,
+    },
+  })
+
+  const json = await res.json()
+
+  if (!res.ok || !json?.ok) {
+    return { ok: false, data: {} as Diary }
   }
+  const diary = json.data
 
-  return data
+  const supabase = await getSupabaseServer()
+  const [signedDiary] = await withSignedImageUrls(supabase, [diary])
+
+  return {
+    ok: true,
+    data: signedDiary,
+  }
 }
 
 type DiaryPatch = {
@@ -34,50 +55,25 @@ export async function updateDiaryAction(form: {
   content: string
   imageUrl: string | null
 }) {
-  const { supabase, user } = await getAuthenticatedUser()
-  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
 
-  const parsed = updateSchema.safeParse(form)
-  if (!parsed.success) throw new Error(MESSAGES.DIARY.ERROR.CREATE_NO_DATA)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${form.id}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: cookieHeader,
+    },
+    body: JSON.stringify(form),
+  })
 
-  const { id, content, imageUrl } = parsed.data
-
-  const { data: existing, error: fetchErr } = await supabase
-    .from('diaries')
-    .select('status, published_at')
-    .eq('id', id)
-    .single()
-
-  if (fetchErr || !existing) {
-    throw new Error(MESSAGES.DIARY.ERROR.READ)
-  }
-
-  let uploadedUrl: string | null = null
-  if (imageUrl) {
-    const { url } = await uploadDiaryImage(imageUrl, user.id)
-    uploadedUrl = url
-  }
-
-  const patch: DiaryPatch = {
-    ...(content !== undefined && { content }),
-    image_url: uploadedUrl ?? null,
-  }
-
-  if (existing.status === 'published') {
-    patch.published_at = existing.published_at
-  }
-
-  const { data, error } = await supabase
-    .from('diaries')
-    .update(patch)
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .select('*')
-    .single()
-
-  if (error) throw new Error(MESSAGES.DIARY.ERROR.UPDATE)
-
-  return { ok: true, data }
+  return res.json()
 }
 
 export async function updateDiaryDraftAction(payload: {
