@@ -4,23 +4,29 @@ import { MESSAGES } from '@/shared/constants/messages'
 import { updateSchema } from '@/shared/types/zod/apis/diaries'
 import { DraftUpdateSchema } from '@/shared/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 import { uploadDiaryImage } from '@/shared/utils/uploads/upload-diary-image'
+import { cookies } from 'next/headers'
 
 export async function getDiary(id: string) {
-  const { supabase, user } = await getAuthenticatedUser()
-  if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+  if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
 
-  const query = supabase.from('diaries').select('*').eq('id', id).single()
-  const { data, error } = await query
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
 
-  if (error) throw new Error(MESSAGES.DIARY.ERROR.READ)
-  if (data?.image_url) {
-    const signed = await withSignedImageUrls(await supabase, [data])
-    return signed[0]
-  }
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      Cookie: cookieHeader,
+    },
+  })
 
-  return data
+  return res.json()
 }
 
 type DiaryPatch = {

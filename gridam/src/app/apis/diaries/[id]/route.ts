@@ -1,31 +1,27 @@
-import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { Params } from '@/shared/types/params'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { NextRequest } from 'next/server'
-import { ZodError } from 'zod'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
-
-    const { data, error } = await supabase
-      .from('diaries')
-      .select('*')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .single()
-    if (error) throw fail(MESSAGES.DIARY.ERROR.READ, 505)
-
-    return withCORS(ok(data))
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
+    if (!user) {
+      return NextResponse.json({ message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER }, { status: 401 })
     }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.READ, 500))
+
+    const query = supabase.from('diaries').select('*').eq('id', id).single()
+    const { data, error } = await query
+
+    if (error) {
+      return NextResponse.json({ message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
+    }
+
+    return NextResponse.json({ ok: true, data })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })
   }
 }
 
