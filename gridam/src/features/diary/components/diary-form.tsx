@@ -1,7 +1,11 @@
 'use client'
 
-import { saveDiaryDraftAction } from '@/app/(main)/(diary)/draft/actions'
-import { saveDiaryAction, updateDiaryAction } from '@/app/(main)/(diary)/write/action'
+import {
+  saveDiaryPublishedAction,
+  updateDiaryAction,
+  updateDiaryDraftAction,
+} from '@/app/(main)/(diary)/[id]/action'
+import { saveDiaryAction, saveDiaryDraftAction } from '@/app/(main)/(diary)/write/action'
 import CanvasContainer from '@/features/canvas/canvas-container'
 import DiaryFormButtons, {
   DIARY_STATUS,
@@ -38,47 +42,49 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
   const handleSave = () => {
     startTransition(async () => {
       try {
-        const res = await saveDiaryAction({
-          date: dateValue,
+        const isDraft = diary?.status === DIARY_STATUS.DRAFT
+        const commonPayload = {
           content: text,
           imageUrl: canvas,
           emoji: weather,
           meta: {
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           },
-        })
+        }
 
+        let res
+
+        if (isDraft) {
+          if (!diary?.id) {
+            toast.error(MESSAGES.DIARY.ERROR.DRAFT_SAVE)
+            return
+          }
+          res = await saveDiaryPublishedAction({
+            id: diary.id,
+            ...commonPayload,
+          })
+
+          if (res.ok) {
+            toast.success(MESSAGES.DIARY.SUCCESS.DRAFT_SAVE)
+            router.push('/')
+          } else {
+            toast.error(MESSAGES.DIARY.ERROR.DRAFT_SAVE)
+          }
+          return
+        }
+
+        res = await saveDiaryAction({
+          date: dateValue,
+          ...commonPayload,
+        })
         if (res.ok) {
           toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
           router.push('/')
         } else {
           toast.error(MESSAGES.DIARY.ERROR.CREATE)
         }
-      } catch (e) {
+      } catch {
         toast.error(MESSAGES.DIARY.ERROR.CREATE)
-      }
-    })
-  }
-
-  const handleUpdate = () => {
-    if (!diary?.id) return
-
-    startTransition(async () => {
-      try {
-        const res = await updateDiaryAction({
-          id: diary.id,
-          content: text,
-          imageUrl: canvas,
-        })
-
-        if (res.ok) {
-          toast.success(MESSAGES.DIARY.SUCCESS.UPDATE)
-          router.push('/')
-        } else {
-          toast.error(MESSAGES.DIARY.ERROR.UPDATE)
-        }
-      } catch (e) {
-        toast.error(MESSAGES.DIARY.ERROR.UPDATE)
       }
     })
   }
@@ -108,8 +114,50 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     })
   }
 
+  const handleUpdate = () => {
+    if (!diary?.id) return
+
+    startTransition(async () => {
+      try {
+        const res = await updateDiaryAction({
+          id: diary.id,
+          content: text,
+          imageUrl: canvas ?? diary.image_url,
+        })
+
+        if (res.ok) {
+          toast.success(MESSAGES.DIARY.SUCCESS.UPDATE)
+          router.push('/')
+        } else {
+          toast.error(MESSAGES.DIARY.ERROR.UPDATE)
+        }
+      } catch (e) {
+        toast.error(MESSAGES.DIARY.ERROR.UPDATE)
+      }
+    })
+  }
+
   const handleDraftUpdate = () => {
-    console.log('handleDraftUpdate')
+    if (!diary?.id) return
+
+    startTransition(async () => {
+      try {
+        const res = await updateDiaryDraftAction({
+          id: diary.id,
+          content: text,
+          imageUrl: canvas,
+        })
+
+        if (res.ok) {
+          toast.success(MESSAGES.DIARY.SUCCESS.DRAFT_UPDATE)
+          router.push('/draft')
+        } else {
+          toast.error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE)
+        }
+      } catch (e) {
+        toast.error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE)
+      }
+    })
   }
 
   return (
