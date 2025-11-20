@@ -1,6 +1,8 @@
 import { MESSAGES } from '@/shared/constants/messages'
 import { Params } from '@/shared/types/params'
+import { updateSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import { uploadDiaryImage } from '@/shared/utils/uploads/upload-diary-image'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_req: NextRequest, { params }: Params) {
@@ -25,62 +27,72 @@ export async function GET(_req: NextRequest, { params }: Params) {
   }
 }
 
-// type DiaryPatch = {
-//   content?: string
-//   image_url?: string | null
-//   published_at?: string | null
-// }
+export async function PATCH(req: NextRequest, { params }: Params) {
+  try {
+    const { id } = await params
+    const body = await req.json()
 
-// export async function PATCH(req: NextRequest, { params }: Params) {
-//   try {
-//     const { supabase, user } = await getAuthenticatedUser()
-//     if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
+        { status: 401 }
+      )
+    }
 
-//     const { id } = await params
-//     const body = await req.json()
+    const parsed = updateSchema.safeParse({ ...body, id })
+    if (!parsed.success) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.CREATE_NO_DATA },
+        { status: 400 }
+      )
+    }
+    const { content, imageUrl } = parsed.data
 
-//     const parsed = updateSchema.safeParse(body)
-//     if (!parsed.success) throw fail(parsed.error.message, 422)
+    const { data: existing, error: fetchErr } = await supabase
+      .from('diaries')
+      .select('status, published_at')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
 
-//     const { content, imageUrl } = parsed.data
+    if (fetchErr || !existing) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 404 })
+    }
 
-//     const { data: existing, error: fetchErr } = await supabase
-//       .from('diaries')
-//       .select('status, published_at')
-//       .eq('id', id)
-//       .single()
+    let uploadedUrl: string | null = null
+    if (imageUrl) {
+      const { url } = await uploadDiaryImage(imageUrl, user.id)
+      uploadedUrl = url
+    }
 
-//     if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.READ, 500)
-//     if (!existing) throw fail(MESSAGES.DIARY.ERROR.READ_NO, 500)
+    const patch: Record<string, any> = {
+      ...(content !== undefined && { content }),
+      image_url: uploadedUrl ?? null,
+    }
 
-//     const patch: DiaryPatch = {
-//       ...(content !== undefined && { content }),
-//       ...(imageUrl !== undefined && { image_url: imageUrl }),
-//     }
+    if (existing.status === 'published') {
+      patch.published_at = existing.published_at
+    }
 
-//     if (existing.status === 'published') {
-//       patch.published_at = existing.published_at
-//     }
+    const { data, error } = await supabase
+      .from('diaries')
+      .update(patch)
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select('*')
+      .single()
 
-//     const { data, error } = await supabase
-//       .from('diaries')
-//       .update(patch)
-//       .eq('id', id)
-//       .eq('user_id', user.id)
-//       .select('*')
-//       .single()
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.UPDATE }, { status: 500 })
+    }
 
-//     if (error) throw fail(MESSAGES.DIARY.ERROR.UPDATE, 500)
-
-//     return withCORS(ok(data))
-//   } catch (err) {
-//     if (err instanceof ZodError) {
-//       const firstIssue = err.issues[0]
-//       return fail(firstIssue.message, 400)
-//     }
-//     return withCORS(fail(MESSAGES.DIARY.ERROR.UPDATE, 500))
-//   }
-// }
+    return NextResponse.json({ ok: true, data })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ message: MESSAGES.DIARY.ERROR.UPDATE }, { status: 500 })
+  }
+}
 
 // // export async function DELETE(_req: NextRequest, { params }: Params) {
 // //   try {

@@ -18,7 +18,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <DiaryLayout date={formattedDate} weatherIcon={weatherIcon}>
-      {!ok ? (
+      {ok ? (
         <DiaryForm dateValue={dateValue} isEdit={true} diary={diary} />
       ) : (
         <div className="h-50 flex flex-col justify-center items-center">
