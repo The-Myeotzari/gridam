@@ -70,6 +70,7 @@ export const MESSAGES = {
       WEATHER: '날씨 조회에 실패했습니다.',
       PUBLISHED: '오늘의 일기를 이미 발행했어요!',
       DRAFT: '작성 중인 오늘의 일기가 있습니다!',
+      EXPORT_INVALID_DATA: '유효하지 않은 연/월입니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',
