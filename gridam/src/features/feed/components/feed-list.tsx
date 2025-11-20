@@ -39,7 +39,7 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
 
     setIsFetchingMore(true)
 
-    const nextPage = await fetchDiaryPage({
+    const { data: nextPage } = await fetchDiaryPage({
       year,
       month,
       cursor: lastPage.nextCursor,

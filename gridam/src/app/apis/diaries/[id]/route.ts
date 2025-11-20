@@ -94,40 +94,47 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 }
 
-// // export async function DELETE(_req: NextRequest, { params }: Params) {
-// //   try {
-// //     const { supabase, user } = await getAuthenticatedUser()
-// //     if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  try {
+    const { id } = await params
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
+        { status: 401 }
+      )
+    }
 
-// //     const { id } = await params
+    const { data: existing, error: fetchErr } = await supabase
+      .from('diaries')
+      .select('id, user_id, deleted_at')
+      .eq('id', id)
+      .single()
 
-// //     const { data: existing, error: fetchErr } = await supabase
-// //       .from('diaries')
-// //       .select('id, user_id, deleted_at')
-// //       .eq('id', id)
-// //       .single()
+    if (fetchErr) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
+    }
+    if (!existing || existing.deleted_at) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.READ_NO },
+        { status: 500 }
+      )
+    }
 
-// //     if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.READ, 500)
-// //     if (!existing) throw fail(MESSAGES.DIARY.ERROR.READ_NO, 500)
-// //     if (existing.deleted_at) {
-// //       // 이미 삭제됨
-// //       return withCORS(ok(MESSAGES.DIARY.ERROR.DELETE_OVER, 204))
-// //     }
+    const { error } = await supabase
+      .from('diaries')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
 
-// //     const { error } = await supabase
-// //       .from('diaries')
-// //       .update({ deleted_at: new Date().toISOString() })
-// //       .eq('id', id)
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.DELETE }, { status: 500 })
+    }
 
-// //     if (error) throw fail(MESSAGES.DIARY.ERROR.DELETE, 500)
-// //     return withCORS(ok(null, 200))
-// //   } catch (err) {
-// //     if (err instanceof ZodError) {
-// //       const firstIssue = err.issues[0]
-// //       return fail(firstIssue.message, 400)
-// //     }
-// //     return withCORS(fail(MESSAGES.DIARY.ERROR.DELETE, 500))
-// //   }
-// // }
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })
+  }
+}
 
-// // export { OPTIONS } from '@/app/apis/_lib/http'
+export { OPTIONS } from '@/app/apis/_lib/http'
