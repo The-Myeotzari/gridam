@@ -29,13 +29,11 @@ export async function resetAction(formData: FormData) {
       credentials: 'include',
       next: { revalidate: 0 },
       headers: {
-        Cookie: cookieHeader, // 🚨 클라이언트 세션을 백엔드에 전달
+        Cookie: cookieHeader, // 클라이언트 세션을 백엔드에 전달
       },
       body: JSON.stringify({
-        // 🚨 [핵심] 백엔드가 기대하는 필드명(newPassword) 사용
         newPassword: password,
         confirmPassword,
-        // token은 API에서 사용하지 않을 가능성이 높지만, 형식 유지를 위해 포함
         token,
       }),
     })
@@ -43,7 +41,7 @@ export async function resetAction(formData: FormData) {
     // 3. 응답 처리
     if (!response.ok) {
       // 에러 응답이 JSON이 아닐 경우(HTML)를 대비한 안전 코드 추가
-      let errorData: any = {}
+      let errorData: { message?: string } | null = null
       try {
         errorData = await response.json()
       } catch (e) {
