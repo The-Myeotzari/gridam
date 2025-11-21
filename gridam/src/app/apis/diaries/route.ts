@@ -1,7 +1,7 @@
 import { MESSAGES } from '@/shared/constants/messages'
 import { createSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
+import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const DEFAULT_LIMIT = 5
