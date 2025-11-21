@@ -21,9 +21,7 @@ export default async function Page({ searchParams }: PageProps) {
           title="비밀번호 찾기"
           subtitle={isSubmitted ? '이메일을 확인해주세요' : '가입하신 이메일을 입력해주세요'}
         />
-        <Suspense>
-          <ForgotPassword isSubmitted={isSubmitted} email={email} error={error} />
-        </Suspense>
+        <ForgotPassword isSubmitted={isSubmitted} email={email} error={error} />
       </Card>
     </div>
   )
