@@ -45,13 +45,15 @@ export async function getDiaryAction(id: string) {
   }
 }
 
-export async function updateDiaryAction(form: {
+type DiaryDrafcAction = {
   id: string
   content: string
   imageUrl: string | null
   oldImagePath?: string | null
   isImageChanged: boolean
-}) {
+}
+
+export async function updateDiaryAction(form: DiaryDrafcAction) {
   const cookieStore = await cookies()
   const cookieHeader = cookieStore
     .getAll()
@@ -114,47 +116,61 @@ type DiaryPatch = {
   published_at?: string | null
 }
 
-export async function updateDiaryDraftAction(payload: {
-  id: string
-  content: string
-  imageUrl: string | null
-}) {
-  try {
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+export async function updateDiaryDraftAction(form: DiaryDrafcAction) {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
 
-    const parsed = DraftUpdateSchema.safeParse(payload)
-    if (!parsed.success) throw new Error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_DATA)
+  const { id, content, imageUrl, isImageChanged, oldImagePath } = form
+  let uploadURL = (imageUrl ? imageUrl : oldImagePath) ?? ''
 
-    const { id, content, imageUrl } = parsed.data
+  if (isImageChanged && imageUrl) {
+    const blob = await getDataURLToBlob(uploadURL)
+    const file = getBlobToFile(blob, 'image.png')
 
-    let uploadedUrl: string | null = null
-    if (imageUrl && imageUrl.startsWith('data:image')) {
-      const { url } = await uploadDiaryImage(imageUrl, user.id)
-      uploadedUrl = url
-    } else {
-      uploadedUrl = imageUrl ?? null
+    const uploadForm = new FormData()
+    uploadForm.append('file', file)
+
+    const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads`, {
+      method: 'POST',
+      credentials: 'include',
+      cache: 'no-store',
+      next: { revalidate: 0 },
+      headers: {
+        Cookie: cookieHeader,
+      },
+      body: uploadForm,
+    })
+
+    const uploadJson = await uploadRes.json()
+    if (!uploadRes.ok) {
+      throw new Error(uploadJson.message || '이미지 업로드 실패')
     }
 
-    const patch: DiaryPatch = {
-      ...(content !== undefined && { content }),
-      image_url: uploadedUrl ?? null,
-    }
+    uploadURL = uploadJson.data?.url ?? null
 
-    const { data, error } = await supabase
-      .from('diaries')
-      .update(patch)
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .select('*')
-      .single()
-
-    if (error) throw new Error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE)
-
-    return { ok: true, data: data }
-  } catch (err) {
-    return { ok: false }
+    // NOTE: 이미지 파일 교체 이후 기존 이미지 삭제 여부 필요? -> 히스토리 기능이 들어갈까?
   }
+
+  const patchRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/drafts/${id}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      'Content-Type': 'application/json',
+      Cookie: cookieHeader,
+    },
+    body: JSON.stringify({
+      id,
+      content,
+      imageUrl: uploadURL,
+    }),
+  })
+
+  return patchRes.json()
 }
 
 export async function saveDiaryPublishedAction(form: {

@@ -39,38 +39,47 @@ export async function GET(_req: NextRequest, { params }: Params) {
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
+    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
 
     const { id } = await params
     const body = await req.json()
 
     const parsed = DraftUpdateSchema.safeParse(body)
-    if (!parsed.success) throw fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_DATA, 500)
+    if (!parsed.success) return fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_DATA, 500)
 
     const { content, imageUrl } = parsed.data
 
-    const patch = {
-      ...(content !== undefined && { content }),
-      ...(imageUrl !== undefined && { image_url: imageUrl }),
+    const { data: existing, error: fetchErr } = await supabase
+      .from('diaries')
+      .select('status')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
+
+    if (fetchErr || !existing) {
+      return fail(MESSAGES.DIARY.ERROR.READ, 404)
     }
 
     const { data, error } = await supabase
       .from('diaries')
-      .update(patch)
+      .update({
+        content,
+        image_url: imageUrl,
+      })
       .eq('id', id)
       .eq('user_id', user.id)
       .select('*')
       .single()
 
-    if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500)
+    if (error) return fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500)
 
-    return withCORS(ok(data))
+    return ok(data, 200)
   } catch (err) {
     if (err instanceof ZodError) {
       const firstIssue = err.issues[0]
       return fail(firstIssue.message, 400)
     }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500))
+    return fail(MESSAGES.DIARY.ERROR.DRAFT_UPDATE, 500)
   }
 }
 

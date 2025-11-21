@@ -147,7 +147,9 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
         const res = await updateDiaryDraftAction({
           id: diary.id,
           content: text,
-          imageUrl: canvas,
+          imageUrl: canvas ?? diary.image_url,
+          oldImagePath: diary.image_url,
+          isImageChanged: true,
         })
 
         if (res.ok) {
