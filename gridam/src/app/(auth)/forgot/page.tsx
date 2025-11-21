@@ -1,7 +1,6 @@
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
 import { Card } from '@/shared/ui/card'
 import ForgotPassword from './forgot-password'
-import { Suspense } from 'react'
 
 type PageProps = {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
