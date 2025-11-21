@@ -2,7 +2,7 @@ import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/weather/weather-icon'
 import { fetchWeather } from '@/features/weather/weather.api'
-import { formatDate } from '@/shared/utils/format-date'
+import { getFormatDate } from '@/shared/utils/get-format-date'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
@@ -21,7 +21,7 @@ export default async function Page() {
   const weather = await fetchWeather(coords.lat, coords.lon)
 
   const dateValue = new Date().toISOString().slice(0, 10)
-  const formattedDate = formatDate(dateValue)
+  const formattedDate = getFormatDate(dateValue)
 
   return (
     <DiaryLayout

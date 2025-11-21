@@ -3,7 +3,7 @@ import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
-import { formatDate } from '@/shared/utils/format-date'
+import { getFormatDate } from '@/shared/utils/get-format-date'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
@@ -12,7 +12,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { ok, data: diary } = await getDiaryAction(id)
 
   const dateValue = diary.date
-  const formattedDate = formatDate(dateValue)
+  const formattedDate = getFormatDate(dateValue)
   // 날씨 예외처리 고민 필요 - 기본이미지 출력?
   const weatherIcon = diary.emoji ?? '/fallback-weather.png'
 

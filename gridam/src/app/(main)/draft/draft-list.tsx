@@ -1,11 +1,11 @@
 'use client'
 
-import { deleteDraftAction } from '@/app/(main)/(diary)/draft/actions'
+import { deleteDraftAction } from '@/app/(main)/draft/actions'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'
-import { formatDate } from '@/shared/utils/format-date'
+import { getFormatDate } from '@/shared/utils/get-format-date'
 import { toast } from '@/store/toast-store'
 import { useRouter } from 'next/navigation'
 import { useOptimistic, useState, useTransition } from 'react'
@@ -26,15 +26,16 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
     setDeletingId(id)
 
     startTransition(async () => {
-      try {
-        await deleteDraftAction(id)
+      const res = await deleteDraftAction(id)
+
+      if (res.ok) {
         toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
-      } catch (err) {
-        toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
+      } else {
         optimisticDelete(null)
-      } finally {
-        setDeletingId(null)
+        toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
       }
+
+      setDeletingId(null)
     })
   }
 
@@ -72,7 +73,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
               {diary.content}
             </CardBody>
             <CardFooter className="text-muted-foreground text-sm">
-              저장: {formatDate(diary.updated_at)}
+              저장: {getFormatDate(diary.updated_at)}
             </CardFooter>
           </Card>
         )
