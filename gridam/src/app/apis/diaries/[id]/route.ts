@@ -2,7 +2,6 @@ import { MESSAGES } from '@/shared/constants/messages'
 import { Params } from '@/shared/types/params'
 import { updateSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { uploadDiaryImage } from '@/shared/utils/uploads/upload-diary-image'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_req: NextRequest, { params }: Params) {
@@ -60,24 +59,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 404 })
     }
 
-    let uploadedUrl: string | null = null
-    if (imageUrl) {
-      const { url } = await uploadDiaryImage(imageUrl, user.id)
-      uploadedUrl = url
-    }
-
-    const patch: Record<string, any> = {
-      ...(content !== undefined && { content }),
-      image_url: uploadedUrl ?? null,
-    }
-
-    if (existing.status === 'published') {
-      patch.published_at = existing.published_at
-    }
-
     const { data, error } = await supabase
       .from('diaries')
-      .update(patch)
+      .update({
+        content,
+        image_url: imageUrl,
+      })
       .eq('id', id)
       .eq('user_id', user.id)
       .select('*')

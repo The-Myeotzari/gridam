@@ -1,4 +1,4 @@
-import { getDiary } from '@/app/(main)/(diary)/[id]/action'
+import { getDiaryAction } from '@/app/(main)/(diary)/[id]/action'
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import { MESSAGES } from '@/shared/constants/messages'
@@ -9,7 +9,7 @@ import Link from 'next/link'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { ok, data: diary } = await getDiary(id)
+  const { ok, data: diary } = await getDiaryAction(id)
 
   const dateValue = diary.date
   const formattedDate = formatDate(dateValue)

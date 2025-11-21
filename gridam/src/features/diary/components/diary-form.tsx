@@ -123,6 +123,8 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
           id: diary.id,
           content: text,
           imageUrl: canvas ?? diary.image_url,
+          oldImagePath: diary.image_url,
+          isImageChanged: true,
         })
 
         if (res.ok) {
