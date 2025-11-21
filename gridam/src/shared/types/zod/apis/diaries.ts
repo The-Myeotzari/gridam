@@ -4,7 +4,7 @@ export const createSchema = z.object({
   date: z.string(), // YYYY-MM-DD
   content: z.string(),
   emoji: z.string().optional(),
-  imageUrl: z.string().nullable(),
+  imageUrl: z.string().nullable().optional(),
   meta: z
     .object({
       timezone: z.string(),
