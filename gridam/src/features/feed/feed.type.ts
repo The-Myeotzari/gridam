@@ -6,7 +6,7 @@ export type GetDiaryParams = {
   limit?: number
 }
 
-export type DiaryPage = {
+export type FetchDiaryResponseType = {
   items: Diary[]
   nextCursor: string | null
   hasMore: boolean
