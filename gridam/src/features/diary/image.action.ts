@@ -56,7 +56,7 @@ export async function updateImageAction({
   isImageChanged: boolean
   cookieHeader: string
 }) {
-  let finalUrl = imageUrl ?? oldImagePath ?? ''
+  const finalUrl = imageUrl ?? oldImagePath ?? ''
 
   if (!isImageChanged || !imageUrl) return finalUrl
 
