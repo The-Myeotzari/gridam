@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  saveDiaryPublishedAction,
-  updateDiaryAction,
-  updateDiaryDraftAction,
-} from '@/app/(main)/(diary)/[id]/action'
+import { updateDiaryAction } from '@/app/(main)/(diary)/[id]/action'
 import { saveDiaryAction, saveDiaryDraftAction } from '@/app/(main)/(diary)/write/action'
 import CanvasContainer from '@/features/canvas/canvas-container'
 import DiaryFormButtons, {
@@ -39,18 +35,11 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     return DIARY_STATUS.PUBLISHED
   })()
 
+  // TODO: 개선 필요
   const handleSave = () => {
     startTransition(async () => {
       try {
         const isDraft = diary?.status === DIARY_STATUS.DRAFT
-        const commonPayload = {
-          content: text,
-          imageUrl: canvas,
-          emoji: weather,
-          meta: {
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-        }
 
         let res
 
@@ -59,9 +48,13 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
             toast.error(MESSAGES.DIARY.ERROR.DRAFT_SAVE)
             return
           }
-          res = await saveDiaryPublishedAction({
+          res = await updateDiaryAction({
             id: diary.id,
-            ...commonPayload,
+            content: text,
+            imageUrl: canvas ?? diary.image_url,
+            oldImagePath: diary.image_url,
+            isImageChanged: true,
+            type: 'publish',
           })
 
           if (res.ok) {
@@ -75,7 +68,12 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
         res = await saveDiaryAction({
           date: dateValue,
-          ...commonPayload,
+          content: text,
+          imageUrl: canvas,
+          emoji: weather,
+          meta: {
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
         })
         if (res.ok) {
           toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
@@ -125,6 +123,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
           imageUrl: canvas ?? diary.image_url,
           oldImagePath: diary.image_url,
           isImageChanged: true,
+          type: 'diary',
         })
 
         if (res.ok) {
@@ -144,12 +143,13 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
     startTransition(async () => {
       try {
-        const res = await updateDiaryDraftAction({
+        const res = await updateDiaryAction({
           id: diary.id,
           content: text,
           imageUrl: canvas ?? diary.image_url,
           oldImagePath: diary.image_url,
           isImageChanged: true,
+          type: 'draft',
         })
 
         if (res.ok) {
