@@ -11,6 +11,7 @@ import { toast } from '@/store/toast-store'
 
 import ForgotButton from './forgot-button'
 import { MESSAGES } from '@/shared/constants/messages'
+import ClientButton from '@/shared/ui/client-button'
 
 interface ForgotState {
   isSubmitted: boolean //URL 쿼리에서 해석된 값
@@ -99,7 +100,7 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotStat
             <p className="font-handwritten text-sm text-muted-foreground">
               이메일을 받지 못하셨나요?
             </p>
-            <Button
+            <ClientButton
               type="submit"
               variant="gradient"
               label="다시 시도하기"
