@@ -4,8 +4,6 @@ import { updateImageAction } from '@/features/diary/image.action'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/getCookies'
-import getSupabaseServer from '@/shared/utils/supabase/server'
-import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
 
 export async function getDiaryAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
@@ -27,13 +25,9 @@ export async function getDiaryAction(id: string) {
   }
   const diary = json.data
 
-  // TODO: 여기 수정!!
-  const supabase = await getSupabaseServer()
-  const [signedDiary] = await withSignedImageUrls(supabase, [diary])
-
   return {
     ok: true,
-    data: signedDiary,
+    data: diary,
   }
 }
 
