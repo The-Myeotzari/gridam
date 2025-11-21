@@ -26,7 +26,7 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
 
   const search = new URLSearchParams()
   const setParams = new URLSearchParams({ year, month, limit: String(limit) })
-  if (cursor) search.set('cursor', String(cursor))
+  if (cursor) setParams.set('cursor', String(cursor))
 
   const cookieStore = await cookies()
   const cookieHeader = cookieStore
