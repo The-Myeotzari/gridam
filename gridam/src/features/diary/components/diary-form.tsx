@@ -1,7 +1,7 @@
 'use client'
 
 import { updateDiaryAction } from '@/app/(main)/(diary)/[id]/action'
-import { saveDiaryAction, saveDiaryDraftAction } from '@/app/(main)/(diary)/write/action'
+import { saveDiaryAction } from '@/app/(main)/(diary)/write/action'
 import CanvasContainer from '@/features/canvas/canvas-container'
 import DiaryFormButtons, {
   DIARY_STATUS,
@@ -74,6 +74,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
           meta: {
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           },
+          type: 'diaries',
         })
         if (res.ok) {
           toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
@@ -90,7 +91,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
   const handleDraftSave = () => {
     startTransition(async () => {
       try {
-        const res = await saveDiaryDraftAction({
+        const res = await saveDiaryAction({
           date: dateValue,
           content: text,
           imageUrl: canvas,
@@ -98,6 +99,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
           meta: {
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           },
+          type: 'drafts',
         })
 
         if (res.ok) {
