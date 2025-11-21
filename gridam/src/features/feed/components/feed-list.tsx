@@ -33,26 +33,31 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
   )
 
   // 무한스크롤
-  const loadMore = useCallback(async () => {
+  const loadMore = useCallback(() => {
     const lastPage = pages[pages.length - 1]
-    if (!lastPage?.hasMore || isFetchingMore) return
+
+    if (!lastPage?.hasMore) return false
+    if (isFetchingMore) return true
 
     setIsFetchingMore(true)
+    ;(async () => {
+      const { data: nextPage } = await fetchDiaryPage({
+        year,
+        month,
+        cursor: lastPage.nextCursor,
+      })
 
-    const { data: nextPage } = await fetchDiaryPage({
-      year,
-      month,
-      cursor: lastPage.nextCursor,
-    })
+      if (!nextPage) {
+        setIsError(true)
+        setIsFetchingMore(false)
+        return
+      }
 
-    if (!nextPage) {
-      setIsError(true)
+      setPages((prev) => [...prev, nextPage])
       setIsFetchingMore(false)
-      return
-    }
+    })()
 
-    setPages((prev) => [...prev, nextPage])
-    setIsFetchingMore(false)
+    return true
   }, [pages, year, month, isFetchingMore])
 
   const ref = useIntersection(loadMore)
