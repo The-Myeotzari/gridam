@@ -26,15 +26,16 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
     setDeletingId(id)
 
     startTransition(async () => {
-      try {
-        await deleteDraftAction(id)
+      const res = await deleteDraftAction(id)
+
+      if (res.ok) {
         toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
-      } catch (err) {
-        toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
+      } else {
         optimisticDelete(null)
-      } finally {
-        setDeletingId(null)
+        toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
       }
+
+      setDeletingId(null)
     })
   }
 
