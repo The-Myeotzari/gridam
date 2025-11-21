@@ -3,7 +3,7 @@
 import { DEFAULT_LIMIT } from '@/app/apis/diaries/route'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
-import { cookies } from 'next/headers'
+import { getCookies } from '@/shared/utils/getCookies'
 
 type FetchDiaryType = {
   year: string
@@ -27,11 +27,7 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
   const setParams = new URLSearchParams({ year, month, limit: String(limit) })
   if (cursor) setParams.set('cursor', String(cursor))
 
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
+  const cookieHeader = await getCookies()
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries?${setParams.toString()}`,
@@ -51,13 +47,7 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
 
 export async function deleteDiary(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
-
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
-
+  const cookieHeader = await getCookies()
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
     method: 'DELETE',
     credentials: 'include',
@@ -67,6 +57,5 @@ export async function deleteDiary(id: string) {
       Cookie: cookieHeader,
     },
   })
-
   return res.json()
 }

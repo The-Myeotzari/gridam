@@ -3,18 +3,13 @@
 import { updateImageAction } from '@/features/diary/image.action'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
+import { getCookies } from '@/shared/utils/getCookies'
 import getSupabaseServer from '@/shared/utils/supabase/server'
 import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
-import { cookies } from 'next/headers'
 
 export async function getDiaryAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
-
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
+  const cookieHeader = await getCookies()
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
     method: 'GET',
@@ -27,12 +22,12 @@ export async function getDiaryAction(id: string) {
   })
 
   const json = await res.json()
-
   if (!res.ok || !json?.ok) {
     return { ok: false, data: {} as Diary }
   }
   const diary = json.data
 
+  // TODO: 여기 수정!!
   const supabase = await getSupabaseServer()
   const [signedDiary] = await withSignedImageUrls(supabase, [diary])
 
@@ -59,12 +54,7 @@ type DiaryDrafcAction = {
 }
 
 export async function updateDiaryAction(form: DiaryDrafcAction) {
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
-
+  const cookieHeader = await getCookies()
   const { id, content, imageUrl, isImageChanged, oldImagePath, type } = form
 
   const uploadedUrl = await updateImageAction({

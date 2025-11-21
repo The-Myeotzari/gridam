@@ -1,7 +1,7 @@
 'use server'
 
 import { saveImageAction } from '@/features/diary/image.action'
-import { cookies } from 'next/headers'
+import { getCookies } from '@/shared/utils/getCookies'
 
 type SaveDiaryAction = {
   date: string
@@ -13,11 +13,7 @@ type SaveDiaryAction = {
 }
 
 export async function saveDiaryAction(form: SaveDiaryAction) {
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
+  const cookieHeader = await getCookies()
 
   const { date, content, imageUrl, emoji, meta, type } = form
 

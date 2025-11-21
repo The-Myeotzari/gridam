@@ -1,16 +1,11 @@
 'use server'
 
 import { MESSAGES } from '@/shared/constants/messages'
+import { getCookies } from '@/shared/utils/getCookies'
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
 
 export async function fetchDraftAction() {
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
-
+  const cookieHeader = await getCookies()
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/drafts`, {
     method: 'GET',
     credentials: 'include',
@@ -27,13 +22,7 @@ export async function fetchDraftAction() {
 
 export async function deleteDraftAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
-
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
-
+  const cookieHeader = await getCookies()
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/drafts/${id}`, {
     method: 'DELETE',
     credentials: 'include',
