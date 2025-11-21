@@ -36,7 +36,12 @@ const SIZE_STYLE: Record<Size, string> = {
   icon: 'h-10 w-10 p-0',
 }
 
-export interface ButtonProps extends React.ComponentProps<'button'> {
+type NoEventAttrs = Omit<
+  React.ComponentProps<'button'>,
+  keyof React.DOMAttributes<HTMLButtonElement>
+>
+
+export interface ButtonProps extends NoEventAttrs {
   type?: 'button' | 'submit' | 'reset'
   variant?: Variant
   size?: Size
