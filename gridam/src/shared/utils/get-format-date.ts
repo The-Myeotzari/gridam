@@ -1,4 +1,4 @@
-export function formatDate(date?: string) {
+export function getFormatDate(date?: string) {
   const target = date ? new Date(date) : new Date()
 
   return target.toLocaleDateString('ko-KR', {

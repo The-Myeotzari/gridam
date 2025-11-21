@@ -7,7 +7,7 @@ type Options = {
 
 // infinite cursor 관찰 전용
 export function useIntersection(
-  onIntersect: () => void,
+  onIntersect: () => boolean,
   options?: Options // IntersectionObserver init setting
 ) {
   const ref = useRef<HTMLDivElement | null>(null)
@@ -22,13 +22,19 @@ export function useIntersection(
     const el = ref.current
     if (!el) return
 
-    const io = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return
+
       // 관찰 대상이 현재 뷰포트 안에 들어오면, fetchNextPage()(=onIntersect) 호출
-      if (entries.some((e) => e.isIntersecting)) onIntersect()
+      const shouldContinue = onIntersect()
+      // false 들어오면 무한스크롤 중단
+      if (shouldContinue === false) {
+        observer.disconnect()
+      }
     }, optionsRef.current)
 
-    io.observe(el)
-    return () => io.disconnect()
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [onIntersect])
 
   return ref
