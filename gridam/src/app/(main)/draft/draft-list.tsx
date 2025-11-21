@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteDraftAction } from '@/app/(main)/(diary)/draft/actions'
+import { deleteDraftAction } from '@/app/(main)/draft/actions'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'

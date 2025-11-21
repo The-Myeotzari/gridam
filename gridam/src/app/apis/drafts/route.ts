@@ -3,39 +3,46 @@ import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { DraftCreateSchema } from '@/shared/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
 // 임시저장 목록 전체 조회
-// export async function GET() {
-//   try {
-//     const { supabase, user } = await getAuthenticatedUser()
-//     if (!user) throw new Error(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER)
+export async function GET() {
+  try {
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
+        { status: 401 }
+      )
+    }
 
-//     const { data, error } = await supabase
-//       .from('diaries')
-//       .select('*')
-//       .eq('user_id', user.id)
-//       .eq('status', 'draft')
-//       .is('published_at', null)
-//       .is('deleted_at', null)
-//       .order('updated_at', { ascending: false })
-//       .order('created_at', { ascending: false })
+    const { data, error } = await supabase
+      .from('diaries')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'draft')
+      .is('published_at', null)
+      .is('deleted_at', null)
+      .order('updated_at', { ascending: false })
+      .order('created_at', { ascending: false })
 
-//     if (error) {
-//       return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
-//     }
-//     console.log('data', data)
+    if (error) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.DRAFT_DELETE_OVER },
+        { status: 500 }
+      )
+    }
 
-//     return withCORS(ok({ data }, 201))
-//   } catch (err) {
-//     if (err instanceof ZodError) {
-//       const firstIssue = err.issues[0]
-//       return fail(firstIssue.message, 400)
-//     }
-//     return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
-//   }
-// }
+    return NextResponse.json({ ok: true, data })
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const firstIssue = err.issues[0]
+      return fail(firstIssue.message, 400)
+    }
+    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
+  }
+}
 
 // 새 일기 처음 작성시 사용하는 임시 저장
 export async function POST(req: NextRequest) {
