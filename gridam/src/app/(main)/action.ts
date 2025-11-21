@@ -24,7 +24,6 @@ type FetchDiaryResponseType = {
 export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiaryResponseType> {
   const { year, month, cursor, limit = DEFAULT_LIMIT } = params
 
-  const search = new URLSearchParams()
   const setParams = new URLSearchParams({ year, month, limit: String(limit) })
   if (cursor) setParams.set('cursor', String(cursor))
 
