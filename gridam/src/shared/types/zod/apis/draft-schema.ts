@@ -13,6 +13,7 @@ export const DraftCreateSchema = z.object({
 })
 
 export const DraftUpdateSchema = z.object({
+  id: z.string(),
   content: z.string().min(1).max(2000).optional(),
   imageUrl: z.string().nullable().optional(),
 })
