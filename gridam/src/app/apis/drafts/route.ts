@@ -10,12 +10,6 @@ import { ZodError } from 'zod'
 export async function GET() {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
-        { status: 401 }
-      )
-    }
 
     const { data, error } = await supabase
       .from('diaries')
@@ -48,7 +42,6 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
 
     const body = await req.json()
     const parsed = DraftCreateSchema.safeParse(body)

@@ -8,9 +8,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json({ message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER }, { status: 401 })
-    }
 
     const query = supabase.from('diaries').select('*').eq('id', id).single()
     const { data, error } = await query
@@ -32,12 +29,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const body = await req.json()
 
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
-        { status: 401 }
-      )
-    }
 
     const parsed = updateSchema.safeParse({ ...body, id })
     if (!parsed.success) {
@@ -85,12 +76,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
-        { status: 401 }
-      )
-    }
 
     const { data: existing, error: fetchErr } = await supabase
       .from('diaries')

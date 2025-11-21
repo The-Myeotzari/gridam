@@ -11,8 +11,6 @@ import { ZodError } from 'zod'
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-
     const { id } = await params
 
     const body = await req.json()

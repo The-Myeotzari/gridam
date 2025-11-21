@@ -13,7 +13,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
     const { data, error } = await supabase
       .from('diaries')
@@ -39,7 +38,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
 
     const { id } = await params
     const body = await req.json()
@@ -87,9 +85,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-    }
+
     const { id } = await params
 
     // 삭제 여부 확인

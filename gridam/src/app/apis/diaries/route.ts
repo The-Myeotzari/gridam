@@ -16,12 +16,6 @@ export async function GET(req: NextRequest) {
     const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT
 
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
-        { status: 401 }
-      )
-    }
 
     let query = supabase
       .from('diaries')
@@ -89,12 +83,6 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER },
-        { status: 401 }
-      )
-    }
 
     const body = await req.json()
     const parsed = createSchema.safeParse(body)
