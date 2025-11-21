@@ -3,7 +3,7 @@
 import { DEFAULT_LIMIT } from '@/app/apis/diaries/route'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
-import { getCookies } from '@/shared/utils/getCookies'
+import { getCookies } from '@/shared/utils/get-cookies'
 
 type FetchDiaryType = {
   year: string

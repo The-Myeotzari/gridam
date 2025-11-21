@@ -3,7 +3,7 @@
 import { updateImageAction } from '@/features/diary/image.action'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
-import { getCookies } from '@/shared/utils/getCookies'
+import { getCookies } from '@/shared/utils/get-cookies'
 
 export async function getDiaryAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)

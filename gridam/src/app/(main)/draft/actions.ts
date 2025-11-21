@@ -1,7 +1,7 @@
 'use server'
 
 import { MESSAGES } from '@/shared/constants/messages'
-import { getCookies } from '@/shared/utils/getCookies'
+import { getCookies } from '@/shared/utils/get-cookies'
 import { revalidatePath } from 'next/cache'
 
 export async function fetchDraftAction() {

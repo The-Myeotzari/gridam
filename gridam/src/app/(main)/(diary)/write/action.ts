@@ -1,7 +1,7 @@
 'use server'
 
 import { saveImageAction } from '@/features/diary/image.action'
-import { getCookies } from '@/shared/utils/getCookies'
+import { getCookies } from '@/shared/utils/get-cookies'
 
 type SaveDiaryAction = {
   date: string
