@@ -44,7 +44,6 @@ export default function ResetForm({ token }: ResetFormProps) {
       const result = await resetAction(formData)
 
       if (result.error) {
-        // 서버 액션에서 반환된 에러 처리
         toast.error(result.error)
         return { error: result.error, isSuccess: false }
       }
