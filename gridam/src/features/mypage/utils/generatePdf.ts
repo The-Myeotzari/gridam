@@ -1,6 +1,6 @@
 import { PDFDocument, rgb } from 'pdf-lib'
 import { Diary } from '@/features/mypage/types/mypage'
-import { formatDate } from '@/shared/utils/format-date'
+import { getFormatDate } from '@/shared/utils/get-format-date'
 import fontkit from '@pdf-lib/fontkit'
 import { readFile } from 'fs/promises'
 import sharp from 'sharp'
@@ -30,7 +30,7 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
     const { width, height } = page.getSize()
 
     // 1. 헤더 (날짜 + 날씨 + 이모지)
-    const headerText = formatDate(diary.date)
+    const headerText = getFormatDate(diary.date)
     const weatherIconPath = diary.emoji
     let weatherIcon = null
     if (weatherIconPath) {

@@ -6,7 +6,7 @@ import { ModalHeader, ModalBody } from '@/shared/ui/modal/modal'
 import { Diary } from '@/features/mypage/types/mypage'
 import Textarea from '@/shared/ui/textarea'
 import Image from 'next/image'
-import { formatDate } from '@/shared/utils/format-date'
+import { getFormatDate } from '@/shared/utils/get-format-date'
 import { toast } from '@/store/toast-store'
 
 type DiaryExportPreviewModalProps = {
@@ -68,7 +68,7 @@ export function DiaryExportPreviewModal({
         <div className="flex-1 overflow-y-auto space-y-4 mt-2 rounded-md p-2">
           {
             diaries.map((diary) => {
-              const formattedDate = formatDate(diary.date)
+              const formattedDate = getFormatDate(diary.date)
               return (
                 <article
                   key={diary.id}
