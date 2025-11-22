@@ -1,6 +1,6 @@
-import { Diary } from '@/features/feed/types/feed'
-import getSupabaseServer from '@/shared/utils/supabase/server'
-import { withSignedImageUrls } from '@/shared/utils/supabase/with-signed-image-urls'
+import { Diary } from '@/features/mypage/types/mypage'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
 
 export async function getMonthlyDiaries({
   year,
@@ -13,13 +13,9 @@ export async function getMonthlyDiaries({
     throw new Error('INVALID_YEAR_MONTH')
   }
 
-  const supabase = await getSupabaseServer()
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await getAuthenticatedUser()
 
-  if (userError || !user) {
+  if (!user) {
     throw new Error('UNAUTHORIZED')
   }
 
@@ -42,7 +38,6 @@ export async function getMonthlyDiaries({
     .order('created_at', { ascending: true })
 
   if (error) {
-    console.error('[getMonthlyDiaries] supabase error', error)
     throw new Error('DB_ERROR')
   }
 

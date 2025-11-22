@@ -1,15 +1,8 @@
-import { MESSAGES } from '@/shared/constants/messages'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 
 // 사용자 통합 정보 조회 함수
 export async function getUserData() {
-  const supabase = await getSupabaseServer()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) return { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER }
+  const { supabase, user } = await getAuthenticatedUser()
 
   const userId = user.id
 
@@ -47,7 +40,7 @@ export async function getUserData() {
       time,
       weekday: `${weekday}요일`,
       content: diary.content,
-      emoji: diary.emoji ?? '☁️',
+      emoji: diary.emoji ?? '',
     }
   })
 
