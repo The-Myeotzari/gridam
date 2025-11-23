@@ -5,7 +5,7 @@ import ResetForm from './reset-form'
 
 type PageProps = {
   searchParams: Promise<{
-    code?: string | ''
+    code?: string
   }>
 }
 
@@ -13,7 +13,7 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
   const token = (await searchParams)?.code ?? ''
 
   return (
-    <div className="flex-1 flex item-center justify-center">
+    <div className="flex-1 flex items-center justify-center">
       <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto">
         <AuthHeader title="비밀번호 재설정" subtitle="새 비밀번호를 입력해주세요" />
 

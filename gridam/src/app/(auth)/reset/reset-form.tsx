@@ -29,8 +29,8 @@ export default function ResetForm({ token }: ResetFormProps) {
         return { error: MESSAGES.AUTH.ERROR.EMPTY_FORM, isSuccess: false }
       }
       if (password !== confirmPassword) {
-        toast.error(MESSAGES.AUTH.ERROR.WRONG_CURRENT_PASSWORD)
-        return { error: MESSAGES.AUTH.ERROR.WRONG_CURRENT_PASSWORD, isSuccess: false }
+        toast.error(MESSAGES.AUTH.ERROR.WRONG_NEW_PASSWORD)
+        return { error: MESSAGES.AUTH.ERROR.WRONG_NEW_PASSWORD, isSuccess: false }
       }
       if (password.length < 8) {
         toast.error(MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH)

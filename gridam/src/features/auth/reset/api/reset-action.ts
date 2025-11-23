@@ -6,7 +6,6 @@ export async function resetAction(formData: FormData) {
   const token = formData.get('token')
   const password = formData.get('password')
   const confirmPassword = formData.get('confirmPassword')
-  console.log('resetAction >>>', { token, password, confirmPassword })
 
   const cookieStore = cookies()
   const cookieHeader = (await cookieStore)
@@ -15,7 +14,7 @@ export async function resetAction(formData: FormData) {
     .join('; ')
 
   const apiPath = '/apis/auth/reset/complete'
-  const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const apiBaseUrl = 'http://localhost:3000'
 
   try {
     const response = await fetch(`${apiBaseUrl}${apiPath}`, {
