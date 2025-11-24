@@ -1,0 +1,79 @@
+import { useMemo, useState } from 'react'
+import buildCalendar, { weekday } from './build-calendar'
+import { Card } from '@/shared/ui/card'
+import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
+
+export default function CalendarComponent() {
+  const today = new Date()
+
+  const [view, setView] = useState(() => ({ year: today.getFullYear(), month: today.getMonth() }))
+
+  const cells = useMemo(() => {
+    return buildCalendar(view.year, view.month)
+  }, [view.year, view.month])
+
+  const handlePrevMonth = () => {
+    setView((prev) => {
+      let year = prev.year
+      let month = prev.month - 1
+
+      if (month < 0) {
+        month = 11
+        year -= 1
+      }
+      return { year, month }
+    })
+  }
+  // 다음 달
+  const handleNextMonth = () => {
+    setView((prev) => {
+      let year = prev.year
+      let month = prev.month
+
+      if (month > 11) {
+        month = 0
+        year += 1
+      }
+      console.log('셀', cells)
+      return { year, month }
+    })
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* header */}
+      <div className="flex justify-around">
+        <button onClick={}>
+          <CircleChevronLeft color="#2c2e44" strokeWidth={1.25} className="h-5 w-5" />
+        </button>
+        <div>
+          {view.year}년 {view.month}월
+        </div>
+        <button>
+          <CircleChevronRight color="#2c2e44" strokeWidth={1.25} className="h-5 w-5" />
+        </button>
+      </div>
+      {/* header - */}
+      {/* week */}
+      <div className="grid grid-cols-7 text-center">
+        {weekday.map((day) => {
+          return <div key={day}>{day}</div>
+        })}
+      </div>
+      {/* _week */}
+      {/* dates */}
+      <div className="grid grid-cols-7 text-center ">
+        {cells.map((cell, idx) => {
+          return (
+            <div
+              key={idx}
+              className={`p-2 ${cell.inCurrentMonth ? '' : 'text-muted-foreground/40'}`}
+            >
+              {cell.date}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
