@@ -43,7 +43,7 @@ export default function CalendarComponent() {
     <div className="flex flex-col gap-4">
       {/* header */}
       <div className="flex justify-around">
-        <button onClick={}>
+        <button>
           <CircleChevronLeft color="#2c2e44" strokeWidth={1.25} className="h-5 w-5" />
         </button>
         <div>
