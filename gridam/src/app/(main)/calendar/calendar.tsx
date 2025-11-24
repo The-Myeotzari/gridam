@@ -1,9 +1,10 @@
+'use client'
 import { useMemo, useState } from 'react'
 import buildCalendar, { weekday } from './build-calendar'
 import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 
-export default function CalendarComponent() {
+export default function Calendar() {
   const today = new Date()
   // 날짜 선택
   const [selectedDate, setSelectedDate] = useState<{
