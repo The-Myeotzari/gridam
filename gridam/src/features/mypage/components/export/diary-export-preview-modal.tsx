@@ -8,6 +8,7 @@ import Textarea from '@/shared/ui/textarea'
 import Image from 'next/image'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 import { toast } from '@/store/toast-store'
+import { MESSAGES } from '@/shared/constants/messages'
 
 type DiaryExportPreviewModalProps = {
   year: number
@@ -34,8 +35,17 @@ export function DiaryExportPreviewModal({
       )
 
       if (!res.ok) {
-        // TODO: 토스트 에러 처리
-        toast.error('')
+        // 에러 토스트 처리
+        let message: string = MESSAGES.DIARY.ERROR.EXPORT
+        try {
+          const errorBody = await res.json()
+          if (typeof errorBody.message === 'string') {
+            message = errorBody.message
+          }
+        } catch {
+          // ignore
+        }
+        toast.error(message)
         return
       }
 
@@ -48,9 +58,9 @@ export function DiaryExportPreviewModal({
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      toast.success('성공')
+      toast.success(MESSAGES.DIARY.SUCCESS.EXPORT)
     } catch (err) {
-      const message = err instanceof Error ? err.message : '예상치 못한 오류가 발생했습니다'
+      const message = err instanceof Error ? err.message : MESSAGES.DIARY.ERROR.EXPORT
       toast.error(message)
     } finally {
       setIsDownloading(false)
