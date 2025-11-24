@@ -35,12 +35,10 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('[GET /apis/diaries/export-pdf] error', error)
-
     if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
     }
 
-    return fail('PDF 생성 중 오류가 발생했습니다.', 500)
+    return fail(MESSAGES.DIARY.ERROR.EXPORT, 500)
   }
 }

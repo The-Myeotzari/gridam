@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
 
     return ok(result)
   } catch (error) {
-    console.error('[GET /apis/diaries/month] error', error)
 
     if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
