@@ -1,10 +1,15 @@
 import { Card } from '@/shared/ui/card'
-import Calendar from './components/calendar'
+import { fetchCalendar } from './action'
+import CalendarMemoList from './components/calendar-memo-list'
+import { Calendar } from 'lucide-react'
 import SelectedDateDiary from './components/selected-date-diary'
 
-import CalendarMemoList from './components/calendar-memo-list'
+export default async function Page() {
+  const { ok, data } = await fetchCalendar()
+  // 특정 날짜 조회
+  // await fetchCalendarData({date: { year: 2025, month: 2, day: 10 }})
+  console.log(data)
 
-export default function Page() {
   return (
     <div>
       <div className="mb-8 text-center animate-fade-in">
