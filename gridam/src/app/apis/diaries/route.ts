@@ -17,6 +17,32 @@ export async function GET(req: NextRequest) {
 
     const { supabase, user } = await getAuthenticatedUser()
 
+    // 오늘 일기 상태 조회
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+
+    const todayEnd = new Date()
+    todayEnd.setHours(23, 59, 59, 999)
+
+    const { data: todayDiaries } = await supabase
+      .from('diaries')
+      .select('status, published_at, updated_at')
+      .eq('user_id', user.id)
+      .gte('created_at', todayStart.toISOString())
+      .lte('created_at', todayEnd.toISOString())
+      .is('deleted_at', null)
+
+    let todayDiaryStatus: 'published' | 'draft' | 'none' = 'none'
+
+    if (todayDiaries && todayDiaries.length > 0) {
+      const isPublished = todayDiaries.some((d) => d.status === 'published')
+      const isDraft = todayDiaries.some((d) => d.status === 'draft')
+
+      if (isPublished) todayDiaryStatus = 'published'
+      else if (isDraft) todayDiaryStatus = 'draft'
+    }
+
+    // 일기 조회
     let query = supabase
       .from('diaries')
       .select('*')
@@ -72,6 +98,7 @@ export async function GET(req: NextRequest) {
         items: diariesWithSignedUrls,
         nextCursor: hasMore ? lastItem.published_at : null,
         hasMore,
+        todayDiaryStatus,
       },
     })
   } catch (err) {

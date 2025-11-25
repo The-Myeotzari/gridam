@@ -122,7 +122,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
     canvas.width = Math.floor(cssW * dpr)
     canvas.height = Math.floor(cssH * dpr)
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })
     if (!ctx) return
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)

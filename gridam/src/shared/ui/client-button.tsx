@@ -1,9 +1,9 @@
 'use client'
 
-import React from 'react'
 import Button, { ButtonProps } from '@/shared/ui/button'
+import React from 'react'
 
-interface ClientButtonProps extends ButtonProps {
+export interface ClientButtonProps extends ButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
