@@ -7,7 +7,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 import { useRouter } from 'next/navigation'
 
-// TODO: Server Actions으로 변경
 export function useLogout() {
   const queryClient = useQueryClient()
   const router = useRouter()

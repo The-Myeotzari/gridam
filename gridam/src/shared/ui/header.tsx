@@ -2,7 +2,7 @@ import HeaderNavLink from '@/features/layout/components/header-navlink'
 import HeaderUserMenu from '@/features/layout/components/header-user-menu'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getAuthenticatedUser } from '../utils/get-authenticated-user'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 
 export default async function Header() {
   const { user } = await getAuthenticatedUser()
