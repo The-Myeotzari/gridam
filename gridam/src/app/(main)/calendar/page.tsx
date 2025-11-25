@@ -1,8 +1,14 @@
 import { Card } from '@/shared/ui/card'
+import { fetchCalendar } from './action'
 import Calendar from './calendar'
 import SelectedDateDiary from './selected-date-diary'
 
-export default function Page() {
+export default async function Page() {
+  const { ok, data } = await fetchCalendar()
+  // 특정 날짜 조회
+  // await fetchCalendarData({date: { year: 2025, month: 2, day: 10 }})
+  console.log(data)
+
   return (
     <div>
       <div className="mb-8 text-center animate-fade-in">
