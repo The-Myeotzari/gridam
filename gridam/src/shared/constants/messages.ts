@@ -1,3 +1,5 @@
+// NOTE: 안내 메시지 정리 필요
+
 export const MESSAGES = {
   AUTH: {
     SUCCESS: {
