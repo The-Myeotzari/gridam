@@ -71,7 +71,7 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
       startTransition(async () => {
         updateOptimisticItems(id)
         const res = await deleteDiary(id)
-        if (!res.ok) {
+        if (res.ok) {
           setPages((prev) =>
             prev.map((page) => ({
               ...page,
