@@ -34,19 +34,6 @@ export default function DiaryFormButtons({
       {/* 취소 */}
       <DiaryCancelButton />
 
-      {/* 저장: 신규 작성 / 임시 저장 */}
-      {(status === DIARY_STATUS.NEW || status === DIARY_STATUS.DRAFT) && (
-        <span onClick={onSave}>
-          <DiaryFormButton
-            label={MESSAGES.COMMON.SAVE_BUTTON}
-            type="button"
-            variant="blue"
-            isPending={isPending}
-            className="ml-2"
-          />
-        </span>
-      )}
-
       {/* 수정: 발행된 글 */}
       {status === DIARY_STATUS.PUBLISHED && (
         <span onClick={onUpdate}>
@@ -78,6 +65,19 @@ export default function DiaryFormButtons({
           <DiaryFormButton
             label={MESSAGES.COMMON.DRAFT_UPDATE_BUTTON}
             type="button"
+            isPending={isPending}
+            className="ml-2"
+          />
+        </span>
+      )}
+
+      {/* 저장: 신규 작성 / 임시 저장 */}
+      {(status === DIARY_STATUS.NEW || status === DIARY_STATUS.DRAFT) && (
+        <span onClick={onSave}>
+          <DiaryFormButton
+            label={MESSAGES.COMMON.SAVE_BUTTON}
+            type="button"
+            variant="blue"
             isPending={isPending}
             className="ml-2"
           />

@@ -32,7 +32,7 @@ export default function DiaryCancelButton() {
   }, [router])
 
   return (
-    <span onClick={handleCancel} className="mr-2">
+    <span onClick={handleCancel}>
       <DiaryFormButton label={MESSAGES.COMMON.CANCEL_BUTTON} type="button" />
     </span>
   )
