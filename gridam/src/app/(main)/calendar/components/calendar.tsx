@@ -1,6 +1,6 @@
 'use client'
 import { useMemo, useState } from 'react'
-import buildCalendar, { weekday } from './build-calendar'
+import buildCalendar, { weekday } from '../lib/build-calendar'
 import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 
@@ -48,34 +48,34 @@ export default function Calendar() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-around">
+    <div className="flex flex-col gap-4 justify-center">
+      <div className="flex justify-between min-h-auto items-center">
         <CircleChevronLeft
           color="#2c2e44"
           strokeWidth={1.25}
-          className="h-5 w-5 hover:cursor-pointer hover:bg-accent rounded-xl"
+          className="h-8 w-8 hover:cursor-pointer hover:bg-accent rounded-xl"
           onClick={handlePrevMonth}
         />
 
-        <div>
+        <div className="text-2xl">
           {view.year}년 {view.month + 1}월
         </div>
 
         <CircleChevronRight
           color="#2c2e44"
           strokeWidth={1.25}
-          className="h-5 w-5 hover:cursor-pointer hover:bg-accent rounded-xl"
+          className="h-8 w-8 hover:cursor-pointer hover:bg-accent rounded-xl"
           onClick={handleNextMonth}
         />
       </div>
 
-      <div className="grid grid-cols-7 text-center">
+      <div className="flex justify-around text-center min-h-8 items-center">
         {weekday.map((day) => {
           return <div key={day}>{day}</div>
         })}
       </div>
 
-      <div className="grid grid-cols-7 text-center ">
+      <div className="grid grid-cols-7  text-center ">
         {cells.map((cell, idx) => {
           const isSelected =
             selectedDate &&
@@ -93,6 +93,8 @@ export default function Calendar() {
                 }
               }}
               className={cn(
+                // 달력에 표시할게 많지 않으면 center로 바꾸기
+                'aspect-square flex justify-start items-start',
                 `p-2 ${cell.inCurrentMonth ? '' : 'text-muted-foreground/40'}`,
                 'hover:cursor-pointer',
                 isSelected && 'bg-accent rounded-sm '

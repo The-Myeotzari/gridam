@@ -1,7 +1,8 @@
 import { Card } from '@/shared/ui/card'
 import { fetchCalendar } from './action'
-import Calendar from './calendar'
-import SelectedDateDiary from './selected-date-diary'
+import CalendarMemoList from './components/calendar-memo-list'
+import { Calendar } from 'lucide-react'
+import SelectedDateDiary from './components/selected-date-diary'
 
 export default async function Page() {
   const { ok, data } = await fetchCalendar()
@@ -15,10 +16,15 @@ export default async function Page() {
         <h1 className="font-handwritten text-4xl mb-2 text-navy-gray">캘린더</h1>
         <p className="font-handwritten text-xl text-muted-foreground">날짜별 그림 일기</p>
       </div>
-      <Card className="flex flex-col md:flex-row p-6 gap-7 max-w-4xl mx-auto">
-        <Calendar />
-        <SelectedDateDiary />
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2">
+        <Card className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] p-6 gap-7 ">
+          <Calendar />
+          <SelectedDateDiary />
+        </Card>
+        <Card className="flex flex-col md:flex-row p-6 gap-7 ">
+          <CalendarMemoList />
+        </Card>
+      </div>
     </div>
   )
 }
