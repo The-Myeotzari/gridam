@@ -1,4 +1,5 @@
 import { getUserData } from "@/features/mypage/api/mypage.api";
+import DiaryExportSection from "@/features/mypage/components/export/diary-export-section";
 import MyStats from "@/features/mypage/components/my-stats";
 import MyPageButtons from "@/features/mypage/components/mypage-buttons";
 import MyPageHeader from "@/features/mypage/components/mypage-header";
@@ -22,11 +23,12 @@ export default async function MyPage() {
 
   return (
     <div className="w-full lg:max-w-3/4 lg:mx-auto flex flex-col gap-6 font-bold items-center">
-      <MyPageHeader/>
+      <MyPageHeader />
       <ProfileCard email={user.email} nickname={user.nickname} createdAt={user.created_at} />
-      <MyStats totalDays={stats.totalDays} totalDiaries={stats.totalDiaries}/>
-      <RecentDiaries diaries={recentDiaries}/>
-      <MyPageButtons/>
+      <MyStats totalDays={stats.totalDays} totalDiaries={stats.totalDiaries} />
+      <DiaryExportSection />
+      <RecentDiaries diaries={recentDiaries} />
+      <MyPageButtons />
     </div>
   )
 }

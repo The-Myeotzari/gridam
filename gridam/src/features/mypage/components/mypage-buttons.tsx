@@ -1,7 +1,7 @@
 'use client'
 
 import { useLogout } from '@/features/mypage/api/queries/use-logout'
-import ChangePasswordModal from '@/features/mypage/components/change-password-modal'
+import ChangePasswordModal from '@/features/mypage/components/change-password/change-password-modal'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
 import { modalStore } from '@/store/modal-store'
