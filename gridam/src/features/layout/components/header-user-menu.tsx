@@ -4,10 +4,13 @@ import { useLogout } from '@/features/mypage/api/queries/use-logout'
 import DropBox from '@/shared/ui/dropbox'
 import { useRouter } from 'next/navigation'
 
-export default function HeaderUserMenu() {
+interface HeaderUserMenuProps {
+  userName: string
+}
+
+export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
   const router = useRouter()
   const { mutate: handleLogout } = useLogout()
-  const userName = '닉네임'
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
