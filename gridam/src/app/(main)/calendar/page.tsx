@@ -1,6 +1,6 @@
 import { Card } from '@/shared/ui/card'
-import Calendar from './calendar'
-import SelectedDateDiary from './selected-date-diary'
+import Calendar from './components/calendar'
+import SelectedDateDiary from './components/selected-date-diary'
 
 export default function Page() {
   return (

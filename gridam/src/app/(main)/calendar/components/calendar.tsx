@@ -1,6 +1,6 @@
 'use client'
 import { useMemo, useState } from 'react'
-import buildCalendar, { weekday } from './build-calendar'
+import buildCalendar, { weekday } from '../build-calendar'
 import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 
