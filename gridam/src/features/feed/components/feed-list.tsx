@@ -13,7 +13,7 @@ import { modalStore } from '@/store/modal-store'
 import { refresh } from 'next/cache'
 import { useCallback, useOptimistic, useState, useTransition } from 'react'
 
-type FeedListProps = {
+export type FeedListProps = {
   year: string
   month: string
   initialPage: FetchDiaryResponseType
@@ -30,6 +30,10 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
   const [optimisticItems, updateOptimisticItems] = useOptimistic<Diary[], string>(
     allItems,
     (state, removedId) => state.filter((d) => d.id !== removedId)
+  )
+
+  const displayedItems = Array.from(new Map(optimisticItems.map((d) => [d.id, d]))).map(
+    ([, diary]) => diary
   )
 
   // 무한스크롤
@@ -120,21 +124,16 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
     return <FeedCardSkeleton />
   }
 
-  if (optimisticItems.length === 0) {
+  if (displayedItems.length === 0) {
     return <div className="text-muted-foreground">작성된 일기가 없어요!</div>
   }
 
   return (
     <div className="flex flex-col gap-4 sm:w-xl md:w-2xl sm:mx-auto">
-      {/* TODO: 추후 스피너 컴포넌트로 교체 필요 */}
       {isPending && <div>로딩중입니다</div>}
-      {optimisticItems.map((diary, idx) => (
-        <FeedCard
-          key={`${diary.id}의 게시글`}
-          diary={diary}
-          isFirst={idx === 0}
-          onDelete={openDeleteModal}
-        />
+
+      {displayedItems.map((diary, idx) => (
+        <FeedCard key={diary.id} diary={diary} isFirst={idx === 0} onDelete={openDeleteModal} />
       ))}
 
       <div ref={ref} className="h-10" />
