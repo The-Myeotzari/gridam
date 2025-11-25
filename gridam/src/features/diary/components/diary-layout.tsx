@@ -16,7 +16,13 @@ export default function DiaryLayout({ date, weatherIcon, children }: DiaryLayout
           <div className="flex items-center leading-9 gap-2">
             <span className="font-bold text-md hidden sm:block">날씨</span>
             {typeof weatherIcon === 'string' ? (
-              <Image src={weatherIcon} alt="weather icon" width={36} height={36} />
+              <Image
+                src={weatherIcon}
+                alt="weather icon"
+                width={36}
+                height={36}
+                className="w-9 h-9"
+              />
             ) : (
               weatherIcon
             )}

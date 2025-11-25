@@ -1,9 +1,10 @@
 import { fetchDiaryPage } from '@/app/(main)/action'
 import FeedList from '@/features/feed/components/feed-list'
+import FeedWriteBtn from '@/features/feed/components/feed-write-btn'
 import { resolveYearMonth } from '@/features/feed/utils/diary-date'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
-import { Plus, RefreshCcw } from 'lucide-react'
+import { RefreshCcw } from 'lucide-react'
 import Link from 'next/link'
 
 type PageProps = {
@@ -39,13 +40,7 @@ export default async function Home({ searchParams }: PageProps) {
         </div>
       )}
 
-      <Link href="/write">
-        <Button
-          size="lg"
-          className="fixed bottom-8 right-8 rounded-full w-16 h-16 shadow-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground hover:scale-110 transition-all"
-          label={<Plus className="w-8 h-8" />}
-        />
-      </Link>
+      <FeedWriteBtn todayDiaryStatus={firstPage.todayDiaryStatus} />
     </div>
   )
 }

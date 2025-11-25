@@ -52,6 +52,7 @@ export default function FeedCard({ diary, isFirst, onDelete }: FeedCardProps) {
             className="object-contain"
             loading={isFirst ? 'eager' : 'lazy'}
             priority={!!isFirst}
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 576px, 672px"
           />
         )}
       </CardFooter>
