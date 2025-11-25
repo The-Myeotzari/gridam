@@ -1,4 +1,4 @@
-// TODO: 2차 개발 기간에 폴더 구조 확정 이후 위치 이동 필요
+// NOTE: 2차 개발 기간에 폴더 구조 확정 이후 위치 이동 필요
 // File을 bole로
 export async function getDataURLToBlob(dataURL: string): Promise<Blob> {
   const res = await fetch(dataURL)

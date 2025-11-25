@@ -1,3 +1,5 @@
+// NOTE: 쿼리키 정리 필요
+
 export const QUERY_KEYS = {
   // Auth 관련
   AUTH: {
@@ -8,7 +10,7 @@ export const QUERY_KEYS = {
     RESET_REQUEST: ['auth', 'reset', 'request'] as const,
     RESET_COMPLETE: ['auth', 'reset', 'complete'] as const,
     ME: ['auth', 'me'] as const,
-    CHANGE_PASSWORD: ['auth', 'change'] as const
+    CHANGE_PASSWORD: ['auth', 'change'] as const,
   },
 
   // Me 관련

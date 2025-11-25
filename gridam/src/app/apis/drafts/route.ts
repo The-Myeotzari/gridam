@@ -1,4 +1,3 @@
-// TODO: 에러 메시지 전체 검토 필요
 import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { DraftCreateSchema } from '@/shared/types/zod/apis/draft-schema'

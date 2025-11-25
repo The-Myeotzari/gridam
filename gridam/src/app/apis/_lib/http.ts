@@ -6,6 +6,7 @@ export const ok = (data: unknown, init = 200) =>
 export const fail = (message: string, init = 400) =>
   NextResponse.json({ ok: false, message }, { status: init })
 
+// NOTE: 제거 필요
 export const withCORS = (resp: Response) => {
   resp.headers.set('Access-Control-Allow-Origin', '*')
   resp.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
@@ -13,6 +14,7 @@ export const withCORS = (resp: Response) => {
   return resp
 }
 
+// NOTE: 제거 필요
 export function OPTIONS() {
   return withCORS(new Response(null, { status: 204 }))
 }
