@@ -1,9 +1,7 @@
 'use client'
 
-import { Card } from '@/shared/ui/card'
-import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
-
 export const weekday = ['일', '월', '화', '수', '목', '금', '토']
+
 type CalendarCell = {
   year: number
   month: number // 0~11
