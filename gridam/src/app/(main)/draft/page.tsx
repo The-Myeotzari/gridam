@@ -1,8 +1,8 @@
+import { fetchDraftAction } from '@/app/(main)/draft/actions'
+import DraftList from '@/app/(main)/draft/draft-list'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
 import { Link, RefreshCcw } from 'lucide-react'
-import { fetchDraftAction } from './actions'
-import DraftList from './draft-list'
 
 export const dynamic = 'force-dynamic'
 
