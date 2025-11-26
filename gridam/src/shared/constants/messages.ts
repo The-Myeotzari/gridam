@@ -47,6 +47,7 @@ export const MESSAGES = {
       DRAFT_SAVE: '임시 게시글이 발행되었습니다!',
       DRAFT_CREATE: '임시 게시글이 저장되었습니다!',
       DRAFT_UPDATE: '임시 게시글이 수정되었습니다!',
+      EXPORT: '일기 다운로드에 성공했습니다!',
     },
     ERROR: {
       READ: '일기 조회에 실패했습니다.',
@@ -70,6 +71,8 @@ export const MESSAGES = {
       WEATHER: '날씨 조회에 실패했습니다.',
       PUBLISHED: '오늘의 일기를 이미 발행했어요!',
       DRAFT: '작성 중인 오늘의 일기가 있습니다!',
+      EXPORT: '일기 다운로드에 실패했습니다.',
+      EXPORT_INVALID_DATA: '유효하지 않은 연/월입니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',
@@ -77,6 +80,24 @@ export const MESSAGES = {
 이 작업은 되돌릴 수 없어요.`,
     },
   },
+  MEMO: {
+    SUCCESS: {
+      CREATE: '메모가 저장되었습니다!',
+      UPDATE: '메모가 수정되었습니다!',
+      DELETE: '메모가 삭제되었습니다.',
+    },
+    ERROR: {
+      READ: '메모 조회에 실패했습니다.',
+      READ_NO: '존재하지 않는 메모입니다.',
+      CREATE: '메모 저장에 실패했습니다.',
+      CREATE_NO_DATA: '메모 저장에 필요한 데이터가 없습니다.',
+      UPDATE: '메모 수정에 실패했습니다.',
+      UPDATE_NO_DATA: '메모 수정에 필요한 데이터가 없습니다.',
+      DELETE: '메모 삭제에 실패했습니다.',
+      DELETE_OVER: '이미 삭제된 메모입니다.',
+    },
+  },
+
   COMMON: {
     CANCEL: '취소',
     CONFIRM: '확인',

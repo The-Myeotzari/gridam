@@ -13,11 +13,10 @@ export async function resetAction(formData: FormData) {
     .map((c) => `${c.name}=${c.value}`)
     .join('; ')
 
-  const apiPath = '/apis/auth/reset/complete'
-  const apiBaseUrl = 'http://localhost:3000'
+  const apiPath = '/auth/reset/complete'
 
   try {
-    const response = await fetch(`${apiBaseUrl}${apiPath}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${apiPath}`, {
       method: 'POST',
       cache: 'no-store',
       credentials: 'include',
