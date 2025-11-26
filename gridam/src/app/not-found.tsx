@@ -1,3 +1,4 @@
+// NOTE: 디자인 보완 필요
 import Link from 'next/link'
 
 export default function NotFound() {

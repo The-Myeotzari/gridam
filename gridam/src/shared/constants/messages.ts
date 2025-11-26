@@ -1,3 +1,5 @@
+// NOTE: 안내 메시지 정리 필요
+
 export const MESSAGES = {
   AUTH: {
     SUCCESS: {
@@ -45,6 +47,7 @@ export const MESSAGES = {
       DRAFT_SAVE: '임시 게시글이 발행되었습니다!',
       DRAFT_CREATE: '임시 게시글이 저장되었습니다!',
       DRAFT_UPDATE: '임시 게시글이 수정되었습니다!',
+      EXPORT: '일기 다운로드에 성공했습니다!',
     },
     ERROR: {
       READ: '일기 조회에 실패했습니다.',
@@ -66,6 +69,10 @@ export const MESSAGES = {
       DRAFT_READ: '임시 게시글 조회에 실패했습니다.',
       IMAGE: '이미지 업로드에 실패했습니다.',
       WEATHER: '날씨 조회에 실패했습니다.',
+      PUBLISHED: '오늘의 일기를 이미 발행했어요!',
+      DRAFT: '작성 중인 오늘의 일기가 있습니다!',
+      EXPORT: '일기 다운로드에 실패했습니다.',
+      EXPORT_INVALID_DATA: '유효하지 않은 연/월입니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',

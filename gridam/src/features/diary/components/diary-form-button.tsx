@@ -1,9 +1,9 @@
-import Button, { ButtonProps } from '@/shared/ui/button'
+import ClientButton, { type ClientButtonProps } from '@/shared/ui/client-button'
 import cn from '@/shared/utils/cn'
 
 type WriteButtonProps = {
   isPending?: boolean
-} & ButtonProps
+} & ClientButtonProps
 
 export default function DiaryFormButton({
   isPending,
@@ -11,7 +11,7 @@ export default function DiaryFormButton({
   ...buttonProps
 }: WriteButtonProps) {
   return (
-    <Button
+    <ClientButton
       {...buttonProps}
       size="sm"
       disabled={buttonProps.disabled || isPending}

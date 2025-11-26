@@ -18,6 +18,8 @@ type FetchDiaryResponseType = {
     items: Diary[]
     nextCursor: string | null
     hasMore: boolean
+    // TODO: 개발 완료 이후 상수화 필요
+    todayDiaryStatus: 'published' | 'draft' | 'none'
   }
 }
 

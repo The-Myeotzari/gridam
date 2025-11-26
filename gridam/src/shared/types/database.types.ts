@@ -48,55 +48,38 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'diaries_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
       memos: {
         Row: {
-          id: string
-          user_id: string
-          title: string
-          content: string
-          created_at: string
-          updated_at: string
+          content: string | null
+          created_at: string | null
           deleted_at: string | null
+          id: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          title: string
-          content: string
-          created_at?: string
-          updated_at?: string
+          content?: string | null
+          created_at?: string | null
           deleted_at?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          content?: string
-          created_at?: string
-          updated_at?: string
+          content?: string | null
+          created_at?: string | null
           deleted_at?: string | null
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'memos_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
-
       metadata: {
         Row: {
           date: string
@@ -126,48 +109,12 @@ export type Database = {
           },
         ]
       }
-      users: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          jwt_access_token: string | null
-          jwt_expires_at: string | null
-          jwt_refresh_token: string | null
-          nickname: string
-          password_hash: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          jwt_access_token?: string | null
-          jwt_expires_at?: string | null
-          jwt_refresh_token?: string | null
-          nickname: string
-          password_hash: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          jwt_access_token?: string | null
-          jwt_expires_at?: string | null
-          jwt_refresh_token?: string | null
-          nickname?: string
-          password_hash?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      count_diary_days: { Args: { p_user: string }; Returns: number }
     }
     Enums: {
       diary_status: 'draft' | 'published'
