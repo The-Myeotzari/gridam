@@ -1,0 +1,111 @@
+// NOTE: 안내 메시지 정리 필요
+
+export const MESSAGES = {
+  AUTH: {
+    SUCCESS: {
+      LOGIN: '로그인이 되었습니다.',
+      REGISTER: '회원가입이 완료되었습니다.',
+      REGISTER_EMAIL: '이메일 인증 이메일이 발송되었습니다.',
+      LOGOUT: '로그아웃 되었습니다.',
+      PASSWORD_RESET: '비밀번호 재설정이 완료되었습니다.',
+      PASSWORD_RESET_EMAIL: '비밀번호 재설정 이메일이 발송되었습니다.',
+      REGISTER_AND_EMAIL:
+        '회원가입 요청이 완료되었습니다. 이메일로 전송된 인증 링크를 확인해주세요.',
+    },
+    ERROR: {
+      UNAUTHORIZED_USER: '인증되지 않은 사용자입니다. 로그인 해주세요.',
+      EMPTY_EMAIL_PASSWORD: '이메일과 비밀번호를 입력해주세요.',
+      EMPTY_EMAIL: '이메일을 입력해주세요.',
+      WRONG_PASSWORD: '비밀번호가 일치하지 않습니다.',
+      ACCOUNT_NOT_EXIST: '존재하지 않는 계정입니다.',
+      REGISTER: '회원가입에 실패했습니다.',
+      LOGIN: '로그인에 실패했습니다. 다시 시도해주세요.',
+      LOGOUT: '로그아웃에 실패했습니다. 다시 시도해주세요.',
+      WRONG_NEW_PASSWORD: '새 비밀번호가 일치하지 않습니다.',
+      WRONG_CURRENT_PASSWORD: '현재 비밀번호와 일치하지 않습니다.',
+      EMPTY_FORM: '모든 항목을 입력해주세요.',
+      INVALID_PASSWORD_LENGTH: '비밀번호는 8자 이상이어야 합니다.',
+      INVALID_PASSWORD_FORMAT:
+        '비밀번호에는 숫자, 영문 대·소문자, 특수문자가 각각 최소 1개 이상 포함되어야 합니다.',
+      PASSWORD_RESET: '비밀번호 재설정에 실패했습니다. 다시 시도해주세요.',
+      INVALID_EMAIL_FORMAT: '이메일 형식이 올바르지 않습니다',
+      INVALID_NICKNAME_FORMAT: '닉네임은 2~12자 이내의 한글, 영문, 숫자로 입력해주세요.',
+      EMAIL_ALREADY_IN_USE: '이미 사용 중인 이메일입니다.',
+      REGISTER_TOO_MANY_REQUEST: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+      EMAIL_VERIFICATION_REQUEST_FAILED:
+        '이메일 인증 요청에 실패하셨습니다. 잠시 후 다시 시도해주세요 ',
+      EMPTY_PASSWORD: '비밀번호를 입력해주세요.',
+    },
+  },
+
+  DIARY: {
+    SUCCESS: {
+      CREATE: '일기가 저장되었습니다!',
+      UPDATE: '일기가 수정되었습니다!',
+      DELETE: '일기가 성공적으로 삭제되었습니다.',
+      READ_NO_DATA: '아직 이 달에 작성된 일기가 없어요.',
+      DRAFT_SAVE: '임시 게시글이 발행되었습니다!',
+      DRAFT_CREATE: '임시 게시글이 저장되었습니다!',
+      DRAFT_UPDATE: '임시 게시글이 수정되었습니다!',
+      EXPORT: '일기 다운로드에 성공했습니다!',
+    },
+    ERROR: {
+      READ: '일기 조회에 실패했습니다.',
+      READ_NO: '존재하지 않은 일기입니다.',
+      CREATE: '일기 저장에 실패했습니다.',
+      CREATE_OVER: '오늘 일기가 이미 생성되었습니다.',
+      CREATE_NO_DATA: '일기 저장에 필요한 데이터가 없습니다.',
+      UPDATE: '일기 수정에 실패했습니다.',
+      DELETE: '일기 삭제에 실패했습니다.',
+      DELETE_OVER: '이미 삭제된 일기입니다.',
+      META: '일기의 메타 데이터 생성에 실패했습니다.',
+      DRAFT_SAVE: '임시 게시글이 발행에 실패했습니다.',
+      DRAFT_CREATE: '임시 저장에 실패했습니다.',
+      DRAFT_CREATE_NO_DATA: '임시 저장에 필요한 데이터가 없습니다.',
+      DRAFT_UPDATE: '임시 게시글 수정에 실패했습니다.',
+      DRAFT_UPDATE_NO_DATA: '임시 수정에 필요한 데이터가 없습니다.',
+      DRAFT_DELETE: '임시 게시글 삭제에 실패했습니다.',
+      DRAFT_DELETE_OVER: '이미 삭제된 일기입니다.',
+      DRAFT_READ: '임시 게시글 조회에 실패했습니다.',
+      IMAGE: '이미지 업로드에 실패했습니다.',
+      WEATHER: '날씨 조회에 실패했습니다.',
+      PUBLISHED: '오늘의 일기를 이미 발행했어요!',
+      DRAFT: '작성 중인 오늘의 일기가 있습니다!',
+      EXPORT: '일기 다운로드에 실패했습니다.',
+      EXPORT_INVALID_DATA: '유효하지 않은 연/월입니다.',
+    },
+    CANCEL: {
+      TITLE: '정말 뒤로 가시겠어요?',
+      DESCRIPTION: `작성 중인 내용이 저장되지 않고 사라질 수 있어요.
+이 작업은 되돌릴 수 없어요.`,
+    },
+  },
+  MEMO: {
+    SUCCESS: {
+      CREATE: '메모가 저장되었습니다!',
+      UPDATE: '메모가 수정되었습니다!',
+      DELETE: '메모가 삭제되었습니다.',
+    },
+    ERROR: {
+      READ: '메모 조회에 실패했습니다.',
+      READ_NO: '존재하지 않는 메모입니다.',
+      CREATE: '메모 저장에 실패했습니다.',
+      CREATE_NO_DATA: '메모 저장에 필요한 데이터가 없습니다.',
+      UPDATE: '메모 수정에 실패했습니다.',
+      UPDATE_NO_DATA: '메모 수정에 필요한 데이터가 없습니다.',
+      DELETE: '메모 삭제에 실패했습니다.',
+      DELETE_OVER: '이미 삭제된 메모입니다.',
+    },
+  },
+
+  COMMON: {
+    CANCEL: '취소',
+    CONFIRM: '확인',
+    CANCEL_BUTTON: '취소하기',
+    SAVE_BUTTON: '저장하기',
+    UPDATE_BUTTON: '수정하기',
+    DELETE_BUTTON: '삭제하기',
+    DRAFT_SAVE_BUTTON: '임시 저장',
+    DRAFT_UPDATE_BUTTON: '임시 수정',
+  },
+} as const
