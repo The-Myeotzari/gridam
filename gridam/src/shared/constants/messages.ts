@@ -80,6 +80,24 @@ export const MESSAGES = {
 이 작업은 되돌릴 수 없어요.`,
     },
   },
+  MEMO: {
+    SUCCESS: {
+      CREATE: '메모가 저장되었습니다!',
+      UPDATE: '메모가 수정되었습니다!',
+      DELETE: '메모가 삭제되었습니다.',
+    },
+    ERROR: {
+      READ: '메모 조회에 실패했습니다.',
+      READ_NO: '존재하지 않는 메모입니다.',
+      CREATE: '메모 저장에 실패했습니다.',
+      CREATE_NO_DATA: '메모 저장에 필요한 데이터가 없습니다.',
+      UPDATE: '메모 수정에 실패했습니다.',
+      UPDATE_NO_DATA: '메모 수정에 필요한 데이터가 없습니다.',
+      DELETE: '메모 삭제에 실패했습니다.',
+      DELETE_OVER: '이미 삭제된 메모입니다.',
+    },
+  },
+
   COMMON: {
     CANCEL: '취소',
     CONFIRM: '확인',
