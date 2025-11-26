@@ -1,5 +1,4 @@
 import { Card } from '@/shared/ui/card'
-import Image from 'next/image'
 import Link from 'next/link'
 import LoginForm from './login-form'
 
@@ -9,7 +8,7 @@ export default function Page() {
       <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto shadow-card">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <Image
+          <img
             src="/favicon.ico"
             alt="그리담 로고"
             width={56}

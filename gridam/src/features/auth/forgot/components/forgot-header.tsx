@@ -1,5 +1,4 @@
 import { ArrowLeft } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 interface AuthHeaderProps {
@@ -24,13 +23,11 @@ export function AuthHeader({ title, subtitle, backHref = '/login' }: AuthHeaderP
 
       <div className="text-center">
         <div className="h-20 mx-auto mb-4 relative w-28">
-          <Image
+          <img
             src="/favicon.ico"
             alt="그리담 GRIDAM"
-            fill
             sizes="112px"
             className="object-contain"
-            priority
           />
         </div>
         <h1 className="font-handwritten text-4xl text-navy-gray mb-2">{title}</h1>
