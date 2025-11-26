@@ -40,7 +40,7 @@ export default async function Home({ searchParams }: PageProps) {
         </div>
       )}
 
-      <FeedWriteBtn todayDiaryStatus={firstPage.todayDiaryStatus} />
+      <FeedWriteBtn todayDiaryStatus={firstPage?.todayDiaryStatus ? 'none' :firstPage?.todayDiaryStatus } />
     </div>
   )
 }
