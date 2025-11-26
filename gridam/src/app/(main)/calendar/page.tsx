@@ -1,8 +1,8 @@
 import { Card } from '@/shared/ui/card'
-import { fetchCalendar } from './action'
-import CalendarMemoList from './components/calendar-memo-list'
-import { Calendar } from 'lucide-react'
-import SelectedDateDiary from './components/selected-date-diary'
+import { fetchCalendar } from '@/app/(main)/calendar/action'
+import CalendarMemoList from '@/app/(main)/calendar/components/calendar-memo-list'
+import Calendar from '@/app/(main)/calendar/components/calendar'
+import SelectedDateDiary from '@/app/(main)/calendar/components/selected-date-diary'
 
 export default async function Page() {
   const { ok, data } = await fetchCalendar()
