@@ -23,12 +23,7 @@ export function AuthHeader({ title, subtitle, backHref = '/login' }: AuthHeaderP
 
       <div className="text-center">
         <div className="h-20 mx-auto mb-4 relative w-28">
-          <img
-            src="/favicon.ico"
-            alt="그리담 GRIDAM"
-            sizes="112px"
-            className="object-contain"
-          />
+         <img src="/favicon.ico" width={56} height={56} alt="그리담로고" className=" mx-auto" />
         </div>
         <h1 className="font-handwritten text-4xl text-navy-gray mb-2">{title}</h1>
         {subtitle ? (
