@@ -1,5 +1,7 @@
 'use server'
 
+import type { Diary } from '@/features/feed/feed.type'
+import type { Memo } from '@/features/memo/api/memo.action'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 type FetchCalendarParams = {
@@ -11,8 +13,8 @@ type FetchCalendarParams = {
 export type CalendarResponse = {
   ok: boolean
   data: {
-    diary: any | null
-    memos: any[]
+    diary: Diary[] | null
+    memos: Memo[]
   }
 }
 
