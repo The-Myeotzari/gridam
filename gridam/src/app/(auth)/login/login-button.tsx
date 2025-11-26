@@ -10,7 +10,7 @@ export default function SocialLoginButtons() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
       },
     })
   }
@@ -19,7 +19,7 @@ export default function SocialLoginButtons() {
     await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
       },
     })
   }
