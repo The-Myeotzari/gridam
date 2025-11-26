@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import getSupabaseServer, { getOrigin } from '@/shared/utils/supabase/server'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
 
   // 1. 항상 ENV 기준 origin 우선 사용
-  const envOrigin = process.env.NEXT_PUBLIC_BASE_URL
+  const envOrigin = await getOrigin()
   const origin = envOrigin ?? requestUrl.origin
 
   // code 없으면 로그인으로
