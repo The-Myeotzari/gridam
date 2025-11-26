@@ -2,7 +2,7 @@
 name: "[BUG] 버그 리포트"
 about: 버그 템플릿 입니다!
 title: ''
-labels: bug
+labels: bug, QA
 assignees: ''
 
 ---
