@@ -2,7 +2,11 @@ import { getFormatDate } from '@/shared/utils/get-format-date'
 
 const todayDate = getFormatDate()
 
-export default function CalendarMempList() {
+interface CalendarMemoList {
+  memos?: any[]
+  isLoading: boolean
+}
+export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList) {
   return (
     <div className="mb-4 flex flex-col flex-1 gap">
       <h3 className="font-handwritten text-xl mb-2 text-navy-gray">메모</h3>

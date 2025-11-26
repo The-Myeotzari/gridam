@@ -1,6 +1,7 @@
 'use server'
 
 import { getCookies } from '@/shared/utils/get-cookies'
+import { MonthlyData } from './components/calendar-client'
 
 type FetchCalendarParams = {
   year?: number
@@ -11,8 +12,9 @@ type FetchCalendarParams = {
 export type CalendarResponse = {
   ok: boolean
   data: {
-    diary: any | null
-    memos: any[]
+    diary?: any | null
+    memos?: any[]
+    monthlyData?: MonthlyData
   }
 }
 
