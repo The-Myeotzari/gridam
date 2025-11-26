@@ -38,7 +38,8 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/forgot') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/apis') &&
-    !request.nextUrl.pathname.startsWith('/error')
+    !request.nextUrl.pathname.startsWith('/error') &&
+    !request.nextUrl.pathname.startsWith('/auth/callback')
   ) {
     // 로그인 페이지로 사용자 리다이렉트
     const url = request.nextUrl.clone()
