@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
 
   // code 없으면 로그인으로
   if (!code) {
-    return NextResponse.redirect(new URL('/login', requestUrl))
+    return NextResponse.redirect('/login')
   }
 
   const supabase = await getSupabaseServer()
@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
   if (error) {
     console.error('exchangeCodeForSession error', error)
     // 세션 교환 실패 -> 로그인으로
-    return NextResponse.redirect(new URL('/login', requestUrl))
+    return NextResponse.redirect('/login')
   }
 
-  return NextResponse.redirect(new URL('/', requestUrl))
+  return NextResponse.redirect('/')
 }
