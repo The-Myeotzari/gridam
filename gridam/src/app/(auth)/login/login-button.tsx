@@ -7,19 +7,25 @@ export default function SocialLoginButtons() {
   const supabase = createClientComponentClient()
 
   const handleGoogle = async () => {
+    const redirectTo = `${window.location.origin}/callback`
+    console.log('google:', redirectTo)
+
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
+        redirectTo,
       },
     })
   }
 
   const handleKakao = async () => {
+    const redirectTo = `${window.location.origin}/callback`
+    console.log('kakao:', redirectTo)
+
     await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
+        redirectTo,
       },
     })
   }
