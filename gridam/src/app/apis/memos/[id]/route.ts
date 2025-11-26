@@ -1,5 +1,5 @@
 import { MESSAGES } from '@/shared/constants/messages'
-import { Params } from '@/shared/types/params'
+import { Params } from '@/shared/types/params.type'
 import { updateMemoSchema } from '@/shared/types/zod/apis/memos'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest, NextResponse } from 'next/server'
