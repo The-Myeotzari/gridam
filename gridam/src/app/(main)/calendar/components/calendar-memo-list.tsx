@@ -7,6 +7,13 @@ interface CalendarMemoList {
   isLoading: boolean
 }
 export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList) {
+  if (isLoading) {
+    return <div>메모를 불러오고 있습니다...</div>
+  }
+
+  if (!memos?.length) {
+    return <div>메모가 없습니다.</div>
+  }
   return (
     <div className="mb-4 flex flex-col flex-1 gap">
       <h3 className="font-handwritten text-xl mb-2 text-navy-gray">메모</h3>

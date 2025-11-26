@@ -26,6 +26,7 @@ export default function Calendar({
   onSelectDate,
   currentView,
   onViewChange,
+  monthlyData,
 }: CalendarProps) {
   console.log('현재 선택된 날짜 (Props):', selectedDate)
 
@@ -92,6 +93,11 @@ export default function Calendar({
             selectedDate.year === cell.year &&
             selectedDate.month - 1 === cell.month &&
             selectedDate.day === cell.day
+
+          //현재 달에 속하는 셀에만 monthlyData 적용
+          const info = cell.inCurrentMonth ? monthlyData[cell.day] : undefined
+          const hasDiary = info?.hasDiary
+          const hasMemo = info?.hasMemo
           return (
             <div
               key={idx}
@@ -107,7 +113,19 @@ export default function Calendar({
                 isSelected && 'bg-accent rounded-sm '
               )}
             >
-              {cell.day}
+              <div className="flex flex-col items-start w-full h-full">
+                <div>{cell.day}</div>
+                {hasDiary && (
+                  <span className="bg-primary w-full px-1 mt-1 rounded-full text-sm text-white">
+                    일기
+                  </span>
+                )}
+                {hasMemo && (
+                  <span className="bg-pink-400 w-full px-1 mt-0.5 rounded-full text-sm text-white">
+                    메모
+                  </span>
+                )}
+              </div>
             </div>
           )
         })}

@@ -21,8 +21,23 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
   const [isPending, startTransition] = useTransition()
   //날짜마다 메모나 일기가 있는지 표시
   const [monthlyData, setMonthlyData] = useState<MonthlyData>(initialData.monthlyData || {})
-  const [view, setView] = useState(() => ({ year: today.getFullYear(), month: today.getMonth() }))
+  const [view, setView] = useState(() => ({ year: today.getFullYear(), month: today.getMonth() })) //0 ~11
 
+  // const mockMonthlyData: MonthlyData = {
+  //   1: {
+  //     hasDiary: true,
+  //     hasMemo: false,
+  //   },
+  //   10: {
+  //     hasDiary: false,
+  //     hasMemo: true, // 10일은 메모만 있다고 가정
+  //   },
+  //   25: {
+  //     hasDiary: true,
+  //     hasMemo: true, // 25일은 일기와 메모 모두 있다고 가정
+  //   },
+  //   // 나머지 날짜는 키가 없거나 { hasDiary: false, hasMemo: false }일 수 있음
+  // }
   useEffect(() => {
     // view가 바뀌었을 때만 실행
     startTransition(async () => {
@@ -49,8 +64,8 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
     startTransition(async () => {
       const res = await fetchCalendar(newDate)
       if (res.ok) {
-        setDiary(res.data.diary)
-        setMemos(res.data.memos)
+        setDiary(res.data.diary ?? null) //일기가 없습니다.
+        setMemos(res.data.memos ?? []) //메모가 없습니다.
       }
     })
   }
@@ -61,7 +76,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
         <Calendar
           selectedDate={selectedDate}
           onSelectDate={handleSelectDate}
-          monthlyData={monthlyData}
+          monthlyData={monthlyData} // 일기/메모 표시
           currentView={view}
           onViewChange={setView}
         />
