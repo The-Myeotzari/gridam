@@ -2,7 +2,7 @@ import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { SignUpSchema } from '@/shared/types/zod/apis/auth'
 import getSupabaseAdmin from '@/shared/utils/supabase/admin'
-import getSupabaseServer, { getOrigin } from '@/shared/utils/supabase/server'
+import { getOrigin } from '@/shared/utils/supabase/server'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -10,11 +10,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { email, password, nickname } = SignUpSchema.parse(body)
 
-    const supabase = await getSupabaseServer()
+    // const supabase = await getSupabaseServer()
+    const supabase = await getSupabaseAdmin()
     const origin = await getOrigin()
-    const supabaseAdmin = await getSupabaseAdmin()
 
-    const { data: userList, error: listErr } = await supabaseAdmin.auth.admin.listUsers()
+    const { data: userList, error: listErr } = await supabase.auth.admin.listUsers()
 
     if (listErr) {
       return fail(MESSAGES.AUTH.ERROR.REGISTER, listErr.status)
