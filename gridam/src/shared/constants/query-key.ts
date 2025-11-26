@@ -23,6 +23,8 @@ export const QUERY_KEYS = {
     DETAIL: (id: string) => ['diary', id] as const,
     CREATE: ['diary', 'create'] as const,
     UPDATE: ['diary', 'update'] as const,
+    MONTHLY_EXPORT: (year: number, month: number) =>
+      ['diary', 'monthly-export', year, month] as const,
   },
 
   //Drafts 관련
