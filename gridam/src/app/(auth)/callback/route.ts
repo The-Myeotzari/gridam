@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import getSupabaseServer, { getOrigin } from '@/shared/utils/supabase/server'
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
 
+  // 1. 항상 ENV 기준 origin 우선 사용
+  const envOrigin = await getOrigin()
+  const origin = envOrigin ?? requestUrl.origin
+
   // code 없으면 로그인으로
   if (!code) {
-    return NextResponse.redirect(new URL('/login', requestUrl))
+    return NextResponse.redirect(new URL('/login', origin))
   }
 
   const supabase = await getSupabaseServer()
@@ -18,8 +22,8 @@ export async function GET(request: NextRequest) {
   if (error) {
     console.error('exchangeCodeForSession error', error)
     // 세션 교환 실패 -> 로그인으로
-    return NextResponse.redirect(new URL('/login', requestUrl))
+    return NextResponse.redirect(new URL('/login', origin))
   }
 
-  return NextResponse.redirect(new URL('/', requestUrl))
+  return NextResponse.redirect(new URL('/', origin))
 }
