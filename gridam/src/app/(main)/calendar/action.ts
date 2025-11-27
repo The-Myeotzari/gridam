@@ -3,6 +3,7 @@
 import type { Diary } from '@/features/feed/feed.type'
 import type { Memo } from '@/features/memo/api/memo.action'
 import { getCookies } from '@/shared/utils/get-cookies'
+import { MonthlyData } from './components/calendar-client'
 
 type FetchCalendarParams = {
   year?: number
@@ -13,8 +14,9 @@ type FetchCalendarParams = {
 export type CalendarResponse = {
   ok: boolean
   data: {
-    diary: Diary[] | null
-    memos: Memo[]
+    diary?: Diary | null
+    memos?: Memo[]
+    monthlyData?: MonthlyData
   }
 }
 
