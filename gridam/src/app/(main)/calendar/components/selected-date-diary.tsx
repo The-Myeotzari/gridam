@@ -1,5 +1,6 @@
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
+import { Diary } from '@/features/feed/feed.type'
 import Button from '@/shared/ui/button'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 import Link from 'next/link'
@@ -7,7 +8,7 @@ import Link from 'next/link'
 interface SelectedDateDiaryProps {
   isLoading: boolean
   selectedDate: { year: number; month: number; day: number }
-  diary: any | null
+  diary: Diary | null
 }
 
 export default function SelectedDateDiary({

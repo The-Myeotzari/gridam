@@ -1,9 +1,10 @@
+import { Memo } from '@/features/memo/api/memo.action'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 
 const todayDate = getFormatDate()
 
 interface CalendarMemoList {
-  memos?: any[]
+  memos?: Memo[]
   isLoading: boolean
 }
 export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList) {

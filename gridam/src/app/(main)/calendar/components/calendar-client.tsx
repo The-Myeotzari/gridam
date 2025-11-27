@@ -3,21 +3,23 @@ import { Card } from '@/shared/ui/card'
 import Calendar from './calendar'
 import SelectedDateDiary from './selected-date-diary'
 import CalendarMemoList from './calendar-memo-list'
-import { useEffect, useState, useTransition, startTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { fetchCalendar } from '../action'
+import { Diary } from '@/features/feed/feed.type'
+import { Memo } from '@/features/memo/api/memo.action'
 //날짜를 키로 (1 ~ 31), 데이터 존재 여부를 값으로 가짐
 export type MonthlyData = Record<number, { hasDiary: boolean; hasMemo: boolean }>
 
 interface CalendarClientProps {
   initialDate: { year: number; month: number; day: number }
-  initialData: { diary?: any; memos?: any[]; monthlyData?: MonthlyData }
+  initialData: { diary?: Diary | null; memos?: Memo[]; monthlyData?: MonthlyData }
 }
 
 export default function CalendarClient({ initialDate, initialData }: CalendarClientProps) {
   const today = new Date()
   const [selectedDate, setSelectedDate] = useState(initialDate)
-  const [diary, setDiary] = useState(initialData.diary)
-  const [memos, setMemos] = useState(initialData.memos)
+  const [diary, setDiary] = useState<Diary | null>(initialData.diary ?? null)
+  const [memos, setMemos] = useState<Memo[]>(initialData.memos ?? [])
   const [isPending, startTransition] = useTransition()
   //날짜마다 메모나 일기가 있는지 표시
   const [monthlyData, setMonthlyData] = useState<MonthlyData>(initialData.monthlyData || {})

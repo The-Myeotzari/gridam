@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
     const monthlyData: MonthlyData = {}
 
     //일기 있는 날 표시: date 문자열 기준 ("YYYY-MM-DD")
-    monthDiaries?.forEach((d: any) => {
+    monthDiaries?.forEach((d) => {
       if (!d.date) return
       const parts = d.date.split('-') // ["2025","11","26"]
       const dayNum = Number(parts[2])
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     })
 
     // 메모 있는 날 표시 (created_at으로 날짜 뽑기)
-    monthMemos?.forEach((m: any) => {
+    monthMemos?.forEach((m) => {
       if (!m.created_at) return
       const date = new Date(m.created_at)
       const dayNum = date.getDate()
