@@ -59,7 +59,7 @@ export default function Calendar({
   }
 
   return (
-    <div className="flex flex-col gap-4 justify-center">
+    <div className="flex flex-col gap-4 ">
       <div className="flex justify-between min-h-auto items-center">
         <CircleChevronLeft
           color="#2c2e44"

@@ -7,12 +7,20 @@ interface CalendarMemoList {
   isLoading: boolean
 }
 export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList) {
+  let content
   if (isLoading) {
-    return <div>메모를 불러오고 있습니다...</div>
-  }
-
-  if (!memos?.length) {
-    return <div>메모가 없습니다.</div>
+    content = <div>메모를 불러오고 있어요!</div>
+  } else if (!memos?.length) {
+    content = <div>메모가 없습니다.</div>
+  } else {
+    //메모가 있을 경우
+    content = (
+      <div className=" ">
+        {memos.map((memo, index) => (
+          <div key={index}>{memo.title}</div>
+        ))}
+      </div>
+    )
   }
   return (
     <div className="mb-4 flex flex-col flex-1 gap">
@@ -21,9 +29,7 @@ export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList)
         {todayDate}
       </div>
       {/* 메모 목록 */}
-      <div className=" flex-1 flex items-center justify-center p-6">
-        <div>일정이 없습니다.</div>
-      </div>
+      <div className=" flex-1 flex items-center justify-center p-6">{content}</div>
     </div>
   )
 }

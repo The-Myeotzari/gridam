@@ -14,8 +14,9 @@ type FetchCalendarParams = {
 export type CalendarResponse = {
   ok: boolean
   data: {
-    diary: Diary[] | null
-    memos: Memo[]
+    diary?: Diary[] | null
+    memos?: Memo[]
+    monthlyData?: MonthlyData
   }
 }
 
