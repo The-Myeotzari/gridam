@@ -1,9 +1,5 @@
-import DiaryForm from '@/features/diary/components/diary-form'
-import DiaryLayout from '@/features/diary/components/diary-layout'
 import { Diary } from '@/features/feed/feed.type'
-import Button from '@/shared/ui/button'
-import { getFormatDate } from '@/shared/utils/get-format-date'
-import Link from 'next/link'
+import { DiaryReadOnly } from './diary-readonly'
 
 interface SelectedDateDiaryProps {
   isLoading: boolean
@@ -11,11 +7,7 @@ interface SelectedDateDiaryProps {
   diary: Diary | null
 }
 
-export default function SelectedDateDiary({
-  isLoading,
-  selectedDate,
-  diary,
-}: SelectedDateDiaryProps) {
+export default function SelectedDateDiary({ isLoading, diary }: SelectedDateDiaryProps) {
   let content
 
   if (isLoading) {
@@ -31,23 +23,7 @@ export default function SelectedDateDiary({
       </div>
     )
   } else {
-    // 이미 calendar API에서 받은 diary 객체 사용
-    const dateValue = diary.date // "2025-11-26" 이런 형태라고 가정
-    const formattedDate = getFormatDate(dateValue)
-    const weatherIcon = diary.emoji ?? '/fallback-weather.png'
-
-    content = (
-      <DiaryLayout date={formattedDate} weatherIcon={weatherIcon}>
-        {/* 읽기 전용 느낌으로 쓰고 싶으면 isEdit={false}로 바꿔도 됨 */}
-        <DiaryForm dateValue={dateValue} isEdit={false} diary={diary} />
-
-        <div className="mt-4 flex justify-end">
-          <Link href={`/diary/${diary.id}`}>
-            <Button label="전체 화면에서 보기" />
-          </Link>
-        </div>
-      </DiaryLayout>
-    )
+    content = <DiaryReadOnly diary={diary} />
   }
   return <div>{content}</div>
 }
