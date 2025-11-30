@@ -19,9 +19,17 @@ export default function SelectedDateDiary({
   let content
 
   if (isLoading) {
-    content = <div>일기를 불러오고 있어요!</div>
+    content = (
+      <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
+        일기를 불러오고 있어요!
+      </div>
+    )
   } else if (!diary) {
-    content = <div>아직 작성된 일기가 없어요!</div>
+    content = (
+      <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
+        선택한 날짜에 일기가 없습니다
+      </div>
+    )
   } else {
     // 이미 calendar API에서 받은 diary 객체 사용
     const dateValue = diary.date // "2025-11-26" 이런 형태라고 가정

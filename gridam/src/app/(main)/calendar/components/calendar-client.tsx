@@ -70,6 +70,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
           currentView={view}
           onViewChange={setView}
         />
+
         <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
       </Card>
       <Card className="flex flex-col md:flex-row p-6 gap-7 ">
