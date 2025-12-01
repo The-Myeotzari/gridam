@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const origin = await getOrigin()
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/reset-password`,
+      redirectTo: `${origin}/reset`,
     })
 
     if (error) {

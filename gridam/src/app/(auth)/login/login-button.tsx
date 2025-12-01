@@ -1,25 +1,31 @@
 'use client'
 
-import Image from 'next/image'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import Image from 'next/image'
 
 export default function SocialLoginButtons() {
   const supabase = createClientComponentClient()
 
   const handleGoogle = async () => {
+    const redirectTo = `${window.location.origin}/callback`
+    console.log('google:', redirectTo)
+
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        redirectTo,
       },
     })
   }
 
   const handleKakao = async () => {
+    const redirectTo = `${window.location.origin}/callback`
+    console.log('kakao:', redirectTo)
+
     await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        redirectTo,
       },
     })
   }

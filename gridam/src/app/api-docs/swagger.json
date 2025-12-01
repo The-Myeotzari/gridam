@@ -425,6 +425,261 @@
         }
       }
     },
+    "/apis/diaries/export": {
+      "get": {
+        "tags": ["Diary"],
+        "summary": "월별 일기 PDF 다운로드",
+        "description": "지정한 연도와 월의 일기를 하나의 PDF 파일로 생성하여 다운로드합니다.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "description": "연도 (예: 2025)",
+            "schema": {
+              "type": "integer",
+              "example": 2025
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "description": "월 (1~12)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12,
+              "example": 11
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 - PDF 파일 바이너리 응답",
+            "headers": {
+              "Content-Type": {
+                "description": "application/pdf",
+                "schema": {
+                  "type": "string",
+                  "example": "application/pdf"
+                }
+              },
+              "Content-Disposition": {
+                "description": "파일 다운로드를 위한 헤더 (파일명 포함)",
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"Diaries(2025-11).pdf\""
+                }
+              }
+            },
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (year 또는 month가 유효하지 않음)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "InvalidYearOrMonth": {
+                    "summary": "유효하지 않은 year/month",
+                    "value": {
+                      "ok": false,
+                      "message": "EXPORT_INVALID_DATA",
+                      "statusCode": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않은 사용자 (UNAUTHORIZED)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "summary": "로그인이 필요한 경우",
+                    "value": {
+                      "ok": false,
+                      "message": "UNAUTHORIZED_USER",
+                      "statusCode": 401
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류 (PDF 생성 오류 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ExportError": {
+                    "summary": "PDF 내보내기 실패",
+                    "value": {
+                      "ok": false,
+                      "message": "EXPORT_FAILED",
+                      "statusCode": 500
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apis/diaries/monthly": {
+      "get": {
+        "tags": ["Diary"],
+        "summary": "월별 일기 조회",
+        "description": "지정한 연도와 월에 해당하는 일기 목록을 조회합니다.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "description": "연도 (예: 2025)",
+            "schema": {
+              "type": "integer",
+              "example": 2025
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "description": "월 (1~12)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12,
+              "example": 11
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 - 월별 일기 데이터 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyDiariesResponse"
+                },
+                "examples": {
+                  "Success": {
+                    "summary": "월별 일기 조회 성공",
+                    "value": {
+                      "ok": true,
+                      "data": {
+                        "year": 2025,
+                        "month": 11,
+                        "diaries": [
+                          {
+                            "id": "a1b2c3",
+                            "date": "2025-11-01",
+                            "title": "첫 번째 일기",
+                            "content": "오늘은 ...",
+                            "emoji": "😊",
+                            "weather": "sunny",
+                            "imageUrl": "https://example.com/diary/1.png"
+                          }
+                        ]
+                      },
+                      "statusCode": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (year 또는 month가 유효하지 않음, 혹은 INVALID_YEAR_MONTH 에러)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "InvalidQueryParams": {
+                    "summary": "year/month 쿼리 파라미터가 없거나 숫자가 아님",
+                    "value": {
+                      "ok": false,
+                      "message": "EXPORT_INVALID_DATA",
+                      "statusCode": 400
+                    }
+                  },
+                  "InvalidYearMonthDomain": {
+                    "summary": "서비스 기준 유효하지 않은 year/month (INVALID_YEAR_MONTH)",
+                    "value": {
+                      "ok": false,
+                      "message": "EXPORT_INVALID_DATA",
+                      "statusCode": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않은 사용자 (UNAUTHORIZED)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "summary": "로그인이 필요한 경우",
+                    "value": {
+                      "ok": false,
+                      "message": "UNAUTHORIZED_USER",
+                      "statusCode": 401
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류 (일기 조회 실패 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ReadError": {
+                    "summary": "월별 일기 조회 실패",
+                    "value": {
+                      "ok": false,
+                      "message": "READ_DIARY_ERROR",
+                      "statusCode": 500
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/apis/auth/register": {
       "post": {
         "tags": ["Auth"],

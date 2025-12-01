@@ -1,10 +1,10 @@
 import z from 'zod'
 
 export const createSchema = z.object({
-  content: z.string(),
   date: z.string(), // YYYY-MM-DD
+  content: z.string(),
   emoji: z.string().optional(),
-  imageUrl: z.string().nullable(),
+  imageUrl: z.string().nullable().optional(),
   meta: z
     .object({
       timezone: z.string(),
@@ -21,6 +21,7 @@ export const querySchema = z.object({
 })
 
 export const updateSchema = z.object({
+  id: z.string(),
   content: z.string().min(1).max(2000).optional(),
   imageUrl: z.string().nullable().optional(),
   // status: z.enum(['draft', 'published']).optional(),

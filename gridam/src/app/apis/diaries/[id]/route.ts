@@ -1,98 +1,81 @@
-import { fail, ok, withCORS } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
-import { Params } from '@/shared/types/params'
+import type { Params } from '@/shared/types/params.type'
 import { updateSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { NextRequest } from 'next/server'
-import { ZodError } from 'zod'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_req: NextRequest, { params }: Params) {
   try {
     const { id } = await params
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
 
-    const { data, error } = await supabase
-      .from('diaries')
-      .select('*')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .single()
-    if (error) throw fail(MESSAGES.DIARY.ERROR.READ, 505)
+    const query = supabase.from('diaries').select('*').eq('id', id).single()
+    const { data, error } = await query
 
-    return withCORS(ok(data))
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
+    if (error) {
+      return NextResponse.json({ message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
     }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.READ, 500))
-  }
-}
 
-type DiaryPatch = {
-  content?: string
-  image_url?: string | null
-  published_at?: string | null
+    return NextResponse.json({ ok: true, data })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })
+  }
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
-
     const { id } = await params
     const body = await req.json()
 
-    const parsed = updateSchema.safeParse(body)
-    if (!parsed.success) throw fail(parsed.error.message, 422)
+    const { supabase, user } = await getAuthenticatedUser()
 
+    const parsed = updateSchema.safeParse({ ...body, id })
+    if (!parsed.success) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.CREATE_NO_DATA },
+        { status: 400 }
+      )
+    }
     const { content, imageUrl } = parsed.data
 
     const { data: existing, error: fetchErr } = await supabase
       .from('diaries')
       .select('status, published_at')
       .eq('id', id)
+      .eq('user_id', user.id)
       .single()
 
-    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.READ, 500)
-    if (!existing) throw fail(MESSAGES.DIARY.ERROR.READ_NO, 500)
-
-    const patch: DiaryPatch = {
-      ...(content !== undefined && { content }),
-      ...(imageUrl !== undefined && { image_url: imageUrl }),
-    }
-
-    if (existing.status === 'published') {
-      patch.published_at = existing.published_at
+    if (fetchErr || !existing) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 404 })
     }
 
     const { data, error } = await supabase
       .from('diaries')
-      .update(patch)
+      .update({
+        content,
+        image_url: imageUrl,
+      })
       .eq('id', id)
       .eq('user_id', user.id)
       .select('*')
       .single()
 
-    if (error) throw fail(MESSAGES.DIARY.ERROR.UPDATE, 500)
-
-    return withCORS(ok(data))
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.UPDATE }, { status: 500 })
     }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.UPDATE, 500))
+
+    return NextResponse.json({ ok: true, data })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ message: MESSAGES.DIARY.ERROR.UPDATE }, { status: 500 })
   }
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   try {
-    const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
-
     const { id } = await params
+    const { supabase, user } = await getAuthenticatedUser()
 
     const { data: existing, error: fetchErr } = await supabase
       .from('diaries')
@@ -100,11 +83,14 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .eq('id', id)
       .single()
 
-    if (fetchErr) throw fail(MESSAGES.DIARY.ERROR.READ, 500)
-    if (!existing) throw fail(MESSAGES.DIARY.ERROR.READ_NO, 500)
-    if (existing.deleted_at) {
-      // 이미 삭제됨
-      return withCORS(ok(MESSAGES.DIARY.ERROR.DELETE_OVER, 204))
+    if (fetchErr) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
+    }
+    if (!existing || existing.deleted_at) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.READ_NO },
+        { status: 500 }
+      )
     }
 
     const { error } = await supabase
@@ -112,14 +98,14 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)
 
-    if (error) throw fail(MESSAGES.DIARY.ERROR.DELETE, 500)
-    return withCORS(ok(null, 200))
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.DELETE }, { status: 500 })
     }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.DELETE, 500))
+
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })
   }
 }
 

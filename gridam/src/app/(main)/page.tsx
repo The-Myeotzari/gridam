@@ -1,51 +1,60 @@
-import { getDiaryServer } from '@/features/feed/api/get-diary.server'
+import { fetchDiaryPage } from '@/app/(main)/action'
 import FeedList from '@/features/feed/components/feed-list'
-import Month from '@/features/feed/components/month'
-import { type DiarySearchParams, resolveYearMonth } from '@/features/feed/utils/diary-date'
-import { QUERY_KEYS } from '@/shared/constants/query-key'
+import FeedWriteBtn from '@/features/feed/components/feed-write-btn'
+import { resolveYearMonth } from '@/features/feed/utils/diary-date'
+import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
-import { Plus } from 'lucide-react'
+import { RefreshCcw } from 'lucide-react'
 import Link from 'next/link'
 
-type Props = {
-  searchParams: Promise<DiarySearchParams>
+type PageProps = {
+  searchParams: Promise<Record<string, string | undefined>>
 }
 
-export default async function Home({ searchParams }: Props) {
+export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams
   const { year, month } = resolveYearMonth(params)
 
-  const { items, nextCursor, hasMore } = await getDiaryServer({ year, month })
+  const { ok, data: firstPage } = await fetchDiaryPage({ year, month, cursor: null })
 
-  const queryClient = new QueryClient()
-  queryClient.setQueryData(QUERY_KEYS.DIARY.LIST(year, month), {
-    pages: [{ items, nextCursor, hasMore }],
-    pageParams: [null],
-  })
+  const renderContent = () => {
+    if (!ok && firstPage) {
+      return (
+        <div className="h-50 flex flex-col justify-center items-center">
+          <p className="mb-4">{MESSAGES.DIARY.ERROR.READ}</p>
+          <Link href="/">
+            <Button
+              label={
+                <div className="flex items-center">
+                  <RefreshCcw className="mr-2" />
+                  <span>새로고침</span>
+                </div>
+              }
+            />
+          </Link>
+        </div>
+      )
+    }
 
-  const dehydratedState = dehydrate(queryClient)
+    if (!firstPage) {
+      return (
+        <div className="text-center py-16">
+          <p className="font-handwritten text-2xl text-muted-foreground mb-4">아직 일기가 없어요</p>
+          <p className="font-handwritten text-lg text-muted-foreground mb-8">
+            첫 번째 일기를 작성해보세요!
+          </p>
+        </div>
+      )
+    }
+    return <FeedList year={year} month={month} initialPage={firstPage} />
+  }
 
   return (
     <div className="flex flex-col gap-4 p-4 mt-10 text-center">
-      <div className="mb-8 text-center animate-fade-in">
-        <h1 className="font-bold text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
-        <p className="font-bold text-xl text-muted-foreground">모두의 하루를 담은 그림 일기</p>
-      </div>
-
-      <Month year={year} month={month} />
-
-      <HydrationBoundary state={dehydratedState}>
-        <FeedList year={year} month={month} initialDiaries={items} />
-      </HydrationBoundary>
-
-      <Link href="/write">
-        <Button
-          size="lg"
-          className="fixed bottom-8 right-8 rounded-full w-16 h-16 shadow-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground hover:scale-110 transition-all"
-          label={<Plus className="w-8 h-8" />}
-        />
-      </Link>
+      <h1 className="font-bold text-4xl mb-2 text-navy-gray">오늘의 이야기들</h1>
+      <p className="font-bold text-xl text-muted-foreground">모두의 하루를 담은 그림 일기</p>
+      {renderContent()}
+      <FeedWriteBtn todayDiaryStatus={firstPage?.todayDiaryStatus} />
     </div>
   )
 }

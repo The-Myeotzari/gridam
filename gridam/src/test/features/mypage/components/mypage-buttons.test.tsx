@@ -34,7 +34,7 @@ jest.mock('@/shared/ui/button', () => {
   }
 })
 
-jest.mock('@/features/mypage/components/change-password-modal', () => {
+jest.mock('@/features/mypage/components/change-password/change-password-modal', () => {
   return function ChangePasswordModalMock() {
     return <div data-testid="change-password-modal">ChangePasswordModal</div>
   }

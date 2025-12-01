@@ -1,32 +1,124 @@
-// TODO: 에러 메시지 전체 검토 필요
-import { fail, ok, withCORS } from '@/app/apis/_lib/http'
-import { getDiaryServer } from '@/features/feed/api/get-diary.server'
 import { MESSAGES } from '@/shared/constants/messages'
 import { createSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { NextRequest } from 'next/server'
-import { ZodError } from 'zod'
+import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
+import { NextRequest, NextResponse } from 'next/server'
+
+export const DEFAULT_LIMIT = 5
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
+  try {
+    const { searchParams } = new URL(req.url)
 
-  return Response.json(
-    await getDiaryServer({
-      year: searchParams.get('year')!,
-      month: searchParams.get('month')!,
-      cursor: searchParams.get('cursor'),
+    const year = searchParams.get('year')
+    const month = searchParams.get('month')
+    const cursor = searchParams.get('cursor')
+    const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT
+
+    const { supabase, user } = await getAuthenticatedUser()
+
+    // 오늘 일기 상태 조회
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+
+    const todayEnd = new Date()
+    todayEnd.setHours(23, 59, 59, 999)
+
+    const { data: todayDiaries } = await supabase
+      .from('diaries')
+      .select('status, published_at, updated_at')
+      .eq('user_id', user.id)
+      .gte('created_at', todayStart.toISOString())
+      .lte('created_at', todayEnd.toISOString())
+      .is('deleted_at', null)
+
+    let todayDiaryStatus: 'published' | 'draft' | 'none' = 'none'
+
+    if (todayDiaries && todayDiaries.length > 0) {
+      const isPublished = todayDiaries.some((d) => d.status === 'published')
+      const isDraft = todayDiaries.some((d) => d.status === 'draft')
+
+      if (isPublished) todayDiaryStatus = 'published'
+      else if (isDraft) todayDiaryStatus = 'draft'
+    }
+
+    // 일기 조회
+    let query = supabase
+      .from('diaries')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'published')
+      .not('published_at', 'is', null)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+
+    // 연/월 필터 적용
+    if (year && month) {
+      const start = new Date(Number(year), Number(month) - 1, 1).toISOString()
+      const end = new Date(Number(year), Number(month), 1).toISOString()
+      query = query.gte('published_at', start).lt('published_at', end)
+    }
+
+    // 커서 기반 페이지네이션
+    if (cursor) {
+      query = query.lt('published_at', cursor)
+    }
+
+    // created_at 기준 정렬 + limit +1
+    query = query.order('created_at', { ascending: false }).limit(limit + 1)
+
+    const { data, error } = await query
+
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
+    }
+
+    // 결과 없음
+    if (!data || data.length === 0) {
+      return NextResponse.json({
+        items: [],
+        nextCursor: null,
+        hasMore: false,
+      })
+    }
+
+    // hasMore 판별
+    const hasMore = data.length > limit
+    const items = hasMore ? data.slice(0, limit) : data
+
+    // 이미지 signed URL 포함
+    const diariesWithSignedUrls = await withSignedImageUrls(supabase, items)
+
+    // 다음 커서 설정
+    const lastItem = items[items.length - 1]
+
+    return NextResponse.json({
+      ok: true,
+      data: {
+        items: diariesWithSignedUrls,
+        nextCursor: hasMore ? lastItem.published_at : null,
+        hasMore,
+        todayDiaryStatus,
+      },
     })
-  )
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const { supabase, user } = await getAuthenticatedUser()
-    if (!user) return withCORS(fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401))
-    const body = await req.json()
 
+    const body = await req.json()
     const parsed = createSchema.safeParse(body)
-    if (!parsed.success) throw fail(MESSAGES.DIARY.ERROR.CREATE_NO_DATA, 422)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.CREATE_NO_DATA },
+        { status: 400 }
+      )
+    }
 
     const { content, date, emoji, imageUrl, meta } = parsed.data
 
@@ -44,10 +136,14 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (existingError) {
-      throw fail(MESSAGES.DIARY.ERROR.READ, 500)
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
     }
+
     if (existingDiary) {
-      return withCORS(fail(MESSAGES.DIARY.ERROR.CREATE_OVER, 409))
+      return NextResponse.json(
+        { ok: false, message: MESSAGES.DIARY.ERROR.CREATE_OVER },
+        { status: 409 }
+      )
     }
 
     const { data: diary, error } = await supabase
@@ -55,33 +151,31 @@ export async function POST(req: NextRequest) {
       .insert({
         user_id: user.id,
         content,
-        date, // 제거 필요 - created_at과 동일
+        date,
         emoji,
-        image_url: imageUrl ?? null,
+        image_url: imageUrl,
         status: 'published',
         published_at: new Date().toISOString(),
       })
       .select('id')
       .single()
 
-    if (error) throw fail(MESSAGES.DIARY.ERROR.CREATE, 500)
+    if (error) {
+      return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.CREATE }, { status: 500 })
+    }
 
     if (meta) {
-      const { error: metaErr } = await supabase.from('metadata').insert({
+      await supabase.from('metadata').insert({
         diary_id: diary.id,
-        date, // 제거 필요 - created_at과 동일
-        timezone: meta.timezone, // 시간대
+        date,
+        timezone: meta.timezone,
       })
-      if (metaErr) throw fail(MESSAGES.DIARY.ERROR.META, 500)
     }
 
-    return withCORS(ok({ id: diary.id }, 201))
+    return NextResponse.json({ ok: true, id: diary.id })
   } catch (err) {
-    if (err instanceof ZodError) {
-      const firstIssue = err.issues[0]
-      return fail(firstIssue.message, 400)
-    }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.CREATE, 500))
+    console.error(err)
+    return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.CREATE }, { status: 500 })
   }
 }
 

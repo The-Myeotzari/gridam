@@ -1,3 +1,5 @@
+// NOTE: 안내 메시지 정리 필요
+
 export const MESSAGES = {
   AUTH: {
     SUCCESS: {
@@ -30,6 +32,9 @@ export const MESSAGES = {
       INVALID_NICKNAME_FORMAT: '닉네임은 2~12자 이내의 한글, 영문, 숫자로 입력해주세요.',
       EMAIL_ALREADY_IN_USE: '이미 사용 중인 이메일입니다.',
       REGISTER_TOO_MANY_REQUEST: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+      EMAIL_VERIFICATION_REQUEST_FAILED:
+        '이메일 인증 요청에 실패하셨습니다. 잠시 후 다시 시도해주세요 ',
+      EMPTY_PASSWORD: '비밀번호를 입력해주세요.',
     },
   },
 
@@ -39,17 +44,22 @@ export const MESSAGES = {
       UPDATE: '일기가 수정되었습니다!',
       DELETE: '일기가 성공적으로 삭제되었습니다.',
       READ_NO_DATA: '아직 이 달에 작성된 일기가 없어요.',
+      DRAFT_SAVE: '임시 게시글이 발행되었습니다!',
+      DRAFT_CREATE: '임시 게시글이 저장되었습니다!',
+      DRAFT_UPDATE: '임시 게시글이 수정되었습니다!',
+      EXPORT: '일기 다운로드에 성공했습니다!',
     },
     ERROR: {
+      READ: '일기 조회에 실패했습니다.',
+      READ_NO: '존재하지 않은 일기입니다.',
       CREATE: '일기 저장에 실패했습니다.',
       CREATE_OVER: '오늘 일기가 이미 생성되었습니다.',
       CREATE_NO_DATA: '일기 저장에 필요한 데이터가 없습니다.',
       UPDATE: '일기 수정에 실패했습니다.',
       DELETE: '일기 삭제에 실패했습니다.',
       DELETE_OVER: '이미 삭제된 일기입니다.',
-      READ: '일기 조회에 실패했습니다.',
-      READ_NO: '존재하지 않은 일기입니다.',
       META: '일기의 메타 데이터 생성에 실패했습니다.',
+      DRAFT_SAVE: '임시 게시글이 발행에 실패했습니다.',
       DRAFT_CREATE: '임시 저장에 실패했습니다.',
       DRAFT_CREATE_NO_DATA: '임시 저장에 필요한 데이터가 없습니다.',
       DRAFT_UPDATE: '임시 게시글 수정에 실패했습니다.',
@@ -59,6 +69,10 @@ export const MESSAGES = {
       DRAFT_READ: '임시 게시글 조회에 실패했습니다.',
       IMAGE: '이미지 업로드에 실패했습니다.',
       WEATHER: '날씨 조회에 실패했습니다.',
+      PUBLISHED: '오늘의 일기를 이미 발행했어요!',
+      DRAFT: '작성 중인 오늘의 일기가 있습니다!',
+      EXPORT: '일기 다운로드에 실패했습니다.',
+      EXPORT_INVALID_DATA: '유효하지 않은 연/월입니다.',
     },
     CANCEL: {
       TITLE: '정말 뒤로 가시겠어요?',
@@ -66,6 +80,24 @@ export const MESSAGES = {
 이 작업은 되돌릴 수 없어요.`,
     },
   },
+  MEMO: {
+    SUCCESS: {
+      CREATE: '메모가 저장되었습니다!',
+      UPDATE: '메모가 수정되었습니다!',
+      DELETE: '메모가 삭제되었습니다.',
+    },
+    ERROR: {
+      READ: '메모 조회에 실패했습니다.',
+      READ_NO: '존재하지 않는 메모입니다.',
+      CREATE: '메모 저장에 실패했습니다.',
+      CREATE_NO_DATA: '메모 저장에 필요한 데이터가 없습니다.',
+      UPDATE: '메모 수정에 실패했습니다.',
+      UPDATE_NO_DATA: '메모 수정에 필요한 데이터가 없습니다.',
+      DELETE: '메모 삭제에 실패했습니다.',
+      DELETE_OVER: '이미 삭제된 메모입니다.',
+    },
+  },
+
   COMMON: {
     CANCEL: '취소',
     CONFIRM: '확인',
@@ -73,5 +105,7 @@ export const MESSAGES = {
     SAVE_BUTTON: '저장하기',
     UPDATE_BUTTON: '수정하기',
     DELETE_BUTTON: '삭제하기',
+    DRAFT_SAVE_BUTTON: '임시 저장',
+    DRAFT_UPDATE_BUTTON: '임시 수정',
   },
 } as const

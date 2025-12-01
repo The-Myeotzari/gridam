@@ -1,15 +1,8 @@
-import { MESSAGES } from '@/shared/constants/messages'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 
 // 사용자 통합 정보 조회 함수
 export async function getUserData() {
-  const supabase = await getSupabaseServer()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) return { ok: false, message: MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER }
+  const { supabase, user } = await getAuthenticatedUser()
 
   const userId = user.id
 
@@ -18,7 +11,10 @@ export async function getUserData() {
     .from('diaries')
     .select('id, image_url, emoji, date, content, created_at')
     .eq('user_id', userId)
-    .order('created_at', { ascending: false })
+    .eq('status', 'published')
+    .not('published_at', 'is', null)
+    .is('deleted_at', null)
+    .order('date', { ascending: false })
 
   if (error || !diaries) {
     return { ok: false, message: `일기 집계에 실패했습니다` }
@@ -44,7 +40,7 @@ export async function getUserData() {
       time,
       weekday: `${weekday}요일`,
       content: diary.content,
-      emoji: diary.emoji ?? '☁️',
+      emoji: diary.emoji ?? '',
     }
   })
 
@@ -65,5 +61,3 @@ export async function getUserData() {
     },
   }
 }
-
-// 게시물 삭제
