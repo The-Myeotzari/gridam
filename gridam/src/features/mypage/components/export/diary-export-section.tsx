@@ -6,7 +6,7 @@ export default async function DiaryExportSection() {
 
   const initialYear = now.getFullYear()
   const initialMonth = now.getMonth() + 1
-  const initialMonthly = await getMonthlyDiaries({ year: initialYear, month: initialMonth })
+  const initialMonthly = await getMonthlyDiaries({ year: initialYear.toString(), month: initialMonth.toString() })
   
   return (
     <DiaryExportContainer
