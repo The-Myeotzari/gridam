@@ -2,7 +2,7 @@ import { RegisterFormData } from '@/features/auth/register/types/register'
 import { MESSAGES } from '@/shared/constants/messages'
 
 // api 불러오기
-export async function registerUser(data: Omit<RegisterFormData, 'comfirmPassword'>) {
+export async function registerUser(data: Omit<RegisterFormData, 'confirmPassword'>) {
   try {
     const res = await fetch('/apis/auth/register', {
       method: 'POST',
@@ -13,13 +13,8 @@ export async function registerUser(data: Omit<RegisterFormData, 'comfirmPassword
       let errorBody = null
       try {
         errorBody = await res.json()
-      } catch {}
-
-      if (res.status === 409) {
-        throw new Error(errorBody?.message ?? MESSAGES.AUTH.ERROR.ACCOUNT_NOT_EXIST)
-      }
-      if (res.status === 429) {
-        throw new Error(MESSAGES.AUTH.ERROR.REGISTER_TOO_MANY_REQUEST)
+      } catch {
+        // json실패
       }
       throw new Error(errorBody?.message ?? MESSAGES.AUTH.ERROR.REGISTER)
     }

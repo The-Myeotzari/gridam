@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
 
     const { data, error } = await supabase.auth.updateUser({ password: newPassword })
     if (error) {
+      if (error.code === 'same_password') {
+        return fail(MESSAGES.AUTH.ERROR.PASSWORD_SAME_AS_OLD, error.status)
+      }
       return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, error.status)
     }
 
