@@ -98,6 +98,12 @@ export const MESSAGES = {
     },
   },
 
+  MYPAGE: {
+    ERROR: {
+      READ: '마이페이지 조회에 실패했습니다.'
+    }
+  },
+
   COMMON: {
     CANCEL: '취소',
     CONFIRM: '확인',
