@@ -1,14 +1,12 @@
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
-import WeatherIcon from '@/features/weather/weather-icon'
-import { fetchWeather } from '@/features/weather/weather.api'
+import WeatherIcon from '@/features/diary/components/weather-icon'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
 const DEFAULT_COORDS = { lat: 37.5665, lon: 126.978 }
 
-// TODO: 방식 변경 필요
 export function getCoordsFromCookies(cookieStore: ReadonlyRequestCookies) {
   const lat = Number(cookieStore.get('lat')?.value)
   const lon = Number(cookieStore.get('lon')?.value)
@@ -18,7 +16,12 @@ export function getCoordsFromCookies(cookieStore: ReadonlyRequestCookies) {
 export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
-  const weather = await fetchWeather(coords.lat, coords.lon)
+
+  const weatherRes = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/weather?lat=${coords.lat}&lon=${coords.lon}`,
+    { method: 'GET', cache: 'no-store' }
+  )
+  const weather = await weatherRes.json()
 
   const dateValue = new Date().toISOString().slice(0, 10)
   const formattedDate = getFormatDate(dateValue)
