@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Button from '@/shared/ui/button'
 import { ModalHeader, ModalBody } from '@/shared/ui/modal/modal'
 import { Diary } from '@/features/mypage/types/mypage'
 import Textarea from '@/shared/ui/textarea'
@@ -9,6 +8,7 @@ import Image from 'next/image'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 import { toast } from '@/store/toast-store'
 import { MESSAGES } from '@/shared/constants/messages'
+import ClientButton from '@/shared/ui/client-button'
 
 type DiaryExportPreviewModalProps = {
   year: number
@@ -105,24 +105,20 @@ export function DiaryExportPreviewModal({
             총 {diaries.length}개의 일기가 포함됩니다.
           </p>
           <div className="flex gap-2">
-            <span onClick={onClose}>
-              <Button
-                variant='roundedRed'
-                type="button"
-                label='닫기'
-              />
-            </span>
-            <span
+            <ClientButton
+              type='button'
+              variant='roundedRed'
+              label='닫기'
+              onClick={onClose}
+            />
+            <ClientButton
+              type="button"
+              variant='roundedBasic'
+              label={isDownloading ? 'PDF 생성 중…' : 'PDF 다운로드'}
+              disabled={isDownloading || diaries.length === 0}
               onClick={handleDownload}
               className={isDownloading ? 'pointer-events-none opacity-50' : ''}
-            >
-              <Button
-                type="button"
-                variant='roundedBasic'
-                label={isDownloading ? 'PDF 생성 중…' : 'PDF 다운로드'}
-                disabled={isDownloading || diaries.length === 0}
-              />
-            </span>
+            />
           </div>
         </div>
       </ModalBody >

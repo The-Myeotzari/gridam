@@ -24,7 +24,7 @@ export default function DiaryExportContainer({
 }: MyPageDiaryExportContainerProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
-  const { data, isLoading } = useMonthlyDiaries(year, month, {
+  const { data, isLoading, isError, refetch } = useMonthlyDiaries(year, month, {
     initialData:
       year === initialYear && month === initialMonth
         ? initialMonthly
@@ -49,7 +49,7 @@ export default function DiaryExportContainer({
   }
 
   const handleOpenPreview = () => {
-    if (!data || diaryCount === 0) return
+    if (isError || !data || diaryCount === 0) return
 
     modalStore.open((close) => (
       <DiaryExportPreviewModal
@@ -71,6 +71,7 @@ export default function DiaryExportContainer({
       onNextYear={handleNextYear}
       onSelectMonth={handleSelectMonth}
       onPreview={handleOpenPreview}
+      onRetry={refetch}
     />
   )
 }
