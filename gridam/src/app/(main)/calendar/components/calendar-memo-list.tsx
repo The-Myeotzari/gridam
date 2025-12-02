@@ -1,9 +1,10 @@
 'use client'
 import { Memo } from '@/features/memo/api/memo.action'
-import MemoListPage from '@/features/memo/components/memo-list-page'
 import { Card } from '@/shared/ui/card'
 import { getFormatDate } from '@/shared/utils/get-format-date'
+import { FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { mockMemosWithData } from './mockmemo'
 
 const todayDate = getFormatDate()
 
@@ -27,36 +28,21 @@ export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList)
       </div>
     )
   } else {
-    //메모가 있을 경우
-
+    // 메모가 있을 때
     content = (
-      // <div className=" ">
-      //   {memos.map((memo, index) => (
-      //     <div key={index}>{memo.title}</div>
-      //   ))}
-      // </div>
-
-      <section className="flex flex-col gap-3 w-full">
+      <div className="flex flex-col gap-3 ">
         {memos.map((memo) => (
-          <Card
-            key={memo.id}
-            className="
-                        flex cursor-pointer items-center justify-between
-                        rounded-3xl bg-card px-6 py-4
-                        shadow-sm transition
-                        hover:shadow-md
-                      "
-            onClick={() => router.push(`/memo/${memo.id}`)}
-          >
-            <span className="truncate text-base font-medium text-foreground">
-              {memo.title || '(제목 없음)'}
-            </span>
-            <span className="shrink-0 text-xs text-muted-foreground">
-              {new Date(memo.created_at).toLocaleDateString().replace(/\./g, '.').trim()}
-            </span>
+          <Card key={memo.id} className="flex flex-col gap-5 cursor-pointer">
+            <div className="flex gap-2">
+              <FileText className="w-4 h-4" />
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-foreground truncate">{memo.title}</p>
+                <p className=" text-sm text-muted-foreground line-clamp-2  ">{memo.content}</p>
+              </div>
+            </div>
           </Card>
         ))}
-      </section>
+      </div>
     )
   }
   return (

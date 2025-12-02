@@ -61,8 +61,8 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2">
-      <Card className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] p-6 gap-7 ">
+    <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 ">
+      <Card className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] p-6 gap-7 ">
         <Calendar
           selectedDate={selectedDate}
           onSelectDate={handleSelectDate}

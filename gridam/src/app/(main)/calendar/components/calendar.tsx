@@ -35,13 +35,6 @@ export default function Calendar({
     return buildCalendar(currentView.year, currentView.month)
   }, [currentView.year, currentView.month])
 
-  //달력 Jan, Feb...
-  const monthName = useMemo(() => {
-    return new Intl.DateTimeFormat('en-us', { month: 'long' }).format(
-      new Date(currentView.year, currentView.month)
-    )
-  }, [currentView.year, currentView.month])
-
   // 이전 달
   const handlePrevMonth = () => {
     let year = currentView.year
@@ -76,7 +69,7 @@ export default function Calendar({
         />
 
         <div className="text-2xl font-bold">
-          {monthName} {currentView.year}
+          {currentView.year}년 {currentView.month + 1}월
         </div>
 
         <CircleChevronRight
