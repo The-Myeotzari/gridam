@@ -1,9 +1,9 @@
 'use server'
 
+import { MonthlyData } from '@/features/calendar/components/calendar-client'
 import type { Diary } from '@/features/feed/feed.type'
 import type { Memo } from '@/features/memo/api/memo.action'
 import { getCookies } from '@/shared/utils/get-cookies'
-import { MonthlyData } from './components/calendar-client'
 
 type FetchCalendarParams = {
   year?: number

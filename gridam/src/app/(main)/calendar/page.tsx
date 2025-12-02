@@ -12,12 +12,9 @@ export default async function Page() {
 
   //서버에서 초기 데이터 로드
   const { ok, data: initialData } = await fetchCalendar(initialDate)
-  // 특정 날짜 조회
-  // await fetchCalendarData({date: { year: 2025, month: 2, day: 10 }})
-  console.log(initialData)
 
   if (!ok) {
-    return <div>캘린더의 데이터를 불러오지 못했습니다.</div>
+    return <div>캘린더 데이터를 불러오지 못했습니다.</div>
   }
 
   return (
