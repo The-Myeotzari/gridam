@@ -171,3 +171,18 @@ body {
     display: none; /* Chrome/Safari/Edge(Chromium) */
   }
 }
+
+@keyframes caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret-blink {
+  animation: caret-blink 1s step-end infinite;
+}
