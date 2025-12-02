@@ -2,7 +2,7 @@
 
 import { updateDiaryAction } from '@/app/(main)/(diary)/[id]/action'
 import { saveDiaryAction } from '@/app/(main)/(diary)/write/action'
-import { checkImageChanged } from '@/features/diary/utils/checkImageChanged'
+import { checkImageChanged } from '@/features/diary/utils/check-image-changed'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { toast } from '@/store/toast-store'

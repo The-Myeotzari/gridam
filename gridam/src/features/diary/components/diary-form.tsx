@@ -6,9 +6,11 @@ import DiaryFormButtons, {
   type DiaryStatus,
 } from '@/features/diary/components/diary-form-buttons'
 import type { Diary } from '@/features/feed/feed.type'
+import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
+import { toast } from '@/store/toast-store'
 import { useState } from 'react'
-import { useDiaryActions } from '../hook/useDiaryActiuon'
+import { useDiaryActions } from '../hook/use-diary-actiuon'
 
 type DiaryFormProps = {
   dateValue: string
@@ -37,7 +39,24 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     weather,
   }
 
+  const isInvalid = () => {
+    if ((!text || text.trim().length === 0) && !canvas) {
+      toast.error(MESSAGES.DIARY.ERROR.INVALID_ALL)
+      return true
+    }
+    if (!text || text.trim().length === 0) {
+      toast.error(MESSAGES.DIARY.ERROR.INVALID_TEXT)
+      return true
+    }
+    if (!canvas) {
+      toast.error(MESSAGES.DIARY.ERROR.INVALID_CANVAS)
+      return true
+    }
+    return false
+  }
+
   const handleSave = () => {
+    if (isInvalid()) return
     if (diary?.status === DIARY_STATUS.DRAFT) {
       run({ type: 'publishDraft', ...commonParams })
     } else {
@@ -45,9 +64,20 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     }
   }
 
-  const handleDraftSave = () => run({ type: 'draftCreate', ...commonParams })
-  const handleUpdate = () => run({ type: 'update', ...commonParams })
-  const handleDraftUpdate = () => run({ type: 'draftUpdate', ...commonParams })
+  const handleDraftSave = () => {
+    if (isInvalid()) return
+    run({ type: 'draftCreate', ...commonParams })
+  }
+
+  const handleUpdate = () => {
+    if (isInvalid()) return
+    run({ type: 'update', ...commonParams })
+  }
+
+  const handleDraftUpdate = () => {
+    if (isInvalid()) return
+    run({ type: 'draftUpdate', ...commonParams })
+  }
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
