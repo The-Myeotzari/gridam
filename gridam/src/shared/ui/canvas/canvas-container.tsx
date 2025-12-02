@@ -1,9 +1,9 @@
 'use client'
 
-import { useCanvasStore } from '@/features/canvas/canvas-store'
-import { CanvasToolbar } from '@/features/canvas/canvas-toolbar'
-import { CanvasView } from '@/features/canvas/canvas-view'
-import { useCanvasDrawing } from '@/features/canvas/use-canvas-drawing'
+import { useCanvasDrawing } from '@/shared/hooks/use-canvas-drawing'
+import { CanvasToolbar } from '@/shared/ui/canvas/canvas-toolbar'
+import { CanvasView } from '@/shared/ui/canvas/canvas-view'
+import { useCanvasStore } from '@/store/canvas-store'
 import { memo } from 'react'
 
 function CanvasContainer({ initialImage }: { initialImage?: string | null }) {

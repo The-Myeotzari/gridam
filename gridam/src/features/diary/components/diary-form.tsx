@@ -1,7 +1,5 @@
 'use client'
 
-import CanvasContainer from '@/features/canvas/canvas-container'
-import { useCanvasStore } from '@/features/canvas/canvas-store'
 import DiaryFormButtons, {
   DIARY_STATUS,
   type DiaryStatus,
@@ -9,7 +7,9 @@ import DiaryFormButtons, {
 import { useDiaryActions } from '@/features/diary/hook/use-diary-actiuon'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
+import CanvasContainer from '@/shared/ui/canvas/canvas-container'
 import Textarea from '@/shared/ui/textarea'
+import { useCanvasStore } from '@/store/canvas-store'
 import { toast } from '@/store/toast-store'
 import { useState } from 'react'
 
