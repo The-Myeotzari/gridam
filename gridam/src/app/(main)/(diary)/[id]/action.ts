@@ -1,6 +1,6 @@
 'use server'
 
-import { updateImageAction } from '@/features/diary/image.action'
+import { updateImageAction } from '@/features/diary/apis/image.action'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/get-cookies'
