@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fail } from '@/app/apis/_lib/http'
-import { getMonthlyDiaries } from '@/features/mypage/api/get-monthly-diary.api'
+import { getMonthlyDiaries } from '@/app/(main)/mypage/action'
 import { createMonthlyDiaryPdf } from '@/features/mypage/utils/generatePdf'
 import { MESSAGES } from '@/shared/constants/messages'
 
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       return fail(MESSAGES.DIARY.ERROR.EXPORT_INVALID_DATA, 400)
     }
 
-    const monthly = await getMonthlyDiaries({ year, month })
+    const monthly = await getMonthlyDiaries({ year: yearParam, month: monthParam })
 
     const pdfBytes = await createMonthlyDiaryPdf({ diaries: monthly.diaries })
 
@@ -35,10 +35,6 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error) {
-    if (error instanceof Error && error.message === 'UNAUTHORIZED') {
-      return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-    }
-
     return fail(MESSAGES.DIARY.ERROR.EXPORT, 500)
   }
 }
