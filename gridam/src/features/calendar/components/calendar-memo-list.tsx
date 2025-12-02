@@ -1,6 +1,7 @@
 'use client'
 import { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
+import cn from '@/shared/utils/cn'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 import StripMarkDown from '@/shared/utils/strip-markdown'
 import { FileText } from 'lucide-react'
@@ -15,6 +16,7 @@ interface CalendarMemoList {
 export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList) {
   const router = useRouter()
   let content
+  const isScrollable = memos && memos.length > 6
   if (isLoading) {
     content = (
       <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm ">
@@ -43,7 +45,7 @@ export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList)
               <FileText className="w-4 h-4 shrink-0" />
               <div className="flex-1">
                 <p className="font-medium text-foreground truncate">{memo.title}</p>
-                <p className=" text-sm text-muted-foreground line-clamp-1  ">
+                <p className=" text-sm text-muted-foreground line-clamp-1 ">
                   {StripMarkDown(memo.content)}
                 </p>
               </div>
@@ -54,13 +56,15 @@ export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList)
     )
   }
   return (
-    <div className="mb-4 flex flex-col flex-1 gap">
+    <div className="mb-4 flex flex-col flex-1 gap ">
       <h3 className="font-handwritten text-xl mb-2 text-navy-gray font-bold">메모</h3>
       <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 ">
         {todayDate}
       </div>
       {/* 메모 목록 */}
-      <div className=" flex-1 flex  justify-center py-6">{content}</div>
+      <div className={cn('flex-1 flex justify-center py-6 ', isScrollable && 'overflow-y-auto')}>
+        {content}
+      </div>
     </div>
   )
 }
