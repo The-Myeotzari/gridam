@@ -1,11 +1,11 @@
-import { useChangePassword } from '@/features/mypage/api/queries/use-change-password'
+import { changePasswordAction } from '@/features/mypage/api/change-action'
 import ChangePasswordModal from '@/features/mypage/components/change-password/change-password-modal'
 import { toast } from '@/store/toast-store'
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 // Button / Input / Label / Modal mock들
-jest.mock('@/shared/ui/button', () => (props: any) => (
+jest.mock('@/shared/ui/client-button', () => (props: any) => (
   <button type={props.type} className={props.className} onClick={props.onClick}>
     {props.label}
   </button>
@@ -31,8 +31,10 @@ jest.mock('lucide-react', () => ({
   X: (props: any) => <svg data-testid="x-icon" {...props} />,
 }))
 
-// useChangePassword 훅 mock
-jest.mock('@/features/mypage/api/queries/use-change-password')
+// changePasswordAction mock
+jest.mock('@/features/mypage/api/change-action', () => ({
+  changePasswordAction: jest.fn(),
+}))
 
 // toast mock
 jest.mock('@/store/toast-store', () => ({
@@ -42,7 +44,7 @@ jest.mock('@/store/toast-store', () => ({
   },
 }))
 
-const mockUseChangePassword = useChangePassword as jest.Mock
+const mockChangePasswordAction = changePasswordAction as jest.MockedFunction<typeof changePasswordAction>
 const mockToast = toast as jest.Mocked<typeof toast>
 
 describe('ChangePasswordModal', () => {
@@ -54,12 +56,6 @@ describe('ChangePasswordModal', () => {
   })
 
   it('비밀번호 변경 모달 UI를 렌더링한다', () => {
-    // useChangePassword 기본 mock (필수)
-    mockUseChangePassword.mockReturnValue({
-      mutateAsync: jest.fn(),
-      isPending: false,
-    })
-
     render(<ChangePasswordModal close={closeMock} />)
 
     expect(screen.getByText('비밀번호 변경')).toBeInTheDocument()
@@ -75,11 +71,6 @@ describe('ChangePasswordModal', () => {
   })
 
   it('X 아이콘 클릭 시 close가 호출된다', () => {
-    mockUseChangePassword.mockReturnValue({
-      mutateAsync: jest.fn(),
-      isPending: false,
-    })
-
     render(<ChangePasswordModal close={closeMock} />)
 
     const xIcon = screen.getByTestId('x-icon')
@@ -88,15 +79,13 @@ describe('ChangePasswordModal', () => {
     expect(closeMock).toHaveBeenCalledTimes(1)
   })
 
-  it('폼 제출 시 useChangePassword.mutateAsync가 올바른 값으로 호출되고 성공 시 모달을 닫는다', async () => {
-    const mutateAsync = jest.fn().mockResolvedValue({
+  it('폼 제출 시 changePasswordAction이 올바른 값으로 호출되고 성공 시 모달을 닫는다', async () => {
+    // changePasswordAction이 성공 응답을 반환하도록 mock
+    mockChangePasswordAction.mockResolvedValue({
       ok: true,
-      message: '비밀번호가 변경되었습니다.',
-    })
-
-    mockUseChangePassword.mockReturnValue({
-      mutateAsync,
-      isPending: false,
+      data: {
+        message: '비밀번호가 변경되었습니다.'
+      },
     })
 
     render(<ChangePasswordModal close={closeMock} />)
@@ -111,15 +100,17 @@ describe('ChangePasswordModal', () => {
 
     fireEvent.click(screen.getByText('변경하기'))
 
+    // changePasswordAction 호출 여부 및 인자 검증
     await waitFor(() => {
-      expect(mutateAsync).toHaveBeenCalledTimes(1)
-      expect(mutateAsync).toHaveBeenCalledWith({
+      expect(mockChangePasswordAction).toHaveBeenCalledTimes(1)
+      expect(mockChangePasswordAction).toHaveBeenCalledWith({
         password: 'currentPass123',
         newPassword: 'newPass123!',
         confirmPassword: 'newPass123!',
       })
     })
 
+    // 성공 토스트 + close 호출 검증
     await waitFor(() => {
       expect(mockToast.success).toHaveBeenCalled()
       expect(closeMock).toHaveBeenCalledTimes(1)
