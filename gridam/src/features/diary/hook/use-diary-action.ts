@@ -90,6 +90,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
 
       const isChanged = checkImageChanged(diary.image_url, canvas)
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         id: diary.id,
         content: text,
@@ -119,6 +120,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
 
       const isChanged = checkImageChanged(diary.image_url, canvas)
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         id: diary.id,
         content: text,
@@ -148,6 +150,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
 
       const isChanged = checkImageChanged(diary.image_url, canvas)
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         id: diary.id,
         content: text,

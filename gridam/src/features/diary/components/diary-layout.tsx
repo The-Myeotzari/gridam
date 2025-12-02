@@ -3,10 +3,16 @@ import Image from 'next/image'
 type DiaryLayoutProps = {
   date: string
   weatherIcon: string | React.ReactNode
-  children: React.ReactNode
+  canvasSection: React.ReactNode
+  formSection: React.ReactNode
 }
 
-export default function DiaryLayout({ date, weatherIcon, children }: DiaryLayoutProps) {
+export default function DiaryLayout({
+  date,
+  weatherIcon,
+  canvasSection,
+  formSection,
+}: DiaryLayoutProps) {
   return (
     <div className="max-w-4xl mx-auto border-2 border-black bg-(--color-cream-white)">
       <div className="flex items-center justify-between p-5 border-b border-black">
@@ -30,7 +36,9 @@ export default function DiaryLayout({ date, weatherIcon, children }: DiaryLayout
         )}
       </div>
 
-      {children}
+      {canvasSection}
+
+      {formSection}
     </div>
   )
 }
