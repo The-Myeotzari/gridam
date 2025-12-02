@@ -4,7 +4,6 @@ import { Card } from '@/shared/ui/card'
 import { getFormatDate } from '@/shared/utils/get-format-date'
 import { FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { mockMemosWithData } from './mockmemo'
 
 const todayDate = getFormatDate()
 
