@@ -1,12 +1,15 @@
+import { fail, ok } from '@/app/apis/_lib/http'
+import { MESSAGES } from '@/shared/constants/messages'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import { NextRequest } from 'next/server'
 
-// 사용자 통합 정보 조회 함수
-export async function getUserData() {
+export async function GET(_req: NextRequest) {
   const { supabase, user } = await getAuthenticatedUser()
 
   const userId = user.id
 
   // 여기서부터는 supabase.from(...) 으로 통계/일기 조회
+  // 작성 일자 (created_at) 기준
   const { data: diaries, error } = await supabase
     .from('diaries')
     .select('id, image_url, emoji, date, content, created_at')
@@ -14,10 +17,10 @@ export async function getUserData() {
     .eq('status', 'published')
     .not('published_at', 'is', null)
     .is('deleted_at', null)
-    .order('date', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error || !diaries) {
-    return { ok: false, message: `일기 집계에 실패했습니다` }
+    return fail(MESSAGES.DIARY.ERROR.READ, 400)
   }
 
   const totalDiaries = diaries.length ?? 0
@@ -44,9 +47,7 @@ export async function getUserData() {
     }
   })
 
-  return {
-    ok: true,
-    data: {
+  return ok({
       user: {
         id: user.id,
         email: user.email ?? '',
@@ -58,6 +59,5 @@ export async function getUserData() {
         totalDays: daySet.size,
       },
       recentDiaries: recent,
-    },
-  }
+    }, 200)
 }

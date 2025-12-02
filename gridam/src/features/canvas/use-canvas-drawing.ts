@@ -48,7 +48,21 @@ export function useCanvasDrawing(initialImage?: string | null) {
   }, [saveCanvasImage])
 
   // clear
-  const clearHistory = () => setHistory([])
+  const clearHistory = () => {
+    const canvas = canvasRef.current
+    const ctx = ctxRef.current
+    // 준비 안된 상태 처리
+    if (!canvas || !ctx) {
+      setHistory([])
+      setCanvasImage(null)
+      return
+    }
+    // 초기화랑 동일한 로직 진행
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const emptySnap = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    setHistory([emptySnap])
+    setCanvasImage(null)
+  }
 
   // css 색상 해석
   const resolveColor = useCallback((input: string): string => {

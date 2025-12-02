@@ -1,4 +1,4 @@
-import { getUserData } from "@/features/mypage/api/mypage.api";
+import { getUserData } from "@/app/(main)/mypage/action";
 import DiaryExportSection from "@/features/mypage/components/export/diary-export-section";
 import MyStats from "@/features/mypage/components/my-stats";
 import MyPageButtons from "@/features/mypage/components/mypage-buttons";

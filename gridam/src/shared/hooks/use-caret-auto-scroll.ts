@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { graphemeFromUtf16Index, splitGraphemes } from '@/shared/utils/text-utils'
 
 /**
@@ -18,6 +19,8 @@ export function useCaretAutoScroll(
   rowHeight: number, // 행 높이(px)
   visibleRows: number // 뷰포트 표시 행 수
 ) {
+  const [caretIndex, setCaretIndex] = useState(0)
+
   // 현재 캐럿 위치를 그래핌 인덱스로 계산
   const getCaretIndex = () => {
     const contentElement = contentRef.current
@@ -28,7 +31,9 @@ export function useCaretAutoScroll(
 
     // 캐럿이 contentEditable 밖이면 텍스트 끝으로 간주
     if (!contentElement.contains(range.startContainer)) {
-      return splitGraphemes(contentElement.textContent ?? '').length
+      const len = splitGraphemes(contentElement.textContent ?? '').length
+      setCaretIndex(len)
+      return len
     }
 
     // 캐럿 앞부분 텍스트 길이(UTF-16) 계산
@@ -38,7 +43,12 @@ export function useCaretAutoScroll(
     const utf16Length = prefixRange.toString().length
 
     // UTF-16 → 그래핌 인덱스 변환
-    return graphemeFromUtf16Index(splitGraphemes(contentElement.textContent ?? ''), utf16Length)
+    const index = graphemeFromUtf16Index(
+      splitGraphemes(contentElement.textContent ?? ''),
+      utf16Length
+    )
+    setCaretIndex(index)
+    return index
   }
 
   // 캐럿이 있는 행이 뷰포트 밖이면 scrollTop 보정
@@ -46,8 +56,8 @@ export function useCaretAutoScroll(
     const viewportElement = viewportRef.current
     if (!viewportElement) return
 
-    const caretIndex = getCaretIndex()
-    const caretRow = Math.floor(caretIndex / columns)
+    const index = getCaretIndex()
+    const caretRow = Math.floor(index / columns)
     const viewportHeight = visibleRows * rowHeight
     const rowTop = caretRow * rowHeight
     const rowBottom = rowTop + rowHeight
@@ -59,6 +69,6 @@ export function useCaretAutoScroll(
     }
   }
 
-  // 외부에 스크롤 보정 함수만 제공
-  return { ensureVisible }
+  // 스크롤 보정 함수와 현재 캐럿 인덱스를 함께 제공
+  return { ensureVisible, caretIndex }
 }

@@ -35,6 +35,7 @@ export const MESSAGES = {
       EMAIL_VERIFICATION_REQUEST_FAILED:
         '이메일 인증 요청에 실패하셨습니다. 잠시 후 다시 시도해주세요 ',
       EMPTY_PASSWORD: '비밀번호를 입력해주세요.',
+      PASSWORD_SAME_AS_OLD: '새 비밀번호는 이전에 사용한 비밀번호와 동일할 수 없습니다.',
     },
   },
 
@@ -50,6 +51,9 @@ export const MESSAGES = {
       EXPORT: '일기 다운로드에 성공했습니다!',
     },
     ERROR: {
+      INVALID_ALL: '그림과 내용은 필수 입력입니다.',
+      INVALID_CANVAS: '그림을 그려주세요.',
+      INVALID_TEXT: '일기 내용을 작성해 주세요.',
       READ: '일기 조회에 실패했습니다.',
       READ_NO: '존재하지 않은 일기입니다.',
       CREATE: '일기 저장에 실패했습니다.',
@@ -96,6 +100,12 @@ export const MESSAGES = {
       DELETE: '메모 삭제에 실패했습니다.',
       DELETE_OVER: '이미 삭제된 메모입니다.',
     },
+  },
+
+  MYPAGE: {
+    ERROR: {
+      READ: '마이페이지 조회에 실패했습니다.'
+    }
   },
 
   COMMON: {
