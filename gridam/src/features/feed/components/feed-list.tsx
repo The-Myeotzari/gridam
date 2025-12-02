@@ -72,33 +72,6 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
 
   const ref = useIntersection(loadMore)
 
-  const handleDelete = useCallback(
-    async (id: string) => {
-      const previousItems = [...optimisticItems]
-      const previousPages = JSON.parse(JSON.stringify(pages))
-
-      updateOptimisticItems(id)
-
-      const res = await deleteDiary(id)
-
-      if (res.ok) {
-        setPages((prev) =>
-          prev.map((page) => ({
-            ...page,
-            items: page.items.filter((d) => d.id !== id),
-          }))
-        )
-        return
-      }
-
-      updateOptimisticItems(previousItems)
-      setPages(previousPages)
-
-      toast.error(MESSAGES.DIARY.ERROR.DELETE)
-    },
-    [optimisticItems, pages, updateOptimisticItems]
-  )
-
   const openDeleteModal = (id: string) => {
     modalStore.open((close) => (
       <>
@@ -116,8 +89,27 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
             className="bg-(--color-background) text-destructive border-destructive hover:bg-destructive hover:text-(--color-destructive-foreground)"
             onClick={() => {
               startTransition(async () => {
-                await handleDelete(id)
-                close()
+                const previousItems = [...optimisticItems]
+                const previousPages = JSON.parse(JSON.stringify(pages))
+
+                updateOptimisticItems(id)
+
+                const res = await deleteDiary(id)
+
+                if (res.ok) {
+                  setPages((prev) =>
+                    prev.map((page) => ({
+                      ...page,
+                      items: page.items.filter((d) => d.id !== id),
+                    }))
+                  )
+                  close()
+                  return
+                }
+                updateOptimisticItems(previousItems)
+                setPages(previousPages)
+
+                toast.error(MESSAGES.DIARY.ERROR.DELETE)
               })
             }}
           />
