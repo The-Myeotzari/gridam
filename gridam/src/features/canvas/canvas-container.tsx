@@ -1,17 +1,13 @@
 'use client'
 
+import { useCanvasStore } from '@/features/canvas/canvas-store'
 import { CanvasToolbar } from '@/features/canvas/canvas-toolbar'
 import { CanvasView } from '@/features/canvas/canvas-view'
 import { useCanvasDrawing } from '@/features/canvas/use-canvas-drawing'
 import { memo } from 'react'
 
-function CanvasContainer({
-  initialImage,
-  onChange,
-}: {
-  initialImage?: string | null
-  onChange: (img: string | null) => void
-}) {
+function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
+  const { setImage } = useCanvasStore()
   const {
     canvasRef,
     canvasImage,
@@ -32,7 +28,7 @@ function CanvasContainer({
     onPointerUpOrLeave(e)
 
     if (canvasRef.current) {
-      onChange(canvasImage)
+      setImage(canvasImage)
     }
   }
 
