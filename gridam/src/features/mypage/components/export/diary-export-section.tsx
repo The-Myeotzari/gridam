@@ -1,5 +1,5 @@
 import DiaryExportContainer from '@/features/mypage/components/export/diary-export-container'
-import { getMonthlyDiaries } from '@/features/mypage/api/get-monthly-diary.api'
+import { getMonthlyDiaries } from '@/app/(main)/mypage/action'
 
 export default async function DiaryExportSection() {
   const now = new Date()
