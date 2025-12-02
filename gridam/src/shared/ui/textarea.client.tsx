@@ -5,6 +5,7 @@ import { gridStyle, heights } from '@/shared/utils/grid'
 import { handleInputOnce, propagateChange } from '@/shared/utils/textarea-actions'
 import { buildCells, normalizeValue } from '@/shared/utils/textarea-core'
 import { useEffect, useMemo, useRef, useState } from 'react'
+
 /**
  * Props
  * - max/cols/width/cellSize/visibleRows: 격자 규격
@@ -36,9 +37,6 @@ export default function Textarea({
   placeholder,
   readOnly,
 }: Props) {
-  // 치수 계산
-  // const { cell, gridWidth } = getCellSize(width, cols, cellSize)
-
   // 상태/참조
   const isControlled = value !== undefined
   const [inner, setInner] = useState(() => normalizeValue(value ?? '', max))
@@ -46,6 +44,11 @@ export default function Textarea({
   const viewportRef = useRef<HTMLDivElement>(null)
   const [cell, setCell] = useState(0)
   const gridWidth = cell * cols
+  const [focused, setFocused] = useState(false)
+
+  // 타이핑 중 여부 (입력 중에는 커서 깜빡임 멈춤)
+  const [typing, setTyping] = useState(false)
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // 부모 width 기반 계산
   useEffect(() => {
@@ -65,8 +68,14 @@ export default function Textarea({
     return () => ro.disconnect()
   }, [cols])
 
-  // 커서 기준 자동 스크롤
-  const { ensureVisible } = useCaretAutoScroll(viewportRef, ceRef, cols, cell, visibleRows)
+  // 커서 기준 자동 스크롤 + 캐럿 위치 인덱스
+  const { ensureVisible, caretIndex } = useCaretAutoScroll(
+    viewportRef,
+    ceRef,
+    cols,
+    cell,
+    visibleRows
+  )
 
   // 뷰 값
   const view = isControlled ? normalizeValue(value as string, max) : inner
@@ -80,11 +89,32 @@ export default function Textarea({
     requestAnimationFrame(ensureVisible)
   }, [isControlled, value, max, ensureVisible])
 
+  // 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (typingTimerRef.current) {
+        clearTimeout(typingTimerRef.current)
+      }
+    }
+  }, [])
+
   // 입력 처리
   const handleInput = () => {
+    // 타이핑 시작 → 깜빡임 멈춤
+    setTyping(true)
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current)
+    }
+
     const normalizedText = handleInputOnce(ceRef.current, max, normalizeValue)
     propagateChange(normalizedText, isControlled, inner, setInner, onChange)
+
     requestAnimationFrame(ensureVisible)
+
+    // 일정 시간 동안 입력이 없으면 typing=false로 전환
+    typingTimerRef.current = setTimeout(() => {
+      setTyping(false)
+    }, 500)
   }
 
   // 렌더 데이터
@@ -96,6 +126,10 @@ export default function Textarea({
   const gridCss = gridStyle(cols, cell)
   const { contentHeight, viewportH } = heights(totalRows, visibleRows, cell)
   const showPh = !view && placeholder
+
+  // caretIndex(그래핌 기준 위치) → 실제 셀 인덱스로 변환
+  const caretCellIndex =
+    graphemes.length === 0 ? 0 : Math.min(Math.max(caretIndex - 1, 0), graphemes.length - 1)
 
   return (
     <div className={className}>
@@ -121,10 +155,25 @@ export default function Textarea({
             {cells.map((ch, i) => (
               <div
                 key={i}
-                className="flex items-center justify-center border border-border/60 bg-background text-base leading-none select-none"
+                className="relative flex items-center justify-center border border-border/60 bg-background text-base leading-none select-none"
                 style={{ width: cell, height: cell }}
               >
                 <span className="pointer-events-none">{ch}</span>
+
+                {/* 포커스 + not readOnly + 현재 캐럿 위치인 셀에만 점 커서 표시 */}
+                {!readOnly && focused && i === caretCellIndex && (
+                  <span
+                    className={`pointer-events-none ${typing ? '' : 'caret-blink'}`}
+                    style={{
+                      position: 'absolute',
+                      right: cell * 0.15,
+                      top: cell * 0.55,
+                      width: cell * 0.05,
+                      height: cell * 0.05,
+                      backgroundColor: 'black',
+                    }}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -137,6 +186,8 @@ export default function Textarea({
             contentEditable={!readOnly}
             suppressContentEditableWarning
             onInput={handleInput}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             className="absolute inset-y-0 left-0 right-0 z-10 outline-none bg-transparent text-transparent caret-transparent whitespace-pre overflow-hidden"
             tabIndex={0}
             style={{ width: gridWidth }}
