@@ -40,7 +40,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       date={formattedDate}
       weatherIcon={weatherIcon}
       canvasSection={<CanvasContainer initialImage={diary.image_url} />}
-      formSection={<DiaryForm diary={diary} dateValue={dateValue} />}
+      formSection={<DiaryForm diary={diary} dateValue={dateValue} isEdit={true} />}
     />
   )
 }
