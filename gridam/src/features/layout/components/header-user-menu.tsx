@@ -1,6 +1,6 @@
 'use client'
 
-import { useLogout } from '@/features/mypage/api/queries/use-logout'
+import { useLogout } from '@/shared/hooks/use-logout'
 import DropBox from '@/shared/ui/dropbox'
 import { useRouter } from 'next/navigation'
 
@@ -10,7 +10,7 @@ interface HeaderUserMenuProps {
 
 export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
   const router = useRouter()
-  const { mutate: handleLogout } = useLogout()
+  const { logout } = useLogout()
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
@@ -27,7 +27,7 @@ export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
             key: 'logout',
             label: '로그아웃',
             tone: 'destructive',
-            onSelect: () => handleLogout(),
+            onSelect: () => logout(),
           },
         ]}
       />
