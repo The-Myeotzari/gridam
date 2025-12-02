@@ -96,7 +96,7 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
 
       toast.error(MESSAGES.DIARY.ERROR.DELETE)
     },
-    [updateOptimisticItems]
+    [optimisticItems, pages, updateOptimisticItems]
   )
 
   const openDeleteModal = (id: string) => {
