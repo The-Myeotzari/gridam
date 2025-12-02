@@ -51,6 +51,9 @@ export const MESSAGES = {
       EXPORT: '일기 다운로드에 성공했습니다!',
     },
     ERROR: {
+      INVALID_ALL: '그림과 내용은 필수 입력입니다.',
+      INVALID_CANVAS: '그림을 그려주세요.',
+      INVALID_TEXT: '일기 내용을 작성해 주세요.',
       READ: '일기 조회에 실패했습니다.',
       READ_NO: '존재하지 않은 일기입니다.',
       CREATE: '일기 저장에 실패했습니다.',
