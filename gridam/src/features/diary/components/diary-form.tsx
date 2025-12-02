@@ -8,7 +8,7 @@ import DiaryFormButtons, {
 import type { Diary } from '@/features/feed/feed.type'
 import Textarea from '@/shared/ui/textarea'
 import { useState } from 'react'
-import { useDiaryActions } from '../hook/useDiaryActiuon'
+import { useDiaryActions } from '../hook/use-diary-actiuon'
 
 type DiaryFormProps = {
   dateValue: string
