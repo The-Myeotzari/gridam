@@ -1,13 +1,13 @@
 'use client'
 import { fetchCalendar, fetchCalendarMonth } from '@/app/(main)/calendar/action'
+import Calendar from '@/features/calendar/components/calendar'
+import CalendarMemoList from '@/features/calendar/components/calendar-memo-list'
+import SelectedDateDiary from '@/features/calendar/components/selected-date-diary'
 import { Diary } from '@/features/feed/feed.type'
 import { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import { getFormatDate } from '@/shared/utils/date'
 import { useEffect, useState, useTransition } from 'react'
-import Calendar from './calendar'
-import CalendarMemoList from './calendar-memo-list'
-import SelectedDateDiary from './selected-date-diary'
 
 //날짜를 키로 (1 ~ 31), 데이터 존재 여부를 값으로 가짐
 export type MonthlyData = Record<number, { hasDiary: boolean; hasMemo: boolean }>

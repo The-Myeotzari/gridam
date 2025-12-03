@@ -4,7 +4,7 @@ import DiaryLayout from '@/features/diary/components/diary-layout'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import { getFormatDate } from '@/shared/utils/date'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 

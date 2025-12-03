@@ -1,3 +1,4 @@
+import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 // 사용자 통합 정보 조회 함수
@@ -39,6 +40,11 @@ export async function getMonthlyDiaries(params: {
       },
     }
   )
+  const json = await res.json()
 
-  return res.json()
+  if(!json.ok){
+    throw new Error(json.message ?? MESSAGES.DIARY.ERROR.READ)
+  }
+
+  return json.data
 }
