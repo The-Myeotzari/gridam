@@ -25,5 +25,5 @@ export default function SelectedDateDiary({ isLoading, diary }: SelectedDateDiar
   } else {
     content = <DiaryReadOnly diary={diary} />
   }
-  return <div>{content}</div>
+  return <div className="overflow-hidden">{content}</div>
 }

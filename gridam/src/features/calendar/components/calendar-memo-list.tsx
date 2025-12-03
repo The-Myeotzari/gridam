@@ -56,13 +56,13 @@ export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList)
     )
   }
   return (
-    <div className="mb-4 flex flex-col flex-1 gap ">
+    <div className="mb-4 flex flex-col flex-1 gap h-full">
       <h3 className="font-handwritten text-xl mb-2 text-navy-gray font-bold">메모</h3>
-      <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 ">
+      <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 mb-2 ">
         {todayDate}
       </div>
       {/* 메모 목록 */}
-      <div className={cn('flex-1 flex justify-center py-6 ', isScrollable && 'overflow-y-auto')}>
+      <div className={cn('flex-1 flex justify-center py-3 ', isScrollable && 'overflow-y-auto')}>
         {content}
       </div>
     </div>
