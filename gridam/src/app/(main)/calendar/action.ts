@@ -28,8 +28,7 @@ export type CalendarResponse = {
 
 export async function fetchCalendar(params: FetchCalendarParams = {}): Promise<CalendarResponse> {
   // 기본값은 오늘 날짜
-  const { year, month, day } = getDateParts()
-
+  const { year, month, day } = getDateParts(params)
   const cookieHeader = await getCookies()
 
   const searchParams = new URLSearchParams({
