@@ -2,9 +2,27 @@ import { fetchDraftAction } from '@/app/(main)/draft/actions'
 import DraftList from '@/app/(main)/draft/draft-list'
 import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
+import { SITE_URL } from '@/shared/utils/url'
 import { Link, RefreshCcw } from 'lucide-react'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: '임시 글 목록 | Gridam',
+  description: '작성 중이던 일기를 불러오고 수정/삭제할 수 있어요.',
+  alternates: { canonical: new URL('/draft', SITE_URL) },
+  robots: { index: false, follow: false },
+  openGraph: {
+    title: '임시 글 목록 | Gridam',
+    description: '작성 중이던 일기를 불러오고 수정/삭제할 수 있어요.',
+    url: new URL('/draft', SITE_URL),
+    siteName: 'Gridam',
+    type: 'website',
+    locale: 'ko_KR',
+  },
+}
 
 export default async function Page() {
   const { ok, data: diary } = await fetchDraftAction()
