@@ -2,7 +2,7 @@ import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/diary/components/weather-icon'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import { getFormatDate } from '@/shared/utils/date'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
