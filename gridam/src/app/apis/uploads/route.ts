@@ -1,6 +1,6 @@
 import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 
 const BUCKET = 'diary-images'
@@ -27,12 +27,9 @@ const safeName = (name: string) =>
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await getSupabaseServer()
-    const { data: userData, error: userErr } = await supabase.auth.getUser()
-    if (userErr || !userData.user) {
-      return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-    }
-    const userId = userData.user.id
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
+    const userId = user.id
 
     // multipart/form-data 받기
     const form = await req.formData()
@@ -97,11 +94,8 @@ export async function DELETE(req: NextRequest) {
     const path = searchParams.get('path')
     if (!path) return fail('path 파라미터가 필요합니다.', 400)
 
-    const supabase = await getSupabaseServer()
-    const { data: userRes } = await supabase.auth.getUser()
-    const user = userRes?.user
+    const { supabase, user } = await getAuthenticatedUser()
     if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-
     // own-folder 검사
     const [firstToken] = path.split('/')
     if (firstToken !== user.id) return fail('own-folder 정책 위반', 403)
