@@ -13,6 +13,7 @@ export type Memo = {
   created_at: string
   updated_at: string
   deleted_at: string | null
+  tags: string[] | null
 }
 
 type ApiResponse<T> = {
@@ -89,6 +90,7 @@ export async function getMemoDetailAction(id: string) {
 export type CreateMemoInput = {
   title: string
   content: string
+  tags: string[]
 }
 
 export async function createMemoAction(input: CreateMemoInput) {
@@ -115,10 +117,11 @@ export type UpdateMemoInput = {
   id: string
   title?: string
   content?: string
+  tags?: string[]
 }
 
 export async function updateMemoAction(input: UpdateMemoInput) {
-  const { id, title, content } = input
+  const { id, title, content, tags } = input
 
   if (!id) {
     throw new Error(MESSAGES.MEMO.ERROR.UPDATE_NO_DATA)
@@ -135,7 +138,7 @@ export async function updateMemoAction(input: UpdateMemoInput) {
       'Content-Type': 'application/json',
       Cookie: cookieHeader,
     },
-    body: JSON.stringify({ title, content }),
+    body: JSON.stringify({ title, content, tags }),
   })
 
   const json = (await res.json()) as ApiResponse<Memo>

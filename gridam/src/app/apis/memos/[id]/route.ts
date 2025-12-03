@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       )
     }
 
-    const { title, content } = parsed.data
+    const { title, content, tags } = parsed.data
 
     if (!title && !content) {
       return NextResponse.json(
@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     const { data: existing, error: fetchErr } = await supabase
       .from('memos')
-      .select('id, user_id, deleted_at, title, content')
+      .select('id, user_id, deleted_at, title, content, tags')
       .eq('id', id)
       .single()
 
@@ -66,6 +66,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .update({
         title: title ?? existing.title,
         content: content ?? existing.content,
+        tags: tags ?? existing.tags,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
