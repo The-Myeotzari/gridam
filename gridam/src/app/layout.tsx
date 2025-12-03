@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryProvider>
-        <body className={`${zenSerif.variable} font-pretendard`}>
+        <body className={`${zenSerif.variable}`}>
           {children}
           <Toast />
           <ModalRoot />
