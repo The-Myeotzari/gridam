@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { title, content } = parsed.data
+    const { title, content, tags } = parsed.data
 
     const { data, error } = await supabase
       .from('memos')
@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
         user_id: user.id,
         title,
         content,
+        tags,
       })
       .select('*')
       .single()

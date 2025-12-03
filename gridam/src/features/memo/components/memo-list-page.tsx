@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Memo } from '@/features/memo/api/memo.action'
 import Button from '@/shared/ui/button'
 import { Card } from '@/shared/ui/card'
+import TagBadge from '@/shared/ui/tagbadge'
 import MemoEditorDialog from './memo-editor-dialog'
 
 type Props = {
@@ -20,10 +21,6 @@ export default function MemoListPage({ memos }: Props) {
 
   function handleCreate() {
     setEditorOpen(true)
-  }
-
-  function handleOpenChange(next: boolean) {
-    setEditorOpen(next)
   }
 
   function handleSuccess() {
@@ -50,19 +47,27 @@ export default function MemoListPage({ memos }: Props) {
               <Card
                 key={memo.id}
                 className="
-                  flex cursor-pointer items-center justify-between
-                  rounded-3xl bg-card px-6 py-4
-                  shadow-sm transition
-                  hover:shadow-md
+                  cursor-pointer rounded-3xl bg-card px-6 py-4
+                  shadow-sm transition hover:shadow-md
                 "
                 onClick={() => router.push(`/memo/${memo.id}`)}
               >
-                <span className="truncate text-base font-medium text-foreground">
-                  {memo.title || '(제목 없음)'}
-                </span>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {new Date(memo.created_at).toLocaleDateString().replace(/\./g, '.').trim()}
-                </span>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="truncate text-base font-medium text-foreground">
+                    {memo.title || '(제목 없음)'}
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {new Date(memo.created_at).toLocaleDateString().replace(/\./g, '.').trim()}
+                  </span>
+                </div>
+
+                {memo.tags && memo.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {memo.tags.map((tag) => (
+                      <TagBadge key={tag}>{tag}</TagBadge>
+                    ))}
+                  </div>
+                )}
               </Card>
             ))}
           </section>
@@ -80,7 +85,7 @@ export default function MemoListPage({ memos }: Props) {
 
       <MemoEditorDialog
         open={editorOpen}
-        onOpenChange={handleOpenChange}
+        onOpenChange={setEditorOpen}
         initialMemo={null}
         onSuccess={handleSuccess}
       />
