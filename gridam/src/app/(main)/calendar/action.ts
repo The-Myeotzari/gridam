@@ -2,6 +2,7 @@
 
 import type { Diary } from '@/features/feed/feed.type'
 import type { Memo } from '@/features/memo/api/memo.action'
+import { getDateParts } from '@/shared/utils/date'
 import { getCookies } from '@/shared/utils/get-cookies'
 import { MonthlyData } from './components/calendar-client'
 
@@ -22,11 +23,7 @@ export type CalendarResponse = {
 
 export async function fetchCalendar(params: FetchCalendarParams = {}): Promise<CalendarResponse> {
   // 기본값은 오늘 날짜
-  const today = new Date()
-
-  const year = params.year ?? today.getFullYear()
-  const month = params.month ?? today.getMonth() + 1
-  const day = params.day ?? today.getDate()
+  const { year, month, day } = getDateParts()
 
   const cookieHeader = await getCookies()
 
