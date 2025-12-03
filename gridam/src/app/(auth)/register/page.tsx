@@ -1,5 +1,6 @@
 import { Card, CardFooter, CardHeader } from '@/shared/ui/card'
 import Toast from '@/shared/ui/toast'
+import Image from 'next/image'
 import Link from 'next/link'
 import RegisterForm from './register-form'
 
@@ -12,7 +13,13 @@ export default function Page() {
       <CardHeader
         align="vertical"
         cardImage={
-          <img src="/favicon.ico" width={56} height={56} alt="그리담로고" className=" mx-auto" />
+          <Image
+            src="/image/logo.png"
+            width={56}
+            height={56}
+            alt="그리담로고"
+            className=" mx-auto"
+          />
         }
         cardTitle={<h1 className="text-4xl mb-2 text-navy-gray text-center">회원가입</h1>}
         cardDescription={<p className="text-lg text-muted-foreground">그리담과 함께 시작해요</p>}
