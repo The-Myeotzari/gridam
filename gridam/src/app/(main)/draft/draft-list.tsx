@@ -7,7 +7,7 @@ import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import ClientButton from '@/shared/ui/client-button'
 import DropBox from '@/shared/ui/dropbox'
 import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
-import { getFormatDate } from '@/shared/utils/date'
+import { getFormatDateTime } from '@/shared/utils/date'
 import { modalStore } from '@/store/modal-store'
 import { toast } from '@/store/toast-store'
 import { useRouter } from 'next/navigation'
@@ -78,7 +78,6 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
   return (
     <div>
       {drafts.length === 0 && <p>임시 글이 없습니다.</p>}
-      {/* TODO: 카드 전용 컴포넌트로 분리하기 */}
       {drafts.map((diary) => {
         const isDeleting = isPending && deletingId === diary.id
         return (
@@ -107,7 +106,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
               {diary.content}
             </CardBody>
             <CardFooter className="text-muted-foreground text-sm">
-              저장: {getFormatDate(diary.updated_at)}
+              저장: {getFormatDateTime(diary.updated_at)}
             </CardFooter>
           </Card>
         )

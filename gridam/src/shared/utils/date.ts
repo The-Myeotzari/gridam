@@ -45,6 +45,32 @@ export function formatYearMonth(date: Date) {
 }
 
 /**
+ * - 주어진 날짜(문자열)를 "YYYY년 M월 D일 HH시 mm분" 형식으로 변환합니다.
+ * - date가 없으면 오늘 날짜를 기준으로 포맷합니다.
+ * - 시간은 24시간제입니다.
+ * @param date ISO 문자열 등 Date 생성이 가능한 날짜 문자열
+ * @returns 예) "2025년 12월 3일 14시 22분"
+ */
+export function getFormatDateTime(date?: string) {
+  const target = date ? new Date(date) : new Date()
+
+  const datePart = target.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  const timePart = target.toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+
+  const [hh, mm] = timePart.split(':')
+  return `${datePart} ${hh}시 ${mm}분`
+}
+
+/**
  * - params에 값이 없으면 baseDate(기본: 오늘 날짜) 기준으로 year/month/day를 채웁니다.
  * - month는 Date.getMonth()가 0~11이므로, 반환값은 1~12 기준입니다.
  * - baseDate를 주입할 수 있어 테스트/재사용이 쉽습니다.
