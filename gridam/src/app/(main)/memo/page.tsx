@@ -3,6 +3,7 @@ import { getMemoListAction } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import TagBadge from '@/shared/ui/tagbadge'
 import MemoCreateButton from '@/features/memo/components/memo-create-button'
+import { formatDotDateKR } from '@/shared/utils/date'
 
 export default async function Page() {
   const { ok, data } = await getMemoListAction()
@@ -35,7 +36,7 @@ export default async function Page() {
                     {memo.title || '(제목 없음)'}
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
-                    {new Date(memo.created_at).toLocaleDateString().replace(/\./g, '.').trim()}
+                    {formatDotDateKR(memo.created_at)}
                   </span>
                 </div>
 
