@@ -1,12 +1,13 @@
 'use client'
-import { Card } from '@/shared/ui/card'
-import Calendar from './calendar'
-import SelectedDateDiary from './selected-date-diary'
-import CalendarMemoList from './calendar-memo-list'
-import { useEffect, useState, useTransition } from 'react'
+import { fetchCalendar, fetchCalendarMonth } from '@/app/(main)/calendar/action'
 import { Diary } from '@/features/feed/feed.type'
 import { Memo } from '@/features/memo/api/memo.action'
-import { fetchCalendar, fetchCalendarMonth } from '@/app/(main)/calendar/action'
+import { Card } from '@/shared/ui/card'
+import { getFormatDate } from '@/shared/utils/get-format-date'
+import { useEffect, useState, useTransition } from 'react'
+import Calendar from './calendar'
+import CalendarMemoList from './calendar-memo-list'
+import SelectedDateDiary from './selected-date-diary'
 
 //날짜를 키로 (1 ~ 31), 데이터 존재 여부를 값으로 가짐
 export type MonthlyData = Record<number, { hasDiary: boolean; hasMemo: boolean }>
@@ -59,6 +60,8 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
     })
   }
 
+  const todayDate = getFormatDate()
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 ">
       <Card className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] p-6 gap-7 ">
@@ -72,7 +75,14 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
         <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
       </Card>
       <Card className="flex flex-col md:flex-row p-6 gap-7 max-h-[640]">
-        <CalendarMemoList memos={memos} isLoading={isPending} />
+        <div className="mb-4 flex flex-col flex-1 gap h-full">
+          <h3 className="font-handwritten text-xl mb-2 text-navy-gray font-bold">메모</h3>
+          <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 mb-2 ">
+            {todayDate}
+          </div>
+          {/* 메모 목록 */}
+          <CalendarMemoList memos={memos} isLoading={isPending} />
+        </div>
       </Card>
     </div>
   )
