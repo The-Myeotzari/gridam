@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import MemoDeleteTrigger from './memo-delete-trigger'
+import MemoEditTrigger from './memo-edit-trigger'
 import TagBadge from '@/shared/ui/tagbadge'
 
 type PageProps = {
