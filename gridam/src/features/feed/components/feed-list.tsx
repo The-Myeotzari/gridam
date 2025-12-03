@@ -6,6 +6,7 @@ import FeedCardSkeleton from '@/features/feed/components/feed-card-skeleton'
 import FeedListError from '@/features/feed/components/feed-list-error'
 import type { Diary, FetchDiaryResponseType } from '@/features/feed/feed.type'
 import { useIntersection } from '@/features/feed/hooks/use-intersection'
+import { useDiaryStatusStore } from '@/features/feed/store/diary-status-store'
 import { MESSAGES } from '@/shared/constants/messages'
 import ClientButton from '@/shared/ui/client-button'
 import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
@@ -72,33 +73,6 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
 
   const ref = useIntersection(loadMore)
 
-  const handleDelete = useCallback(
-    async (id: string) => {
-      const previousItems = [...optimisticItems]
-      const previousPages = JSON.parse(JSON.stringify(pages))
-
-      updateOptimisticItems(id)
-
-      const res = await deleteDiary(id)
-
-      if (res.ok) {
-        setPages((prev) =>
-          prev.map((page) => ({
-            ...page,
-            items: page.items.filter((d) => d.id !== id),
-          }))
-        )
-        return
-      }
-
-      updateOptimisticItems(previousItems)
-      setPages(previousPages)
-
-      toast.error(MESSAGES.DIARY.ERROR.DELETE)
-    },
-    [updateOptimisticItems]
-  )
-
   const openDeleteModal = (id: string) => {
     modalStore.open((close) => (
       <>
@@ -116,8 +90,28 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
             className="bg-(--color-background) text-destructive border-destructive hover:bg-destructive hover:text-(--color-destructive-foreground)"
             onClick={() => {
               startTransition(async () => {
-                await handleDelete(id)
-                close()
+                const previousItems = [...optimisticItems]
+                const previousPages = JSON.parse(JSON.stringify(pages))
+
+                updateOptimisticItems(id)
+
+                const res = await deleteDiary(id)
+
+                if (res.ok) {
+                  setPages((prev) =>
+                    prev.map((page) => ({
+                      ...page,
+                      items: page.items.filter((d) => d.id !== id),
+                    }))
+                  )
+                  useDiaryStatusStore.getState().setStatus('none')
+                  close()
+                  return
+                }
+                updateOptimisticItems(previousItems)
+                setPages(previousPages)
+
+                toast.error(MESSAGES.DIARY.ERROR.DELETE)
               })
             }}
           />

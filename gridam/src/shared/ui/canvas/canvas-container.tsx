@@ -1,17 +1,13 @@
 'use client'
 
-import { CanvasToolbar } from '@/features/canvas/canvas-toolbar'
-import { CanvasView } from '@/features/canvas/canvas-view'
-import { useCanvasDrawing } from '@/features/canvas/use-canvas-drawing'
-import { memo, useEffect } from 'react'
+import { useCanvasDrawing } from '@/shared/hooks/use-canvas-drawing'
+import { CanvasToolbar } from '@/shared/ui/canvas/canvas-toolbar'
+import { CanvasView } from '@/shared/ui/canvas/canvas-view'
+import { useCanvasStore } from '@/store/canvas-store'
+import { memo } from 'react'
 
-function CanvasContainer({
-  initialImage,
-  onChange,
-}: {
-  initialImage?: string | null
-  onChange: (img: string | null) => void
-}) {
+function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
+  const { setImage } = useCanvasStore()
   const {
     canvasRef,
     canvasImage,
@@ -28,9 +24,13 @@ function CanvasContainer({
     onPointerUpOrLeave,
   } = useCanvasDrawing(initialImage)
 
-  useEffect(() => {
-    onChange(canvasImage)
-  }, [canvasImage, onChange])
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    onPointerUpOrLeave(e)
+
+    if (canvasRef.current) {
+      setImage(canvasImage)
+    }
+  }
 
   return (
     <section className="flex flex-col items-center gap-4 p-5 border-b">
@@ -48,7 +48,7 @@ function CanvasContainer({
         height={45}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUpOrLeave={onPointerUpOrLeave}
+        onPointerUpOrLeave={handlePointerUp}
       />
     </section>
   )

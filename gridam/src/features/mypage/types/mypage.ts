@@ -28,11 +28,6 @@ export interface RecentDiary {
   emoji: string
 }
 
-export interface ChangePasswordState {
-  ok: boolean,
-  message?: string
-}
-
 export interface Diary{
   id: string
   content: string
@@ -46,3 +41,7 @@ export interface Diary{
   updated_at: string
   user_id: string
 }
+
+export type ApiResponse =
+  | { ok: true; data: { message: string } }
+  | { ok: false; message: string }

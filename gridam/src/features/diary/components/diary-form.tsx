@@ -1,16 +1,16 @@
 'use client'
 
-import CanvasContainer from '@/features/canvas/canvas-container'
 import DiaryFormButtons, {
   DIARY_STATUS,
   type DiaryStatus,
 } from '@/features/diary/components/diary-form-buttons'
+import { useDiaryActions } from '@/features/diary/hook/use-diary-action'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
+import { useCanvasStore } from '@/store/canvas-store'
 import { toast } from '@/store/toast-store'
 import { useState } from 'react'
-import { useDiaryActions } from '../hook/use-diary-actiuon'
 
 type DiaryFormProps = {
   dateValue: string
@@ -21,7 +21,7 @@ type DiaryFormProps = {
 
 export default function DiaryForm({ dateValue, weather, isEdit = false, diary }: DiaryFormProps) {
   const [text, setText] = useState(diary?.content ?? '')
-  const [canvas, setCanvas] = useState<string | null>(diary?.image_url ?? null)
+  const canvas = useCanvasStore.getState().image
 
   const { run, isPending } = useDiaryActions()
 
@@ -81,8 +81,6 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <CanvasContainer initialImage={diary?.image_url} onChange={setCanvas} />
-
       <section className="p-5">
         <Textarea value={text} onChange={(v) => setText(v)} />
       </section>

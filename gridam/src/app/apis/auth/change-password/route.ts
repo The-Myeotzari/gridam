@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, 500)
     }
 
-    return ok(MESSAGES.AUTH.SUCCESS.PASSWORD_RESET, 200)
+    return ok({ message: MESSAGES.AUTH.SUCCESS.PASSWORD_RESET }, 200)
   } catch (err) {
     if (err instanceof ZodError) {
       const firstIssue = err.issues[0]

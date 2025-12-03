@@ -1,25 +1,22 @@
 'use client'
+import { useDiaryStatusStore } from '@/features/feed/store/diary-status-store'
 import { MESSAGES } from '@/shared/constants/messages'
 import ClientButton from '@/shared/ui/client-button'
 import { toast } from '@/store/toast-store'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-// TODO: 개발 완료 이후 상수화 필요
-type Props = {
-  todayDiaryStatus: 'published' | 'draft' | 'none'
-}
-
-export default function FeedWriteBtn({ todayDiaryStatus }: Props) {
+export default function FeedWriteBtn() {
+  const status = useDiaryStatusStore((s) => s.status)
   const router = useRouter()
 
   const handleClick = () => {
-    if (todayDiaryStatus === 'published') {
+    if (status === 'published') {
       toast.error(MESSAGES.DIARY.ERROR.PUBLISHED)
       return
     }
 
-    if (todayDiaryStatus === 'draft') {
+    if (status === 'draft') {
       toast.error(MESSAGES.DIARY.ERROR.DRAFT)
       router.push(`/draft`)
       return
