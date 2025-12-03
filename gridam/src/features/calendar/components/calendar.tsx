@@ -1,9 +1,9 @@
 'use client'
 import { useMemo } from 'react'
-import buildCalendar, { weekday } from '@/app/(main)/calendar/lib/build-calendar'
 import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 import { MonthlyData } from './calendar-client'
+import buildCalendar, { weekday } from '../lib/build-calendar'
 
 interface CalendarProps {
   // 캘린더가 외부에서 관리하는 데이터를 받는다.
