@@ -2,7 +2,7 @@
 import { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import cn from '@/shared/utils/cn'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import { getFormatDate } from '@/shared/utils/date'
 import StripMarkDown from '@/shared/utils/strip-markdown'
 import { FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
