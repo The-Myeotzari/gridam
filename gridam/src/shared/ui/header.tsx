@@ -12,15 +12,15 @@ export default async function Header() {
     <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-sm border-b border-border paper-texture shrink-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 h-14 sm:h-16 md:h-20 flex items-center justify-between">
         {/* 로고 */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 hover-float">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3">
           <img
             src="/favicon.ico"
             alt="그리담 GRIDAM"
             width={48}
             height={48}
-            className="shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+            className="shrink-0 w-10 h-10 md:w-12 md:h-12"
           />
-          <span className="text-base sm:text-xl md:text-2xl font-bold text-foreground">
+          <span className="hidden sm:block text-base sm:text-xl md:text-2xl font-bold text-foreground">
             그리담 GRIDAM
           </span>
         </Link>
