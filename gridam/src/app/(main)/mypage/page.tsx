@@ -6,6 +6,17 @@ import MyPageHeader from "@/features/mypage/components/mypage-header";
 import ProfileCard from "@/features/mypage/components/profile-card";
 import RecentDiaries from "@/features/mypage/components/recent-diaries";
 import { MESSAGES } from "@/shared/constants/messages";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: '마이페이지 | Gridam',
+  description:
+    '내 일기 기록과 통계, 프로필, 월별 내보내기를 한 곳에서 관리하는 마이페이지입니다.',
+  robots: {
+    index: false, // 검색 노출 X
+    follow: false,
+  },
+}
 
 export default async function MyPage() {
   const res = await getUserData()
