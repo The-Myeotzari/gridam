@@ -1,6 +1,6 @@
 'use client'
 
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/shared/constants/query-key'
 import { MonthlyDiaries } from '@/features/mypage/types/mypage'
 
@@ -21,8 +21,6 @@ export function useMonthlyDiaries(year: number, month: number, options?: UseMont
     initialData: options?.initialData,
     // 한 번 가져온 월은 5분 동안은 “신선한 데이터”로 취급 (불필요한 재요청 방지)
     staleTime: 5 * 60 * 1000,
-    // 다시 선택해도 이전 데이터 유지하면서 UI 안 튀게
-    placeholderData: keepPreviousData,
     // 포커스로 돌아와도 자동 재요청 안 하도록 (부하 감소)
     refetchOnWindowFocus: false,
   })
