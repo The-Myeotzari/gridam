@@ -1,24 +1,3 @@
-export interface UserStats {
-  user: {
-    id: string
-    email: string
-    nickname: string
-    created_at: string
-  }
-  stats: {
-    totalDiaries: number
-    totalDays: number
-  }
-  recentDiaries: {
-    id: string
-    date: string
-    weekday: string
-    time: string
-    content: string
-    weatherEmoji: string
-  }[]
-}
-
 export interface RecentDiary {
   id: string
   date: string
@@ -40,6 +19,12 @@ export interface Diary{
   status: 'draft' | 'published'
   updated_at: string
   user_id: string
+}
+
+export interface MonthlyDiaries {
+  year: number
+  month: number
+  diaries: Diary[]
 }
 
 export type ApiResponse =

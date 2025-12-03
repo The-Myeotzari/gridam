@@ -2,25 +2,20 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { QUERY_KEYS } from '@/shared/constants/query-key'
-import { Diary } from '@/features/mypage/types/mypage'
-
-type GetMonthlyDiariesResponse = {
-  year: number
-  month: number
-  diaries: Diary[]
-}
+import { MonthlyDiaries } from '@/features/mypage/types/mypage'
 
 type UseMonthlyDiariesOptions = {
-  initialData?: GetMonthlyDiariesResponse
+  initialData?: MonthlyDiaries
 }
 
 export function useMonthlyDiaries(year: number, month: number, options?: UseMonthlyDiariesOptions) {
-  return useQuery<unknown, Error, GetMonthlyDiariesResponse>({
+  return useQuery<unknown, Error, MonthlyDiaries>({
     queryKey: QUERY_KEYS.DIARY.MONTHLY_EXPORT(year, month),
     queryFn: async () => {
       const setParams = new URLSearchParams({ year: year.toString(), month: month.toString() })
-      const res = await fetch(`/apis/diaries/monthly?${setParams.toString()}`, { method: 'GET' }).then(res => res.json())
-      return res.data
+      const res = await fetch(`/apis/diaries/monthly?${setParams.toString()}`, { method: 'GET' })
+      const json = await res.json()
+      return json.data
     },
     // 초기 마이페이지 렌더링 때 서버에서 가져온 값이 있으면 그대로 재사용
     initialData: options?.initialData,
