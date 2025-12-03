@@ -1,6 +1,7 @@
 import HeaderNavLink from '@/features/layout/components/header-navlink'
 import HeaderUserMenu from '@/features/layout/components/header-user-menu'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export default async function Header() {
@@ -14,8 +15,8 @@ export default async function Header() {
         {/* 로고 */}
         <div className="min-w-0 justify-self-start">
           <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <img
-              src="/favicon.ico"
+            <Image
+              src="/image/logo.png"
               alt="그리담 GRIDAM"
               width={48}
               height={48}
