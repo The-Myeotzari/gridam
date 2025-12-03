@@ -1,16 +1,17 @@
 'use client'
 
 import ClientButton from '@/shared/ui/client-button'
-import { Trash2, Undo2 } from 'lucide-react'
-import { useState } from 'react'
+import { Pipette, Trash2, Undo2 } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { ColorPicker, IColor, useColor } from 'react-color-palette'
 
-const palette = [
-  'var(--color-canva-red)',
-  'var(--color-canva-blue)',
-  'var(--color-canva-green)',
-  'var(--color-canva-yellow)',
-  'var(--color-canva-black)',
-]
+function resolveCssVar(input: string) {
+  const m = input.match(/^var\((--[^)]+)\)$/)
+  if (!m) return input
+  if (typeof window === 'undefined') return '#000000'
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim()
+  return raw || '#000000'
+}
 
 type Props = {
   color: string
@@ -30,10 +31,14 @@ export function CanvasToolbar({
   clearHistory,
 }: Props) {
   const [showPalette, setShowPalette] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
+  const resolved = useMemo(() => resolveCssVar(color), [color])
+  const [pickerColor, setPickerColor] = useColor(resolved)
 
-  const handleColorChange = (c: string) => {
+  const handlePickerChange = (next: IColor) => {
     if (isEraser) toggleEraser()
-    setColor(c)
+    setPickerColor(next)
+    setColor(next.hex)
   }
 
   return (
@@ -57,27 +62,25 @@ export function CanvasToolbar({
             items-center gap-2
           `}
         >
-          {palette.map((c) => {
-            const active = color === c
-            return (
-              <ClientButton
-                key={c}
-                type="button"
-                size="icon"
-                variant="roundedBasic"
-                aria-pressed={active}
-                isActive={active}
-                label={
-                  <span className="block w-5 h-5 rounded-full" style={{ backgroundColor: c }} />
-                }
-                onClick={() => {
-                  handleColorChange(c)
-                  setShowPalette(false)
-                }}
-              />
-            )
-          })}
+          <ClientButton
+            type="button"
+            size="icon"
+            variant="roundedBasic"
+            label={<Pipette size={18} />}
+            aria-pressed={showPicker}
+            isActive={showPicker}
+            onClick={() => setShowPicker((v) => !v)}
+          />
         </div>
+        {showPicker && (
+          <ColorPicker
+            color={pickerColor}
+            onChange={handlePickerChange}
+            hideAlpha
+            hideInput={['rgb', 'hsv']}
+            height={180}
+          />
+        )}
       </div>
 
       <div className="flex items-center gap-2">
