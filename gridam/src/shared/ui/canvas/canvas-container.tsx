@@ -7,7 +7,7 @@ import { useCanvasStore } from '@/store/canvas-store'
 import { memo } from 'react'
 
 function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
-  const { setImage } = useCanvasStore()
+  const setImage = useCanvasStore((s) => s.setImage)
   const {
     canvasRef,
     canvasImage,
