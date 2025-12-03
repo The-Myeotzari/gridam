@@ -23,7 +23,7 @@ export default async function MyPage() {
       <MyStats totalDays={stats.totalDays} totalDiaries={stats.totalDiaries} />
       <DiaryExportSection />
       <RecentDiaries diaries={recentDiaries} />
-      <MyPageButtons />
+      <MyPageButtons isOAuth={user.isOAuth}/>
     </div>
   )
 }
