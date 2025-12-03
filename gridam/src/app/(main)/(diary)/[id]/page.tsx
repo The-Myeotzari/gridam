@@ -5,10 +5,57 @@ import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
 import { getFormatDate } from '@/shared/utils/date'
+import { SITE_URL } from '@/shared/utils/url'
 import { ArrowLeft } from 'lucide-react'
+import { Metadata } from 'next'
 import Link from 'next/link'
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+type PageProps = { params: Promise<{ id: string }> }
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params
+  const url = new URL(`/${id}`, SITE_URL)
+  const { ok, data: diary } = await getDiaryAction(id)
+  if (!ok || !diary) {
+    return {
+      metadataBase: new URL(SITE_URL),
+      title: '일기를 찾을 수 없어요 | Gridam',
+      description: '요청한 일기를 불러오지 못했습니다.',
+      alternates: { canonical: url },
+      robots: { index: false, follow: false },
+    }
+  }
+
+  const formattedDate = getFormatDate(diary.date)
+  const title = `${formattedDate} 일기 수정 및 발행 | Gridam`
+  const description = `${formattedDate}에 작성한 그림 일기를 수정 및 발행합니다.`
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Gridam',
+      type: 'article',
+      locale: 'ko_KR',
+      images: diary.image_url
+        ? [
+            {
+              url: diary.image_url.startsWith('http')
+                ? diary.image_url
+                : new URL(diary.image_url, SITE_URL),
+            },
+          ]
+        : undefined,
+    },
+  }
+}
+
+export default async function Page({ params }: PageProps) {
   const { id } = await params
   const { ok, data: diary } = await getDiaryAction(id)
 
