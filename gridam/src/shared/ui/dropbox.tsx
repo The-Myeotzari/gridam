@@ -71,7 +71,7 @@ export default function DropBox({
           <button
             type="button"
             aria-label="메뉴 열기"
-            className="p-2 rounded-full hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30"
+            className="p-2 rounded-full hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/30 cursor-pointer"
           >
             <EllipsisVertical className="h-4 w-4 text-muted-foreground" />
           </button>
