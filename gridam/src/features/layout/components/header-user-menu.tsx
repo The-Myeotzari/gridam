@@ -1,6 +1,6 @@
 'use client'
 
-import { useLogout } from '@/features/mypage/api/queries/use-logout'
+import { useLogout } from '@/shared/hooks/use-logout'
 import DropBox from '@/shared/ui/dropbox'
 import { useRouter } from 'next/navigation'
 
@@ -10,14 +10,16 @@ interface HeaderUserMenuProps {
 
 export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
   const router = useRouter()
-  const { mutate: handleLogout } = useLogout()
+  const { logout } = useLogout()
 
   return (
     <div className="flex items-center gap-2 sm:gap-3">
       <DropBox
         id="header-user-menu"
         trigger={
-          <button className="text-xs sm:text-sm md:text-base text-primary">{userName}</button>
+          <button className="text-xs sm:text-sm md:text-base text-primary cursor-pointer">
+            {userName}
+          </button>
         }
         // TODO 상수화 처리 필요 - 추후 API 및 페이지 경로 전체 상수화 진행 필요
         items={[
@@ -27,7 +29,7 @@ export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
             key: 'logout',
             label: '로그아웃',
             tone: 'destructive',
-            onSelect: () => handleLogout(),
+            onSelect: () => logout(),
           },
         ]}
       />

@@ -7,9 +7,11 @@ import DropBox from "@/shared/ui/dropbox";
 import { useRouter } from "next/navigation";
 import { modalStore } from "@/store/modal-store";
 import { ModalBody, ModalFooter, ModalHeader } from "@/shared/ui/modal/modal";
-import Button from "@/shared/ui/button";
 import { MESSAGES } from "@/shared/constants/messages";
 import { deleteDiary } from "@/app/(main)/action";
+import ClientButton from "@/shared/ui/client-button";
+import { useTransition } from "react";
+import { toast } from "@/store/toast-store";
 
 interface DiaryCardProps {
   diary: RecentDiary
@@ -17,6 +19,7 @@ interface DiaryCardProps {
 
 export default function DiaryCard({ diary }: DiaryCardProps) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const handleEdit = (id: string) => {
     // 다이어리 수정 페이지 이동
@@ -24,9 +27,21 @@ export default function DiaryCard({ diary }: DiaryCardProps) {
   }
 
   const handleDelete = async (id: string) => {
-    const res = await deleteDiary(id)
-    if (res.ok) {
-      router.refresh()
+    try {
+      const res = await deleteDiary(id)
+
+      if (!res.ok) {
+        toast.error(res.message ?? MESSAGES.DIARY.ERROR.DELETE)
+        return
+      }
+
+      toast.success(res.message ?? MESSAGES.DIARY.SUCCESS.DELETE)
+
+      startTransition(() => {
+        router.refresh()
+      })
+    } catch {
+      toast.error(MESSAGES.DIARY.ERROR.DELETE)
     }
   }
 
@@ -44,26 +59,27 @@ export default function DiaryCard({ diary }: DiaryCardProps) {
       </ModalBody>
 
       <ModalFooter className="p-4 flex justify-end gap-2">
-        <span onClick={close}>
-          <Button label={MESSAGES.COMMON.CANCEL_BUTTON} />
-        </span>
-
-        <span
+        <ClientButton label={MESSAGES.COMMON.CANCEL_BUTTON} onClick={close} />
+        <ClientButton
+          label={MESSAGES.COMMON.DELETE_BUTTON}
+          className="bg-(--color-background) text-destructive border-destructive hover:bg-destructive hover:text-(--color-destructive-foreground)"
           onClick={async () => {
             close()
             await handleDelete(diary.id)
           }}
-        >
-          <Button
-            type="submit"
-            label={MESSAGES.COMMON.DELETE_BUTTON}
-            className="bg-(--color-background) text-destructive border-destructive hover:bg-destructive hover:text-(--color-destructive-foreground)"
-          />
-        </span>
+        />
       </ModalFooter>
     </>
   ))
-
+  
+  if (isPending) {
+    return (
+      <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
+        <div className="w-10 h-10 bg-muted rounded-full animate-pulse" />
+        {/* TODO: 로딩 스피너 적용 예정 */}
+      </div>
+    )
+  }
   return (
     <Card
       key={diary.id}

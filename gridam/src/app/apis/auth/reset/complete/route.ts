@@ -1,7 +1,7 @@
 import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { ResetCompleteSchema } from '@/shared/types/zod/apis/auth'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -9,15 +9,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { newPassword } = ResetCompleteSchema.parse(body)
 
-    const supabase = await getSupabaseServer()
-
-    const { data: userData, error: userErr } = await supabase.auth.getUser()
-    if (userErr || !userData?.user) {
-      return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-    }
-
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
     const { data, error } = await supabase.auth.updateUser({ password: newPassword })
     if (error) {
+      if (error.code === 'same_password') {
+        return fail(MESSAGES.AUTH.ERROR.PASSWORD_SAME_AS_OLD, error.status)
+      }
       return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, error.status)
     }
 

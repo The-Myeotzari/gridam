@@ -1,13 +1,14 @@
 import { getMemoDetailAction } from '@/features/memo/api/memo.action'
+import { Card, CardBody } from '@/shared/ui/card'
+import { getFormatDate } from '@/shared/utils/date'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
-import { notFound } from 'next/navigation'
-import { getFormatDate } from '@/shared/utils/get-format-date'
-import { Card, CardBody } from '@/shared/ui/card'
-import MemoEditTrigger from './memo-edit-trigger'
 import MemoDeleteTrigger from './memo-delete-trigger'
+import MemoEditTrigger from './memo-edit-trigger'
+import TagBadge from '@/shared/ui/tagbadge'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -38,6 +39,14 @@ export default async function Page({ params }: PageProps) {
           <div>
             <h1 className="text-3xl font-bold text-foreground">{memo.title}</h1>
             <p className="mt-2 text-sm text-muted-foreground">{formattedDate}</p>
+
+            {memo.tags && memo.tags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {memo.tags.map((tag) => (
+                  <TagBadge key={tag}>{tag}</TagBadge>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">

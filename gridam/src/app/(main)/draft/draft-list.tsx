@@ -4,8 +4,11 @@ import { deleteDraftAction } from '@/app/(main)/draft/actions'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
+import ClientButton from '@/shared/ui/client-button'
 import DropBox from '@/shared/ui/dropbox'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
+import { getFormatDateTime } from '@/shared/utils/date'
+import { modalStore } from '@/store/modal-store'
 import { toast } from '@/store/toast-store'
 import { useRouter } from 'next/navigation'
 import { useOptimistic, useState, useTransition } from 'react'
@@ -16,27 +19,58 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const [drafts, optimisticDelete] = useOptimistic<Diary[], string | null>(
+  const [drafts, updateOptimistic] = useOptimistic<Diary[], string | Diary[]>(
     initialDrafts,
-    (state, idToDelete) => state.filter((item) => item.id !== idToDelete)
+    (state, input) => {
+      if (typeof input === 'string') {
+        return state.filter((item) => item.id !== input)
+      }
+      return input
+    }
   )
 
-  const handleDelete = (id: string) => {
-    optimisticDelete(id)
-    setDeletingId(id)
+  const openDeleteModal = (id: string) => {
+    modalStore.open((close) => (
+      <>
+        <ModalHeader>정말 삭제할까요?</ModalHeader>
+        <ModalBody className="p-6 text-slate-600">
+          삭제 후에는 되돌릴 수 없습니다.
+          <br />
+          해당 임시 저장 글을 삭제하시겠습니까?
+        </ModalBody>
+        <ModalFooter className="p-4 flex justify-end gap-2">
+          <ClientButton label={MESSAGES.COMMON.CANCEL_BUTTON} onClick={close} />
 
-    startTransition(async () => {
-      const res = await deleteDraftAction(id)
+          <ClientButton
+            type="submit"
+            label={MESSAGES.COMMON.DELETE_BUTTON}
+            className="bg-(--color-background) text-destructive border-destructive 
+                       hover:bg-destructive hover:text-(--color-destructive-foreground)"
+            onClick={() => {
+              startTransition(async () => {
+                const previousDrafts = [...drafts]
 
-      if (res.ok) {
-        toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
-      } else {
-        optimisticDelete(null)
-        toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
-      }
+                updateOptimistic(id)
+                setDeletingId(id)
 
-      setDeletingId(null)
-    })
+                const res = await deleteDraftAction(id)
+
+                if (res.ok) {
+                  toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
+                } else {
+                  // 롤백
+                  updateOptimistic(previousDrafts)
+                  toast.error(MESSAGES.DIARY.ERROR.DRAFT_DELETE)
+                }
+
+                setDeletingId(null)
+                close()
+              })
+            }}
+          />
+        </ModalFooter>
+      </>
+    ))
   }
 
   const handleEdit = (id: string) => router.push(`/${id}`)
@@ -44,7 +78,6 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
   return (
     <div>
       {drafts.length === 0 && <p>임시 글이 없습니다.</p>}
-      {/* TODO: 카드 전용 컴포넌트로 분리하기 */}
       {drafts.map((diary) => {
         const isDeleting = isPending && deletingId === diary.id
         return (
@@ -63,7 +96,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
                 <DropBox
                   id={diary.id}
                   onEdit={() => handleEdit(diary.id)}
-                  onDelete={() => handleDelete(diary.id)}
+                  onDelete={() => openDeleteModal(diary.id)}
                 />
               }
               align="horizontal"
@@ -73,7 +106,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
               {diary.content}
             </CardBody>
             <CardFooter className="text-muted-foreground text-sm">
-              저장: {getFormatDate(diary.updated_at)}
+              저장: {getFormatDateTime(diary.updated_at)}
             </CardFooter>
           </Card>
         )

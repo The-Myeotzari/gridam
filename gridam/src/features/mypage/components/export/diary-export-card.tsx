@@ -6,36 +6,103 @@ import {
   CardBody,
   CardFooter,
 } from '@/shared/ui/card'
-import Button from '@/shared/ui/button'
 import { Label } from '@/shared/ui/label'
 import cn from '@/shared/utils/cn'
-import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileDown, RefreshCcw } from 'lucide-react'
+import ClientButton from '@/shared/ui/client-button'
 
-type DiaryExportCardProps = {
+interface DiaryExportCardProps {
   year: number
-  month: number // 1 ~ 12
+  month: number
   diaryCount: number
   isLoading?: boolean
+  isError?: boolean
   onPrevYear?: () => void
   onNextYear?: () => void
   onSelectMonth?: (month: number) => void
   onPreview?: () => void
+  onRetry?: () => void
+}
+
+interface ErrorBannerProps {
+  onRetry?: () => void
 }
 
 const MONTH_LABELS: string[] = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
+
+function renderFooterText(params: {
+  isLoading: boolean
+  isError: boolean
+  hasDiaries: boolean
+  year: number
+  month: number
+  diaryCount: number
+}) {
+  const { isLoading, isError, hasDiaries, year, month, diaryCount } = params
+
+  if (isLoading) {
+    return <>선택한 기간의 일기를 불러오는 중입니다…</>
+  }
+
+  if (isError) {
+    return <>월별 일기를 다시 불러온 뒤 PDF를 미리보기 할 수 있어요.</>
+  }
+
+  if (hasDiaries) {
+    return (
+      <>
+        {year}년 {month}월에 작성된 일기{' '}
+        <span className="font-medium">{diaryCount}개</span>가 PDF에 포함됩니다.
+      </>
+    )
+  }
+
+  return (
+    <>
+      {year}년 {month}월에는 작성된 일기가 없어요.
+    </>
+  )
+}
+
+function DiaryExportErrorBanner({ onRetry }: ErrorBannerProps) {
+
+  return (
+    <div className="mt-3 flex items-center justify-between rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
+      <p className="text-[11px] sm:text-xs text-destructive">
+        월별 일기를 불러오는 중 오류가 발생했어요. 다시 시도해 주세요.
+      </p>
+      {onRetry && (
+        <ClientButton
+          type="button"
+          label={
+            <div className="flex items-center gap-1">
+              <RefreshCcw className="w-3 h-3" />
+              <span className="text-[11px] sm:text-xs font-medium">다시 시도</span>
+            </div>
+          }
+          onClick={onRetry}
+          variant="basic"
+          className="h-7 px-2"
+        />
+      )}
+    </div>
+  )
+}
 
 export default function DiaryExportCard({
   year,
   month,
   diaryCount,
   isLoading = false,
+  isError = false,
   onPrevYear,
   onNextYear,
   onSelectMonth,
   onPreview,
+  onRetry,
 }: DiaryExportCardProps) {
   const hasDiaries = diaryCount > 0
-  const exportDisabled = !hasDiaries || isLoading
+  const exportDisabled = !hasDiaries || isLoading || isError
 
   return (
     <Card className="w-full">
@@ -95,27 +162,21 @@ export default function DiaryExportCard({
                 const isSelected = value === month
 
                 return (
-                  <span
+                  <ClientButton
                     key={value}
                     onClick={() => onSelectMonth?.(value)}
+                    type="button"
                     className={cn(
                       'h-8 sm:h-9 rounded-md border text-xs sm:text-sm transition-colors',
+                      isSelected
+                        ? 'border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary'
+                        : 'border-border bg-background text-foreground hover:bg-muted',
+                      !onSelectMonth && 'cursor-default hover:bg-background',
                     )}
-                  >
-                    <Button
-                      type="button"
-                      className={cn(
-                        'w-full',
-                        isSelected
-                          ? 'border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary' 
-                          : 'border-border bg-background text-foreground hover:bg-muted',
-                        !onSelectMonth && 'cursor-default hover:bg-background',
-                      )}
-                      disabled={!onSelectMonth}
-                      aria-pressed={isSelected}
-                      label={label}
-                    />
-                  </span>
+                    disabled={!onSelectMonth}
+                    aria-pressed={isSelected}
+                    label={label}
+                  />
                 )
               })}
             </div>
@@ -123,31 +184,23 @@ export default function DiaryExportCard({
             <p className="mt-4 text-[11px] sm:text-xs text-muted-foreground">
               연도를 바꾸고, 내보낼 달을 선택해 주세요.
             </p>
+
+            {isError && <DiaryExportErrorBanner onRetry={onRetry} />}
           </div>
         </section>
       </CardBody>
 
       <CardFooter className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="w-full text-[11px] sm:text-xs text-muted-foreground">
-          {hasDiaries ? (
-            <>
-              {year}년 {month}월에 작성된 일기{' '}
-              <span className="font-medium">{diaryCount}개</span>가 PDF에 포함됩니다.
-            </>
-          ) : (
-            <>
-              {year}년 {month}월에는 작성된 일기가 없어요.
-            </>
-          )}
+          {renderFooterText({ isLoading, isError, hasDiaries, year, month, diaryCount })}
         </p>
-        <span onClick={onPreview} className={exportDisabled ? 'pointer-events-none opacity-50' : ''}>
-          <Button
-            type="button"
-            className="h-9 sm:h-10 w-full sm:w-auto px-4"
-            disabled={exportDisabled}
-            label={isLoading ? '불러오는 중…' : 'PDF 미리보기'}
-          />
-        </span>
+        <ClientButton
+          type="button"
+          className={`h-9 sm:h-10 w-full sm:w-auto px-4 ${exportDisabled && 'pointer-events-none opacity-50'}`}
+          disabled={exportDisabled}
+          label={isLoading ? '불러오는 중…' : 'PDF 미리보기'}
+          onClick={onPreview}
+        />
       </CardFooter>
     </Card>
   )

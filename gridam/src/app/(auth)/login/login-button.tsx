@@ -36,7 +36,7 @@ export default function SocialLoginButtons() {
         type="button"
         onClick={handleGoogle}
         className="w-full h-12 rounded-full border border-[#F2F2F2] bg-[#F2F2F2]
-               flex items-center justify-center gap-3"
+               flex items-center justify-center gap-3 cursor-pointer"
       >
         <div className="relative" style={{ width: 190, height: 40 }}>
           <Image
@@ -53,7 +53,7 @@ export default function SocialLoginButtons() {
         type="button"
         onClick={handleKakao}
         className="w-full h-12 rounded-full bg-[#FEE500]
-               flex items-center justify-center px-4"
+               flex items-center justify-center px-4 cursor-pointer"
       >
         <div className="relative" style={{ width: 190, height: 48 }}>
           <Image

@@ -1,14 +1,13 @@
 'use client'
 
-import { useChangePassword } from '@/features/mypage/api/queries/use-change-password'
+import { changePasswordAction } from '@/features/mypage/api/change-action' 
 import { MESSAGES } from '@/shared/constants/messages'
 import { ChangePasswordFormSchema } from '@/shared/types/zod/apis/auth'
-import Button from '@/shared/ui/button'
+import ClientButton from '@/shared/ui/client-button'
 import Input from '@/shared/ui/input'
 import Label from '@/shared/ui/label'
 import { ModalBody, ModalHeader } from '@/shared/ui/modal/modal'
 import { toast } from '@/store/toast-store'
-import { AxiosError } from 'axios'
 import { X } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -23,30 +22,18 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
     reset,
   } = useForm<ChangePasswordForm>()
 
-  // TODO: 비밀번호 변경 API 연동, 유효성 검사
-  const { mutateAsync, isPending } = useChangePassword()
-
   const onSubmit = async (values: ChangePasswordForm) => {
-    try {
-      const { password, newPassword, confirmPassword } = values
-      const res = await mutateAsync({ password, newPassword, confirmPassword })
+    const res = await changePasswordAction(values)
 
-      if (!res.ok) {
-        toast.error(res.message ?? MESSAGES.AUTH.ERROR.PASSWORD_RESET)
-        return
-      }
-
-      toast.success(res.message ?? MESSAGES.AUTH.SUCCESS.PASSWORD_RESET)
-      reset()
-      close()
-    } catch (err) {
-      const message =
-        err instanceof AxiosError ? err.response?.data.message : MESSAGES.AUTH.ERROR.PASSWORD_RESET
-      toast.error(message)
+    if (!res.ok) {
+      toast.error(res.message ?? MESSAGES.AUTH.ERROR.PASSWORD_RESET)
+      return
     }
-  }
 
-  const loading = isSubmitting || isPending
+    toast.success(res.data.message ?? MESSAGES.AUTH.SUCCESS.PASSWORD_RESET)
+    reset()
+    close()
+  }
 
   return (
     <>
@@ -92,15 +79,13 @@ export default function ChangePasswordModal({ close }: { close: () => void }) {
             disabled={isSubmitting}
             {...register('confirmPassword')}
           />
-          <span className={loading ? 'pointer-events-none opacity-50' : ''}>
-            <Button
-              type="submit"
-              variant="gradient"
-              label={loading ? '변경 중...' : '변경하기'}
-              size="lg"
-              className="w-full"
-            />
-          </span>
+          <ClientButton
+            type="submit"
+            variant="gradient"
+            label={isSubmitting ? '변경 중...' : '변경하기'}
+            size="lg"
+            className={`w-full ${isSubmitting && 'pointer-events-none opacity-50'}`}
+          />
         </form>
       </ModalBody>
     </>

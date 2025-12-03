@@ -1,0 +1,57 @@
+'use client'
+
+import { useCanvasDrawing } from '@/shared/hooks/use-canvas-drawing'
+import { CanvasToolbar } from '@/shared/ui/canvas/canvas-toolbar'
+import { CanvasView } from '@/shared/ui/canvas/canvas-view'
+import { useCanvasStore } from '@/store/canvas-store'
+import { memo } from 'react'
+
+function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
+  const { setImage } = useCanvasStore()
+  const {
+    canvasRef,
+    canvasImage,
+
+    color,
+    setColor,
+    isEraser,
+    toggleEraser,
+    handleUndo,
+    clearHistory,
+
+    onPointerDown,
+    onPointerMove,
+    onPointerUpOrLeave,
+  } = useCanvasDrawing(initialImage)
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    onPointerUpOrLeave(e)
+
+    if (canvasRef.current) {
+      setImage(canvasImage)
+    }
+  }
+
+  return (
+    <section className="flex flex-col items-center gap-4 p-5 border-b">
+      <CanvasToolbar
+        color={color}
+        setColor={setColor}
+        isEraser={isEraser}
+        toggleEraser={toggleEraser}
+        handleUndo={handleUndo}
+        clearHistory={clearHistory}
+      />
+
+      <CanvasView
+        canvasRef={canvasRef}
+        height={45}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUpOrLeave={handlePointerUp}
+      />
+    </section>
+  )
+}
+
+export default memo(CanvasContainer)

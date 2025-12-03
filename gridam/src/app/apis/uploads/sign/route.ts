@@ -1,6 +1,6 @@
 import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -9,12 +9,10 @@ export async function GET(req: NextRequest) {
     const path = searchParams.get('path')
     if (!path) return fail('path 파라미터가 필요합니다.', 400)
 
-    const supabase = await getSupabaseServer()
-    const { data: user } = await supabase.auth.getUser()
-    if (!user?.user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-
+    const { supabase, user } = await getAuthenticatedUser()
+    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
     // path 검증 (own-folder)
-    const userId = user.user.id
+    const userId = user.id
     if (!path.startsWith(`${userId}/`)) return fail('own-folder 정책 위반', 403)
 
     const { data, error } = await supabase.storage

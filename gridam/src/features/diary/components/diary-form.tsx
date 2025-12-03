@@ -1,18 +1,16 @@
 'use client'
 
-import { updateDiaryAction } from '@/app/(main)/(diary)/[id]/action'
-import { saveDiaryAction } from '@/app/(main)/(diary)/write/action'
-import CanvasContainer from '@/features/canvas/canvas-container'
 import DiaryFormButtons, {
   DIARY_STATUS,
-  DiaryStatus,
+  type DiaryStatus,
 } from '@/features/diary/components/diary-form-buttons'
-import { Diary } from '@/features/feed/feed.type'
+import { useDiaryActions } from '@/features/diary/hook/use-diary-action'
+import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
+import { useCanvasStore } from '@/store/canvas-store'
 import { toast } from '@/store/toast-store'
-import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 
 type DiaryFormProps = {
   dateValue: string
@@ -22,154 +20,67 @@ type DiaryFormProps = {
 }
 
 export default function DiaryForm({ dateValue, weather, isEdit = false, diary }: DiaryFormProps) {
-  const router = useRouter()
-
   const [text, setText] = useState(diary?.content ?? '')
-  const [canvas, setCanvas] = useState<string | null>(diary?.image_url ?? null)
+  const canvas = useCanvasStore.getState().image
 
-  const [isPending, startTransition] = useTransition()
+  const { run, isPending } = useDiaryActions()
 
   const status: DiaryStatus = (() => {
     if (!isEdit) return DIARY_STATUS.NEW
-    if (isEdit && diary?.status === DIARY_STATUS.DRAFT) return DIARY_STATUS.DRAFT
+    if (diary?.status === DIARY_STATUS.DRAFT) return DIARY_STATUS.DRAFT
     return DIARY_STATUS.PUBLISHED
   })()
 
-  // TODO: 개선 필요
+  const commonParams = {
+    diary,
+    text,
+    canvas,
+    dateValue,
+    weather,
+  }
+
+  const isInvalid = () => {
+    if ((!text || text.trim().length === 0) && !canvas) {
+      toast.error(MESSAGES.DIARY.ERROR.INVALID_ALL)
+      return true
+    }
+    if (!text || text.trim().length === 0) {
+      toast.error(MESSAGES.DIARY.ERROR.INVALID_TEXT)
+      return true
+    }
+    if (!canvas) {
+      toast.error(MESSAGES.DIARY.ERROR.INVALID_CANVAS)
+      return true
+    }
+    return false
+  }
+
   const handleSave = () => {
-    startTransition(async () => {
-      try {
-        const isDraft = diary?.status === DIARY_STATUS.DRAFT
-
-        let res
-
-        if (isDraft) {
-          if (!diary?.id) {
-            toast.error(MESSAGES.DIARY.ERROR.DRAFT_SAVE)
-            return
-          }
-          res = await updateDiaryAction({
-            id: diary.id,
-            content: text,
-            imageUrl: canvas ?? diary.image_url,
-            oldImagePath: diary.image_url,
-            isImageChanged: true,
-            type: 'publish',
-          })
-
-          if (res.ok) {
-            toast.success(MESSAGES.DIARY.SUCCESS.DRAFT_SAVE)
-            router.push('/')
-          } else {
-            toast.error(MESSAGES.DIARY.ERROR.DRAFT_SAVE)
-          }
-          return
-        }
-
-        res = await saveDiaryAction({
-          date: dateValue,
-          content: text,
-          imageUrl: canvas,
-          emoji: weather,
-          meta: {
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-          type: 'diaries',
-        })
-        if (res.ok) {
-          toast.success(MESSAGES.DIARY.SUCCESS.CREATE)
-          router.push('/')
-        } else {
-          toast.error(MESSAGES.DIARY.ERROR.CREATE)
-        }
-      } catch {
-        toast.error(MESSAGES.DIARY.ERROR.CREATE)
-      }
-    })
+    if (isInvalid()) return
+    if (diary?.status === DIARY_STATUS.DRAFT) {
+      run({ type: 'publishDraft', ...commonParams })
+    } else {
+      run({ type: 'create', ...commonParams })
+    }
   }
 
   const handleDraftSave = () => {
-    startTransition(async () => {
-      try {
-        const res = await saveDiaryAction({
-          date: dateValue,
-          content: text,
-          imageUrl: canvas,
-          emoji: weather,
-          meta: {
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-          type: 'drafts',
-        })
-
-        if (res.ok) {
-          toast.success(MESSAGES.DIARY.SUCCESS.DRAFT_CREATE)
-          router.push('/draft')
-        } else {
-          toast.error(MESSAGES.DIARY.ERROR.DRAFT_CREATE)
-        }
-      } catch (e) {
-        toast.error(MESSAGES.DIARY.ERROR.DRAFT_CREATE)
-      }
-    })
+    if (isInvalid()) return
+    run({ type: 'draftCreate', ...commonParams })
   }
 
   const handleUpdate = () => {
-    if (!diary?.id) return
-
-    startTransition(async () => {
-      try {
-        const res = await updateDiaryAction({
-          id: diary.id,
-          content: text,
-          imageUrl: canvas ?? diary.image_url,
-          oldImagePath: diary.image_url,
-          isImageChanged: true,
-          type: 'diary',
-        })
-
-        if (res.ok) {
-          toast.success(MESSAGES.DIARY.SUCCESS.UPDATE)
-          router.push('/')
-        } else {
-          toast.error(MESSAGES.DIARY.ERROR.UPDATE)
-        }
-      } catch (e) {
-        toast.error(MESSAGES.DIARY.ERROR.UPDATE)
-      }
-    })
+    if (isInvalid()) return
+    run({ type: 'update', ...commonParams })
   }
 
   const handleDraftUpdate = () => {
-    if (!diary?.id) return
-
-    startTransition(async () => {
-      try {
-        const res = await updateDiaryAction({
-          id: diary.id,
-          content: text,
-          imageUrl: canvas ?? diary.image_url,
-          oldImagePath: diary.image_url,
-          isImageChanged: true,
-          type: 'draft',
-        })
-
-        if (res.ok) {
-          toast.success(MESSAGES.DIARY.SUCCESS.DRAFT_UPDATE)
-          router.push('/draft')
-        } else {
-          toast.error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE)
-        }
-      } catch (e) {
-        toast.error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE)
-      }
-    })
+    if (isInvalid()) return
+    run({ type: 'draftUpdate', ...commonParams })
   }
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
-      <CanvasContainer initialImage={diary?.image_url} onChange={setCanvas} />
-
       <section className="p-5">
         <Textarea value={text} onChange={(v) => setText(v)} />
       </section>

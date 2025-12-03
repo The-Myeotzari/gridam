@@ -1,34 +1,63 @@
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
-import WeatherIcon from '@/features/weather/weather-icon'
-import { fetchWeather } from '@/features/weather/weather.api'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import WeatherIcon from '@/features/diary/components/weather-icon'
+import CanvasContainer from '@/shared/ui/canvas/canvas-container'
+import { getFormatDate, getTodayISODate } from '@/shared/utils/date'
+import { SITE_URL } from '@/shared/utils/url'
+import { Metadata } from 'next'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
 const DEFAULT_COORDS = { lat: 37.5665, lon: 126.978 }
 
-// TODO: 방식 변경 필요
 export function getCoordsFromCookies(cookieStore: ReadonlyRequestCookies) {
   const lat = Number(cookieStore.get('lat')?.value)
   const lon = Number(cookieStore.get('lon')?.value)
   return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : DEFAULT_COORDS
 }
 
+export async function generateMetadata(): Promise<Metadata> {
+  const dateValue = getTodayISODate()
+  const formattedDate = getFormatDate(dateValue)
+  const title = `${formattedDate} 일기 쓰기 | Gridam`
+  const description = `${formattedDate}의 그림 일기를 작성해보세요.`
+  const url = new URL('/write', SITE_URL)
+  return {
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+    keywords: ['그리담', 'Gridam', '그림일기', '일기쓰기', '오늘일기'],
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Gridam',
+      type: 'website',
+      locale: 'ko_KR',
+    },
+  }
+}
+
 export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
-  const weather = await fetchWeather(coords.lat, coords.lon)
 
-  const dateValue = new Date().toISOString().slice(0, 10)
+  const weatherRes = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/weather?lat=${coords.lat}&lon=${coords.lon}`,
+    { method: 'GET', cache: 'no-store' }
+  )
+  const weather = await weatherRes.json()
+
+  const dateValue = getTodayISODate()
   const formattedDate = getFormatDate(dateValue)
 
   return (
     <DiaryLayout
       date={formattedDate}
       weatherIcon={<WeatherIcon src={weather.iconSrc} alt={weather.description} size={36} />}
-    >
-      <DiaryForm dateValue={dateValue} weather={weather.iconSrc} />
-    </DiaryLayout>
+      canvasSection={<CanvasContainer />}
+      formSection={<DiaryForm dateValue={dateValue} weather={weather.iconSrc} />}
+    />
   )
 }
