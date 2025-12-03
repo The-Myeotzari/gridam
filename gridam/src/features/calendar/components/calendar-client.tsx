@@ -20,7 +20,7 @@ interface CalendarClientProps {
 export default function CalendarClient({ initialDate, initialData }: CalendarClientProps) {
   const today = new Date()
   const [selectedDate, setSelectedDate] = useState(initialDate)
-  const [diary, setDiary] = useState<Diary | null>(initialData.diary ?? null)
+  const [diary, setDiary] = useState<Diary>(initialData.diary ?? ({} as Diary))
   const [memos, setMemos] = useState<Memo[]>(initialData.memos ?? [])
   const [isPending, startTransition] = useTransition()
   //날짜마다 메모나 일기가 있는지 표시
@@ -51,7 +51,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
     startTransition(async () => {
       const res = await fetchCalendar(newDate)
       if (res.ok) {
-        setDiary(res.data.diary ?? null)
+        setDiary(res.data.diary ?? ({} as Diary))
         setMemos(res.data.memos ?? [])
         if (res.data.monthlyData) {
           setMonthlyData(res.data.monthlyData)
@@ -72,7 +72,9 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
           currentView={view}
           onViewChange={setView}
         />
-        <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
+        <div className="overflow-hidden">
+          <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
+        </div>
       </Card>
       <Card className="flex flex-col md:flex-row p-6 gap-7 max-h-[640]">
         <div className="mb-4 flex flex-col flex-1 gap h-full">
