@@ -57,3 +57,15 @@ export function getDateParts(params: DatePartsParams = {}, baseDate: Date = new 
     day: params.day ?? baseDate.getDate(),
   }
 }
+
+/**
+ * formatDotDateKR
+ * - created_at 같은 날짜 문자열을 "YYYY. M. D." 형태(ko-KR 기본)로 포맷합니다.
+ * - ko-KR toLocaleDateString 결과에 붙는 공백을 제거(trim)합니다.
+ *
+ * @param dateString Date 생성이 가능한 날짜 문자열
+ * @returns 예) "2025. 12. 3."
+ */
+export function formatDotDateKR(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('ko-KR').trim()
+}
