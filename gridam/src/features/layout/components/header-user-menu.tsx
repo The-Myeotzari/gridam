@@ -17,7 +17,9 @@ export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
       <DropBox
         id="header-user-menu"
         trigger={
-          <button className="text-xs sm:text-sm md:text-base text-primary">{userName}</button>
+          <button className="text-xs sm:text-sm md:text-base text-primary cursor-pointer">
+            {userName}
+          </button>
         }
         // TODO 상수화 처리 필요 - 추후 API 및 페이지 경로 전체 상수화 진행 필요
         items={[
