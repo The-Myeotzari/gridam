@@ -1,6 +1,6 @@
 import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 
 const BUCKET = 'diary-images'
@@ -9,9 +9,7 @@ const MAX = 5 * 1024 * 1024
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await getSupabaseServer()
-    const { data: userRes } = await supabase.auth.getUser()
-    const user = userRes?.user
+    const {supabase, user } = await getAuthenticatedUser()
     if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
 
     const form = await req.formData()

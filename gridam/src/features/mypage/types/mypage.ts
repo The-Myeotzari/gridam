@@ -1,24 +1,3 @@
-export interface UserStats {
-  user: {
-    id: string
-    email: string
-    nickname: string
-    created_at: string
-  }
-  stats: {
-    totalDiaries: number
-    totalDays: number
-  }
-  recentDiaries: {
-    id: string
-    date: string
-    weekday: string
-    time: string
-    content: string
-    weatherEmoji: string
-  }[]
-}
-
 export interface RecentDiary {
   id: string
   date: string
@@ -26,11 +5,6 @@ export interface RecentDiary {
   time: string
   content: string
   emoji: string
-}
-
-export interface ChangePasswordState {
-  ok: boolean,
-  message?: string
 }
 
 export interface Diary{
@@ -46,3 +20,13 @@ export interface Diary{
   updated_at: string
   user_id: string
 }
+
+export interface MonthlyDiaries {
+  year: number
+  month: number
+  diaries: Diary[]
+}
+
+export type ApiResponse =
+  | { ok: true; data: { message: string } }
+  | { ok: false; message: string }

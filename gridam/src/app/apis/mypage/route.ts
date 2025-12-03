@@ -47,12 +47,15 @@ export async function GET(_req: NextRequest) {
     }
   })
 
+  const providers = user.app_metadata.providers ?? []
+
   return ok({
       user: {
         id: user.id,
         email: user.email ?? '',
         nickname: user.user_metadata.nickname ?? user.user_metadata.name ?? '',
         created_at: new Date(user.created_at).toISOString().slice(0, 10),
+        isOAuth: !providers.includes('email')
       },
       stats: {
         totalDiaries,

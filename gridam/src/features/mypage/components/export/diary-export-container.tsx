@@ -5,34 +5,33 @@ import DiaryExportCard from '@/features/mypage/components/export/diary-export-ca
 import { useMonthlyDiaries } from '@/features/mypage/api/queries/use-monthly-diaries'
 import { modalStore } from '@/store/modal-store'
 import { DiaryExportPreviewModal } from '@/features/mypage/components/export/diary-export-preview-modal'
-import { Diary } from '@/features/mypage/types/mypage'
+import { Diary, MonthlyDiaries } from '@/features/mypage/types/mypage'
 
 type MyPageDiaryExportContainerProps = {
   initialYear: number
   initialMonth: number
-  initialMonthly: {
-    year: number
-    month: number
-    diaries: Diary[]
-  }
+  initialMonthly: MonthlyDiaries | null
+  initialError: boolean
 }
 
 export default function DiaryExportContainer({
   initialYear,
   initialMonth,
   initialMonthly,
+  initialError,
 }: MyPageDiaryExportContainerProps) {
   const [year, setYear] = useState(initialYear)
   const [month, setMonth] = useState(initialMonth)
-  const { data, isLoading } = useMonthlyDiaries(year, month, {
+  const { data, isLoading, isError, refetch } = useMonthlyDiaries(year, month, {
     initialData:
       year === initialYear && month === initialMonth
-        ? initialMonthly
+        ? initialMonthly ? initialMonthly : undefined
         : undefined,
   })
 
-  const diaries = data?.diaries ?? []
-  const diaryCount = diaries.length
+  const diaries: Diary[] = data?.diaries ?? []
+  const diaryCount: number = diaries.length
+  const hasError: boolean = initialError || isError
 
   const handlePrevYear = () => {
     const nextYear = year - 1
@@ -49,7 +48,7 @@ export default function DiaryExportContainer({
   }
 
   const handleOpenPreview = () => {
-    if (!data || diaryCount === 0) return
+    if (isError || !data || diaryCount === 0) return
 
     modalStore.open((close) => (
       <DiaryExportPreviewModal
@@ -67,10 +66,12 @@ export default function DiaryExportContainer({
       month={month}
       diaryCount={diaryCount}
       isLoading={isLoading}
+      isError={hasError}
       onPrevYear={handlePrevYear}
       onNextYear={handleNextYear}
       onSelectMonth={handleSelectMonth}
       onPreview={handleOpenPreview}
+      onRetry={refetch}
     />
   )
 }

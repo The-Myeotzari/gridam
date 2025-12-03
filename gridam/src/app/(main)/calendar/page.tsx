@@ -23,8 +23,8 @@ export default async function Page() {
   return (
     <div>
       <div className="mb-8 text-center animate-fade-in">
-        <h1 className="font-handwritten text-4xl mb-2 text-navy-gray">캘린더</h1>
-        <p className="font-handwritten text-xl text-muted-foreground">날짜별 그림 일기</p>
+        <h1 className="font-handwritten text-4xl mb-2 text-navy-gray font-bold">캘린더</h1>
+        <p className="font-handwritten text-xl text-muted-foreground">일기와 메모를 한눈에</p>
       </div>
       <CalendarClient initialDate={initialDate} initialData={initialData}></CalendarClient>
     </div>

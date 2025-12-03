@@ -1,10 +1,10 @@
-import { PDFDocument, rgb } from 'pdf-lib'
 import { Diary } from '@/features/mypage/types/mypage'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import { getFormatDate } from '@/shared/utils/date'
 import fontkit from '@pdf-lib/fontkit'
 import { readFile } from 'fs/promises'
-import sharp from 'sharp'
 import path from 'path'
+import { PDFDocument, rgb } from 'pdf-lib'
+import sharp from 'sharp'
 
 export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
   const { diaries } = params
@@ -14,7 +14,7 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
   const fontBytes = await fetch(
     'https://oddatelier.net/wp-content/uploads/2025/09/ZEN-SERIF-Regular.otf'
   ).then((res) => res.arrayBuffer())
-  
+
   const font = await pdfDoc.embedFont(fontBytes)
 
   // A4 사이즈
@@ -42,7 +42,7 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
 
     if (weatherIcon) {
       page.drawImage(weatherIcon, {
-        x: width - (marginX * 2),
+        x: width - marginX * 2,
         y: height - marginTop - 15,
         width: 40,
         height: 40,
@@ -99,7 +99,6 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
           borderColor: rgb(0.93, 0.9, 0.87),
           borderWidth: 1,
         })
-
       } catch (e) {
         // 이미지 깨져도 PDF 전체가 망가지진 않도록 무시
         console.error('embed image error', e)

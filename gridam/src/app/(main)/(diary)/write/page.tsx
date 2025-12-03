@@ -1,7 +1,8 @@
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/diary/components/weather-icon'
-import { getFormatDate } from '@/shared/utils/get-format-date'
+import CanvasContainer from '@/shared/ui/canvas/canvas-container'
+import { getFormatDate, getTodayISODate } from '@/shared/utils/date'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
@@ -23,15 +24,15 @@ export default async function Page() {
   )
   const weather = await weatherRes.json()
 
-  const dateValue = new Date().toISOString().slice(0, 10)
+  const dateValue = getTodayISODate()
   const formattedDate = getFormatDate(dateValue)
 
   return (
     <DiaryLayout
       date={formattedDate}
       weatherIcon={<WeatherIcon src={weather.iconSrc} alt={weather.description} size={36} />}
-    >
-      <DiaryForm dateValue={dateValue} weather={weather.iconSrc} />
-    </DiaryLayout>
+      canvasSection={<CanvasContainer />}
+      formSection={<DiaryForm dateValue={dateValue} weather={weather.iconSrc} />}
+    />
   )
 }

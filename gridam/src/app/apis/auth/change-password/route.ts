@@ -1,7 +1,7 @@
 import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { ChangePasswordFormSchema } from '@/shared/types/zod/apis/auth'
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest } from 'next/server'
 import { ZodError } from 'zod'
 
@@ -10,17 +10,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { password, newPassword } = ChangePasswordFormSchema.parse(body)
 
-    const supabase = await getSupabaseServer()
+    const { supabase, user } = await getAuthenticatedUser()
 
-    // 1) 현재 로그인 유저 가져오기
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
-
-    if (userError || !user) {
-      return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
-    }
+    if (!user) return fail(MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER, 401)
 
     if (!user.email || user.app_metadata.provider !== 'email') {
       return fail('이메일 계정이 아닙니다.', 400)
@@ -49,7 +41,7 @@ export async function POST(req: NextRequest) {
       return fail(MESSAGES.AUTH.ERROR.PASSWORD_RESET, 500)
     }
 
-    return ok(MESSAGES.AUTH.SUCCESS.PASSWORD_RESET, 200)
+    return ok({ message: MESSAGES.AUTH.SUCCESS.PASSWORD_RESET }, 200)
   } catch (err) {
     if (err instanceof ZodError) {
       const firstIssue = err.issues[0]

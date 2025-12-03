@@ -1,18 +1,22 @@
 'use client'
 
-import { useLogout } from '@/features/mypage/api/queries/use-logout'
 import ChangePasswordModal from '@/features/mypage/components/change-password/change-password-modal'
-import Button from '@/shared/ui/button'
+import { useLogout } from '@/shared/hooks/use-logout'
+import ClientButton from '@/shared/ui/client-button'
 import { modalStore } from '@/store/modal-store'
 import { Key, LogOut } from 'lucide-react'
 
-export default function MyPageButtons() {
-  const { mutate: handleLogout, isPending } = useLogout()
+interface MyPageButtonsProps {
+  isOAuth: boolean
+}
+
+export default function MyPageButtons({ isOAuth }: MyPageButtonsProps) {
+  const { logout, isLoading } = useLogout()
 
   return (
     <section className="flex gap-2">
-      <span onClick={() => modalStore.open((close) => <ChangePasswordModal close={close} />)}>
-        <Button
+      {!isOAuth &&
+        <ClientButton
           label={
             <>
               <Key />
@@ -21,21 +25,21 @@ export default function MyPageButtons() {
           }
           className="flex-1"
           variant="roundedBasic"
+          onClick={() => modalStore.open((close) => <ChangePasswordModal close={close} />)}
         />
-      </span>
-      <span onClick={() => handleLogout()} className={isPending ? 'pointer-events-none opacity-50' : ''}>
-        <Button
-          type="button"
-          label={
-            <>
-              <LogOut />
-              로그아웃
-            </>
-          }
-          className="flex-1"
-          variant="roundedRed"
-        />
-      </span>
+      }
+      <ClientButton
+        type="button"
+        label={
+          <>
+            <LogOut />
+            로그아웃
+          </>
+        }
+        className={`flex-1 ${isLoading && 'pointer-events-none opacity-50'}`}
+        variant="roundedRed"
+        onClick={() => logout()}
+      />
     </section>
   )
 }

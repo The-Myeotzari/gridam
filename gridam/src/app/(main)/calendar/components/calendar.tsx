@@ -30,6 +30,7 @@ export default function Calendar({
 }: CalendarProps) {
   console.log('현재 선택된 날짜 (Props):', selectedDate)
 
+  // 달력 셀
   const cells = useMemo(() => {
     return buildCalendar(currentView.year, currentView.month)
   }, [currentView.year, currentView.month])
@@ -59,34 +60,33 @@ export default function Calendar({
   }
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4 border-b-2 pb-7 border-accent-foreground lg:border-none lg:pb-0">
       <div className="flex justify-between min-h-auto items-center">
         <CircleChevronLeft
-          color="#2c2e44"
-          strokeWidth={1.25}
-          className="h-8 w-8 hover:cursor-pointer hover:bg-accent rounded-xl"
+          strokeWidth={1}
+          className="h-8 w-8 rounded-xl stroke-muted-foreground/70 hover:cursor-pointer hover:bg-accent hover:stroke-muted-foreground"
           onClick={handlePrevMonth}
         />
 
-        <div className="text-2xl">
+        <div className="text-2xl font-bold">
           {currentView.year}년 {currentView.month + 1}월
         </div>
 
         <CircleChevronRight
           color="#2c2e44"
           strokeWidth={1.25}
-          className="h-8 w-8 hover:cursor-pointer hover:bg-accent rounded-xl"
+          className="h-8 w-8 rounded-xl stroke-muted-foreground/70 hover:cursor-pointer hover:bg-accent hover:stroke-muted-foreground"
           onClick={handleNextMonth}
         />
       </div>
 
-      <div className="flex justify-around text-center min-h-8 items-center">
+      <div className="flex justify-around text-center items-center  text-muted-foreground font-bold">
         {weekday.map((day) => {
           return <div key={day}>{day}</div>
         })}
       </div>
 
-      <div className="grid grid-cols-7  text-center ">
+      <div className="grid grid-cols-7 text-center ">
         {cells.map((cell, idx) => {
           const isSelected =
             selectedDate &&
@@ -110,25 +110,30 @@ export default function Calendar({
                 'aspect-square flex justify-start items-start',
                 `p-2 ${cell.inCurrentMonth ? '' : 'text-muted-foreground/40'}`,
                 'hover:cursor-pointer',
-                isSelected && 'bg-accent rounded-sm '
+                isSelected && 'bg-accent rounded-sm text-amber-900 font-bold'
               )}
             >
-              <div className="flex flex-col items-start w-full h-full">
+              <div className="flex flex-col items-center w-full h-full">
                 <div>{cell.day}</div>
-                {hasDiary && (
-                  <span className="bg-primary w-full px-1 mt-1 rounded-full text-sm text-white">
-                    일기
-                  </span>
-                )}
-                {hasMemo && (
-                  <span className="bg-pink-400 w-full px-1 mt-0.5 rounded-full text-sm text-white">
-                    메모
-                  </span>
-                )}
+                <div className="flex items-center gap-0.5 h-full">
+                  {hasDiary && <div className="w-2 h-2 rounded-full bg-blue-400" />}
+
+                  {hasMemo && <div className="w-2 h-2 rounded-full bg-pink-400" />}
+                </div>
               </div>
             </div>
           )
         })}
+      </div>
+      <div className="flex justify-center gap-4 mt-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-blue-400" />
+          <span className="font-handwritten">일기</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-pink-400" />
+          <span className="font-handwritten ">메모</span>
+        </div>
       </div>
     </div>
   )
