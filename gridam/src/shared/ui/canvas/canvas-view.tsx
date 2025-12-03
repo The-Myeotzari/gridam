@@ -22,7 +22,7 @@ export function CanvasView({
 }: Props) {
   const handleTouchMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     e.preventDefault()
-    onPointerMove(e as any)
+    onPointerMove(e)
   }
 
   return (

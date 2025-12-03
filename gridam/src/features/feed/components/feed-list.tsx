@@ -6,6 +6,7 @@ import FeedCardSkeleton from '@/features/feed/components/feed-card-skeleton'
 import FeedListError from '@/features/feed/components/feed-list-error'
 import type { Diary, FetchDiaryResponseType } from '@/features/feed/feed.type'
 import { useIntersection } from '@/features/feed/hooks/use-intersection'
+import { useDiaryStatusStore } from '@/features/feed/store/diary-status-store'
 import { MESSAGES } from '@/shared/constants/messages'
 import ClientButton from '@/shared/ui/client-button'
 import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
@@ -103,6 +104,7 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
                       items: page.items.filter((d) => d.id !== id),
                     }))
                   )
+                  useDiaryStatusStore.getState().setStatus('none')
                   close()
                   return
                 }
