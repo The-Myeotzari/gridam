@@ -29,10 +29,11 @@ export default async function Header() {
         <nav className="flex items-center gap-2 sm:gap-3 md:gap-6">
           <HeaderNavLink href="/" label="피드" activeColor="primary" />
           <HeaderNavLink href="/calendar" label="캘린더" activeColor="primary" />
+          <HeaderNavLink href="/memo" label="메모" activeColor="primary" />
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <HeaderUserMenu userName={userName}/>
+          <HeaderUserMenu userName={userName} />
         </div>
       </div>
     </header>
