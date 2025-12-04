@@ -152,7 +152,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
     ctx.globalCompositeOperation = 'source-over'
 
     ctxRef.current = ctx
-  }, [])
+  }, [size])
 
   // 초기 세팅 1번 캔버스 만들기
   useEffect(() => {
