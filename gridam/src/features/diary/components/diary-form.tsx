@@ -21,7 +21,7 @@ type DiaryFormProps = {
 
 export default function DiaryForm({ dateValue, weather, isEdit = false, diary }: DiaryFormProps) {
   const [text, setText] = useState(diary?.content ?? '')
-  const canvas = useCanvasStore.getState().image
+  const canvas = useCanvasStore((s) => s.image)
 
   const { run, isPending } = useDiaryActions()
 
