@@ -9,10 +9,17 @@ export function useCanvasDrawing(initialImage?: string | null) {
 
   // 상태
   const [canvasImage, setCanvasImage] = useState<string | null>(null)
-  const [color, setColor] = useState('var(--color-canva-red)')
+  const [color, setColor] = useState('#111827')
   const [isEraser, setIsEraser] = useState(false)
+  const [size, setSize] = useState(10)
   const [history, setHistory] = useState<ImageData[]>([])
   const maxHistory = 50
+
+  useEffect(() => {
+    const ctx = ctxRef.current
+    if (!ctx) return
+    ctx.lineWidth = size
+  }, [size])
 
   const toggleEraser = () => setIsEraser((v) => !v)
 
@@ -80,21 +87,21 @@ export function useCanvasDrawing(initialImage?: string | null) {
       isDrawingRef.current = true
       ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
 
+      ctx.lineWidth = size
+
       if (isEraser) {
         ctx.globalCompositeOperation = 'destination-out'
         ctx.strokeStyle = 'rgba(0,0,0,1)'
-        ctx.lineWidth = 15
       } else {
         ctx.globalCompositeOperation = 'source-over'
         ctx.strokeStyle = resolveColor(color)
-        ctx.lineWidth = 4
       }
 
       const { offsetX, offsetY } = e.nativeEvent
       ctx.beginPath()
       ctx.moveTo(offsetX, offsetY)
     },
-    [color, isEraser, resolveColor]
+    [color, isEraser, resolveColor, size]
   )
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -141,7 +148,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.lineCap = 'round'
-    ctx.lineWidth = 4
+    ctx.lineWidth = size
     ctx.globalCompositeOperation = 'source-over'
 
     ctxRef.current = ctx
@@ -193,11 +200,13 @@ export function useCanvasDrawing(initialImage?: string | null) {
     // 상태
     color,
     isEraser,
+    size,
     history,
 
     // 액션
     setColor,
     toggleEraser,
+    setSize,
     handleUndo,
     clearHistory,
     saveCanvasImage,

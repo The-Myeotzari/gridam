@@ -4,6 +4,7 @@ import ModalRoot from '@/shared/ui/modal/modal-root.client'
 import Toast from '@/shared/ui/toast'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import 'react-color-palette/css'
 
 const zenSerif = localFont({
   src: '../../public/font/ZEN-SERIF-TTF-Regular.woff2',
