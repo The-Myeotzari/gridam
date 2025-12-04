@@ -26,6 +26,9 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
   //날짜마다 메모나 일기가 있는지 표시
   const [monthlyData, setMonthlyData] = useState<MonthlyData>(initialData.monthlyData || {})
   const [view, setView] = useState(() => ({ year: today.getFullYear(), month: today.getMonth() })) //0 ~11
+  //캘린더-날짜 클릭 시 메모란 날짜 업데이트
+  const dateFormatting = new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day)
+  const todayDate = getFormatDate(dateFormatting.toISOString())
 
   useEffect(() => {
     setMonthlyData({})
@@ -59,8 +62,6 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
       }
     })
   }
-
-  const todayDate = getFormatDate()
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 ">
