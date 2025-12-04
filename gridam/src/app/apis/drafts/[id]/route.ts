@@ -1,9 +1,10 @@
-import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import type { Params } from '@/shared/types/params.type'
 import { DraftUpdateSchema } from '@/shared/types/zod/apis/draft-schema'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
-import { NextRequest } from 'next/server'
+import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
+import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
 // 임시저장 글 1개 조회
@@ -22,13 +23,15 @@ export async function GET(_req: NextRequest, { params }: Params) {
       .single()
     if (error) throw fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
 
-    return withCORS(ok(data))
+    const [signedDiary] = await withSignedImageUrls(supabase, [data])
+
+    return NextResponse.json({ ok: true, data: signedDiary })
   } catch (err) {
     if (err instanceof ZodError) {
       const firstIssue = err.issues[0]
       return fail(firstIssue.message, 400)
     }
-    return withCORS(fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500))
+    return fail(MESSAGES.DIARY.ERROR.DRAFT_READ, 500)
   }
 }
 
