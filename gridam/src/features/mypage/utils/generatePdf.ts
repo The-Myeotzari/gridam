@@ -7,7 +7,7 @@ import { PDFDocument, rgb } from 'pdf-lib'
 import sharp from 'sharp'
 
 let FONT_BYTES_CACHE: Uint8Array | null = null
-const WEATHER_ICON_CACHE = new Map<string, Uint8Array>()
+const WEATHER_ICON_CACHE = new Map<string, Buffer>()
 
 async function loadFontBytes() {
   if (FONT_BYTES_CACHE) return FONT_BYTES_CACHE
@@ -59,9 +59,19 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
         if (!res.ok) return null
 
         const buf = Buffer.from(await res.arrayBuffer())
+        const img = sharp(buf)
+        const meta = await img.metadata()
 
-        // 크기/용량 줄이기
-        const resized = await sharp(buf)
+        // 작은 이미지면 그냥 원본 그대로 쓰기
+        if (
+          (meta.width ?? 0) <= 800 &&
+          (meta.height ?? 0) <= 900 &&
+          (meta.size ?? 0) < 200 * 1024 // 200KB 이하 같은
+        ) {
+          return buf
+        }
+
+        const resized = await img
           .resize(800, 900, { fit: 'inside', withoutEnlargement: true })
           .png()
           .toBuffer()
