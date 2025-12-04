@@ -9,7 +9,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
 
   // 상태
   const [canvasImage, setCanvasImage] = useState<string | null>(null)
-  const [color, setColor] = useState('var(--color-canva-red)')
+  const [color, setColor] = useState('#111827')
   const [isEraser, setIsEraser] = useState(false)
   const [history, setHistory] = useState<ImageData[]>([])
   const maxHistory = 50
