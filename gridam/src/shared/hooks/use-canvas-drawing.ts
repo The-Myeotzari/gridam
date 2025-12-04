@@ -154,7 +154,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
 
       redrawAll()
     },
-    [color, isEraser, size]
+    [color, isEraser, size, redrawAll]
   )
 
   // 그리는 중
