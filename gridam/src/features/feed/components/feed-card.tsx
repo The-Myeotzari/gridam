@@ -43,18 +43,18 @@ export default function FeedCard({ diary, isFirst, onDelete }: FeedCardProps) {
 
       <CardBody className="text-left">{diary.content}</CardBody>
 
-      <CardFooter className="relative w-full aspect-square">
-        {diary.image_url && (
-          <Image
-            src={diary.image_url}
-            alt={`${diary.id}_그림일기_이미지`}
-            fill
-            className="object-contain"
-            loading={isFirst ? 'eager' : 'lazy'}
-            priority={!!isFirst}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 576px, 672px"
-          />
-        )}
+      <CardFooter className="p-0">
+        <div className="relative w-full h-full aspect-video overflow-hidden rounded-xl aspect-w-16 aspect-h-9">
+          {diary.image_url && (
+            <Image
+              src={diary.image_url}
+              alt={`${diary.id}_그림일기_이미지`}
+              fill
+              loading={isFirst ? 'eager' : 'lazy'}
+              priority={!!isFirst}
+            />
+          )}
+        </div>
       </CardFooter>
     </Card>
   )

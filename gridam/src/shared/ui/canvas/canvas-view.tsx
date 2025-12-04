@@ -18,7 +18,6 @@ export function CanvasView({
   onPointerMove,
   onPointerUpOrLeave,
   className,
-  height = 45,
 }: Props) {
   const handleTouchMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     e.preventDefault()
@@ -26,11 +25,11 @@ export function CanvasView({
   }
 
   return (
-    <div className="w-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+    <div className="w-full aspect-video border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
       <canvas
         ref={canvasRef}
-        className={cn('block w-full rounded-xl cursor-crosshair touch-none', className)}
-        style={{ height: `${height}vh`, touchAction: 'none' }}
+        className={cn('block w-full h-full rounded-xl cursor-crosshair touch-none', className)}
+        style={{ touchAction: 'none' }}
         onPointerDown={onPointerDown}
         onPointerMove={handleTouchMove}
         onPointerUp={onPointerUpOrLeave}
