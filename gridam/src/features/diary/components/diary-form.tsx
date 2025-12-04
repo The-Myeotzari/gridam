@@ -39,6 +39,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     weather,
   }
 
+  // TODO: 수정일 때는 canvas의 값이 false로 뜸 -> store 구독 상태 떄문인가?
   const isInvalid = () => {
     if ((!text || text.trim().length === 0) && !canvas) {
       toast.error(MESSAGES.DIARY.ERROR.INVALID_ALL)
@@ -48,7 +49,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
       toast.error(MESSAGES.DIARY.ERROR.INVALID_TEXT)
       return true
     }
-    if (!canvas) {
+    if (!canvas && !isEdit) {
       toast.error(MESSAGES.DIARY.ERROR.INVALID_CANVAS)
       return true
     }
