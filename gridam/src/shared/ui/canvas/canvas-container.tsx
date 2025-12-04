@@ -49,7 +49,6 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
 
       <CanvasView
         canvasRef={canvasRef}
-        height={45}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUpOrLeave={handlePointerUp}
