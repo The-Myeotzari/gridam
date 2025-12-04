@@ -6,15 +6,40 @@ import path from 'path'
 import { PDFDocument, rgb } from 'pdf-lib'
 import sharp from 'sharp'
 
+let FONT_BYTES_CACHE: Uint8Array | null = null
+const WEATHER_ICON_CACHE = new Map<string, Uint8Array>()
+
+async function loadFontBytes() {
+  if (FONT_BYTES_CACHE) return FONT_BYTES_CACHE
+
+  const fontPath = path.join(process.cwd(), 'public/font/ZEN-SERIF-TTF-Regular.woff2')
+  const bytes = await readFile(fontPath)
+
+  FONT_BYTES_CACHE = bytes
+  return bytes
+}
+
+async function loadWeatherIconPngBytes(weatherIconPath: string) {
+  const cached = WEATHER_ICON_CACHE.get(weatherIconPath)
+  if (cached) return cached
+
+  const iconPath = path.join(process.cwd(), `public/${weatherIconPath}`)
+  const weatherIconBytes = await readFile(iconPath)
+
+  // 아이콘은 한 번만 변환
+  const pngBuffer = await sharp(weatherIconBytes).png().toBuffer()
+
+  WEATHER_ICON_CACHE.set(weatherIconPath, pngBuffer)
+  return pngBuffer
+}
+
 export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
   const { diaries } = params
 
   const pdfDoc = await PDFDocument.create()
   pdfDoc.registerFontkit(fontkit)
-  const fontBytes = await fetch(
-    'https://oddatelier.net/wp-content/uploads/2025/09/ZEN-SERIF-Regular.otf'
-  ).then((res) => res.arrayBuffer())
 
+  const fontBytes = await loadFontBytes()
   const font = await pdfDoc.embedFont(fontBytes)
 
   // A4 사이즈
@@ -24,29 +49,54 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
   const marginTop = 50
   const marginBottom = 50
 
-  // 📄 각 일기 → 한 페이지
-  for (const diary of diaries) {
+  // 일기 이미지: 네트워크 fetch만 미리 병렬로 수행
+  const diaryImageBuffers = await Promise.all(
+    diaries.map(async (diary) => {
+      if (!diary.image_url) return null
+
+      try {
+        const res = await fetch(diary.image_url)
+        if (!res.ok) return null
+
+        const buf = Buffer.from(await res.arrayBuffer())
+
+        // 크기/용량 줄이기
+        const resized = await sharp(buf)
+          .resize(800, 900, { fit: 'inside', withoutEnlargement: true })
+          .png()
+          .toBuffer()
+
+        return resized
+      } catch (e) {
+        console.error('fetch diary image error', e)
+        return null
+      }
+    })
+  )
+
+  // 각 일기 → 한 페이지
+  for (let i = 0; i < diaries.length; i++) {
+    const diary = diaries[i]
     const page = pdfDoc.addPage([pageWidth, pageHeight])
     const { width, height } = page.getSize()
 
-    // 1. 헤더 (날짜 + 날씨 + 이모지)
+    // 1. 헤더 (날짜 + 날씨)
     const headerText = getFormatDate(diary.date)
-    const weatherIconPath = diary.emoji
-    let weatherIcon = null
-    if (weatherIconPath) {
-      const iconPath = path.join(process.cwd(), `public/${weatherIconPath}`)
-      const weatherIconBytes = await readFile(iconPath)
-      const pngBuffer = await sharp(weatherIconBytes).png().toBuffer()
-      weatherIcon = await pdfDoc.embedPng(pngBuffer)
-    }
 
-    if (weatherIcon) {
-      page.drawImage(weatherIcon, {
-        x: width - marginX * 2,
-        y: height - marginTop - 15,
-        width: 40,
-        height: 40,
-      })
+    if (diary.emoji) {
+      try {
+        const pngBytes = await loadWeatherIconPngBytes(diary.emoji)
+        const weatherIcon = await pdfDoc.embedPng(pngBytes)
+
+        page.drawImage(weatherIcon, {
+          x: width - marginX * 2,
+          y: height - marginTop - 15,
+          width: 40,
+          height: 40,
+        })
+      } catch (e) {
+        console.error('weather icon error', e)
+      }
     }
 
     page.drawText(headerText, {
@@ -57,25 +107,18 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
       color: rgb(0.2, 0.2, 0.2),
     })
 
-    // 2. 그림 영역 (위 가운데에 크게)
+    // 2. 그림 영역
     const drawingTop = height - marginTop - 40
     const drawingHeight = 300
     const drawingWidth = width - marginX * 2
 
-    if (diary.image_url) {
-      try {
-        const imgRes = await fetch(diary.image_url)
-        const imgBuf = await imgRes.arrayBuffer()
-        // PNG / JPG 둘 다 대응
-        let embedded
-        try {
-          embedded = await pdfDoc.embedPng(imgBuf)
-        } catch {
-          embedded = await pdfDoc.embedJpg(imgBuf)
-        }
+    const imageBuffer = diaryImageBuffers[i]
 
+    if (imageBuffer) {
+      try {
+        const embedded = await pdfDoc.embedPng(imageBuffer)
         const imgDim = embedded.scale(1)
-        // 비율 유지하면서 영역 안에 맞추기
+
         const scale = Math.min(drawingWidth / imgDim.width, drawingHeight / imgDim.height, 1)
 
         const drawW = imgDim.width * scale
@@ -100,11 +143,9 @@ export async function createMonthlyDiaryPdf(params: { diaries: Diary[] }) {
           borderWidth: 1,
         })
       } catch (e) {
-        // 이미지 깨져도 PDF 전체가 망가지진 않도록 무시
-        console.error('embed image error', e)
+        console.error('embed diary image error', e)
       }
     } else {
-      // 그림 없는 경우 빈 박스만
       page.drawRectangle({
         x: marginX,
         y: drawingTop - drawingHeight,
