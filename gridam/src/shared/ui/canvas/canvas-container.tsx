@@ -16,6 +16,8 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
     setColor,
     isEraser,
     toggleEraser,
+    size,
+    setSize,
     handleUndo,
     clearHistory,
 
@@ -39,6 +41,8 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
         setColor={setColor}
         isEraser={isEraser}
         toggleEraser={toggleEraser}
+        size={size}
+        setSize={setSize}
         handleUndo={handleUndo}
         clearHistory={clearHistory}
       />

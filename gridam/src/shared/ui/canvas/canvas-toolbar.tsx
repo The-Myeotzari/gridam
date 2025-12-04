@@ -2,29 +2,28 @@
 
 import { useCanvasToolbar } from '@/shared/hooks/use-canvas-toolbar'
 import ClientButton from '@/shared/ui/client-button'
+import ClientInput from '@/shared/ui/input.client'
 import cn from '@/shared/utils/cn'
-import { Pipette, Trash2, Undo2 } from 'lucide-react'
+import { Eraser, Pencil, Pipette, Trash2, Undo2 } from 'lucide-react'
 import { ColorPicker } from 'react-color-palette'
+
+const BASE_COLORS = ['#111827', '#EF4444', '#22C55E', '#3B82F6', '#F59E0B'] as const
+const MIN_SIZE = 1
+const MAX_SIZE = 20
 
 type Props = {
   color: string
   isEraser: boolean
+  size: number
   setColor: (c: string) => void
   toggleEraser: () => void
+  setSize: (value: number) => void
   handleUndo: () => void
   clearHistory: () => void
 }
 
-const BASE_COLORS = ['#111827', '#EF4444', '#22C55E', '#3B82F6', '#F59E0B'] as const
-
-export function CanvasToolbar({
-  color,
-  isEraser,
-  setColor,
-  toggleEraser,
-  handleUndo,
-  clearHistory,
-}: Props) {
+export function CanvasToolbar(props: Props) {
+  const { color, isEraser, size, setColor, toggleEraser, setSize, handleUndo, clearHistory } = props
   const {
     showPalette,
     showPicker,
@@ -118,9 +117,21 @@ export function CanvasToolbar({
       </div>
 
       <div className="flex items-center gap-2">
+        <ClientInput
+          type="number"
+          value={size}
+          autoComplete="off"
+          inputMode="numeric"
+          pattern="[0-20]*"
+          step={1}
+          max={MAX_SIZE}
+          min={MIN_SIZE}
+          onChange={(e) => setSize(Number(e.target.value))}
+          className="w-15"
+        />
         <ClientButton
           type="button"
-          label={isEraser ? '✏️ 펜으로' : '🧽 지우개'}
+          label={isEraser ? <Eraser /> : <Pencil />}
           onClick={toggleEraser}
         />
         <ClientButton type="button" label={<Undo2 size={18} />} onClick={handleUndo} />
