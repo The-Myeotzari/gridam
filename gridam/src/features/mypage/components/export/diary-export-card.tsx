@@ -10,6 +10,7 @@ import { Label } from '@/shared/ui/label'
 import cn from '@/shared/utils/cn'
 import { ChevronLeft, ChevronRight, FileDown, RefreshCcw } from 'lucide-react'
 import ClientButton from '@/shared/ui/client-button'
+import { getDateParts } from '@/shared/utils/date'
 
 interface DiaryExportCardProps {
   year: number
@@ -29,6 +30,8 @@ interface ErrorBannerProps {
 }
 
 const MONTH_LABELS: string[] = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
+const MIN_YEAR: number = 2025
+const MAX_YEAR_RANGE = 2
 
 function renderFooterText(params: {
   isLoading: boolean
@@ -101,8 +104,14 @@ export default function DiaryExportCard({
   onPreview,
   onRetry,
 }: DiaryExportCardProps) {
+  const now = new Date()
   const hasDiaries = diaryCount > 0
   const exportDisabled = !hasDiaries || isLoading || isError
+
+  // 일기 호출 기간 제한
+  const { year: currentYear, month: currentMonth } = getDateParts(undefined, now)
+  const hasPrevYear = onPrevYear && (year > MIN_YEAR && year - currentYear <= MAX_YEAR_RANGE)
+  const hasNextYear = onNextYear && year < currentYear
 
   return (
     <Card className="w-full">
@@ -127,10 +136,10 @@ export default function DiaryExportCard({
                 onClick={onPrevYear}
                 className={cn(
                   'flex h-6 w-6 items-center justify-center rounded-full text-xs text-muted-foreground transition-colors',
-                  onPrevYear && 'hover:bg-muted',
-                  !onPrevYear && 'opacity-40 cursor-default',
+                  hasPrevYear && 'hover:bg-muted cursor-pointer',
+                  !hasPrevYear && 'opacity-40 cursor-default',
                 )}
-                disabled={!onPrevYear}
+                disabled={!hasPrevYear}
                 aria-label="이전 연도"
               >
                 <ChevronLeft className='size-4' />
@@ -143,10 +152,10 @@ export default function DiaryExportCard({
                 onClick={onNextYear}
                 className={cn(
                   'flex h-6 w-6 items-center justify-center rounded-full text-xs text-muted-foreground transition-colors',
-                  onNextYear && 'hover:bg-muted',
-                  !onNextYear && 'opacity-40 cursor-default',
+                  hasNextYear && 'hover:bg-muted cursor-pointer',
+                  !hasNextYear && 'opacity-40 cursor-default',
                 )}
-                disabled={!onNextYear}
+                disabled={!hasNextYear}
                 aria-label="다음 연도"
               >
                 <ChevronRight className='size-4' />
@@ -160,6 +169,7 @@ export default function DiaryExportCard({
               {MONTH_LABELS.map((label, index) => {
                 const value = index + 1
                 const isSelected = value === month
+                const hasNextMonth = onSelectMonth && !(year === currentYear && value > currentMonth)
 
                 return (
                   <ClientButton
@@ -171,9 +181,9 @@ export default function DiaryExportCard({
                       isSelected
                         ? 'border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary'
                         : 'border-border bg-background text-foreground hover:bg-muted',
-                      !onSelectMonth && 'cursor-default hover:bg-background',
+                      !hasNextMonth && 'cursor-default bg-muted',
                     )}
-                    disabled={!onSelectMonth}
+                    disabled={!hasNextMonth}
                     aria-pressed={isSelected}
                     label={label}
                   />
