@@ -4,26 +4,26 @@ import { DiaryReadOnly } from './diary-readonly'
 interface SelectedDateDiaryProps {
   isLoading: boolean
   selectedDate: { year: number; month: number; day: number }
-  diary: Diary | null
+  diary: Diary
 }
 
 export default function SelectedDateDiary({ isLoading, diary }: SelectedDateDiaryProps) {
-  let content
-
+  //로딩 중일 때
   if (isLoading) {
-    content = (
+    return (
       <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
         일기를 불러오고 있어요!
       </div>
     )
-  } else if (!diary) {
-    content = (
+  }
+  //로딩 중이 아니고 일기가 없을 때
+  if (!diary.id) {
+    return (
       <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
         선택한 날짜에 일기가 없습니다
       </div>
     )
-  } else {
-    content = <DiaryReadOnly diary={diary} />
   }
-  return <div className="overflow-hidden">{content}</div>
+  //로딩 중이 아니고 일기가 있을 때
+  return <DiaryReadOnly diary={diary} />
 }

@@ -14,6 +14,7 @@ import {
 } from '@/features/memo/api/memo.action'
 import MarkdownEditor from './markdown-editor'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
+import MemoTagField from '@/features/memo/components/memo-editor-tag'
 
 type Props = {
   open: boolean
@@ -25,13 +26,15 @@ type Props = {
 export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSuccess }: Props) {
   const [loading, setLoading] = useState(false)
   const [content, setContent] = useState('')
+  const [tags, setTags] = useState<string[]>([])
 
   const isEditMode = Boolean(initialMemo)
 
   useEffect(() => {
-    if (open) {
-      setContent(initialMemo?.content ?? '')
-    }
+    if (!open) return
+
+    setContent(initialMemo?.content ?? '')
+    setTags(initialMemo?.tags ?? [])
   }, [open, initialMemo])
 
   function handleClose() {
@@ -61,6 +64,7 @@ export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSu
           id: initialMemo.id,
           title,
           content,
+          tags,
         }
 
         const result = await updateMemoAction(payload)
@@ -75,6 +79,7 @@ export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSu
         const payload: CreateMemoInput = {
           title,
           content,
+          tags,
         }
 
         const result = await createMemoAction(payload)
@@ -121,7 +126,7 @@ export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSu
           </button>
         </ModalHeader>
 
-        <ModalBody className="space-y-4 bg-background px-6 py-4">
+        <ModalBody className="space-y-6 bg-background px-6 py-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="memo-title">
               제목
@@ -134,6 +139,8 @@ export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSu
               className="w-full"
             />
           </div>
+
+          <MemoTagField tags={tags} onChange={setTags} />
 
           <MarkdownEditor value={content} onChange={setContent} />
         </ModalBody>

@@ -1,12 +1,13 @@
 'use client'
-import { Card } from '@/shared/ui/card'
-import Calendar from './calendar'
-import SelectedDateDiary from './selected-date-diary'
-import CalendarMemoList from './calendar-memo-list'
-import { useEffect, useState, useTransition } from 'react'
+import { fetchCalendar, fetchCalendarMonth } from '@/app/(main)/calendar/action'
+import Calendar from '@/features/calendar/components/calendar'
+import CalendarMemoList from '@/features/calendar/components/calendar-memo-list'
+import SelectedDateDiary from '@/features/calendar/components/selected-date-diary'
 import { Diary } from '@/features/feed/feed.type'
 import { Memo } from '@/features/memo/api/memo.action'
-import { fetchCalendar, fetchCalendarMonth } from '@/app/(main)/calendar/action'
+import { Card } from '@/shared/ui/card'
+import { getFormatDate } from '@/shared/utils/date'
+import { useEffect, useState, useTransition } from 'react'
 
 //날짜를 키로 (1 ~ 31), 데이터 존재 여부를 값으로 가짐
 export type MonthlyData = Record<number, { hasDiary: boolean; hasMemo: boolean }>
@@ -19,7 +20,7 @@ interface CalendarClientProps {
 export default function CalendarClient({ initialDate, initialData }: CalendarClientProps) {
   const today = new Date()
   const [selectedDate, setSelectedDate] = useState(initialDate)
-  const [diary, setDiary] = useState<Diary | null>(initialData.diary ?? null)
+  const [diary, setDiary] = useState<Diary>(initialData.diary ?? ({} as Diary))
   const [memos, setMemos] = useState<Memo[]>(initialData.memos ?? [])
   const [isPending, startTransition] = useTransition()
   //날짜마다 메모나 일기가 있는지 표시
@@ -50,7 +51,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
     startTransition(async () => {
       const res = await fetchCalendar(newDate)
       if (res.ok) {
-        setDiary(res.data.diary ?? null)
+        setDiary(res.data.diary ?? ({} as Diary))
         setMemos(res.data.memos ?? [])
         if (res.data.monthlyData) {
           setMonthlyData(res.data.monthlyData)
@@ -58,6 +59,8 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
       }
     })
   }
+
+  const todayDate = getFormatDate()
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-2 ">
@@ -69,10 +72,19 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
           currentView={view}
           onViewChange={setView}
         />
-        <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
+        <div className="overflow-hidden">
+          <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
+        </div>
       </Card>
       <Card className="flex flex-col md:flex-row p-6 gap-7 max-h-[640]">
-        <CalendarMemoList memos={memos} isLoading={isPending} />
+        <div className="mb-4 flex flex-col flex-1 gap h-full">
+          <h3 className="font-handwritten text-xl mb-2 text-navy-gray font-bold">메모</h3>
+          <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 mb-2 ">
+            {todayDate}
+          </div>
+          {/* 메모 목록 */}
+          <CalendarMemoList memos={memos} isLoading={isPending} />
+        </div>
       </Card>
     </div>
   )
