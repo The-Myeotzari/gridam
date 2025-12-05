@@ -45,8 +45,8 @@ export async function GET(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('status', 'published')
       .is('deleted_at', null)
-      .gte('date', monthStartDate)
-      .lte('date', monthEndDate)
+      .gte('published_at', monthStartDate)
+      .lte('published_at', monthEndDate)
 
     if (diariesError) {
       console.error(diariesError)
