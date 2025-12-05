@@ -11,7 +11,7 @@ export default function ModalRoot() {
   useEffect(() => {
     if (!isModalOpen) return
 
-    history.pushState({ modal: true }, '', window.location.href)
+    history.pushState({ modal: true }, '')
 
     const handlePopState = () => {
       close()
