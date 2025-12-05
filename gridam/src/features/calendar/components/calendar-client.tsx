@@ -21,7 +21,6 @@ interface CalendarClientProps {
 type initialDateView = Omit<CalendarClientProps['initialDate'], 'day'>
 
 export default function CalendarClient({ initialDate, initialData }: CalendarClientProps) {
-  console.log('초기날짜', initialDate)
   const [selectedDate, setSelectedDate] = useState(initialDate)
   const [diary, setDiary] = useState<Diary>(initialData.diary ?? ({} as Diary))
   const [memos, setMemos] = useState<Memo[]>(initialData.memos ?? [])
@@ -30,7 +29,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
   const [monthlyData, setMonthlyData] = useState<MonthlyData>(initialData.monthlyData || {})
   const [view, setView] = useState<initialDateView>(() => ({
     year: initialDate.year,
-    month: initialDate.month - 1,
+    month: initialDate.month,
   }))
   //캘린더-날짜 클릭 시 메모란 날짜 업데이트
   const dateFormatting = new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day)
@@ -43,7 +42,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
       // 월별 맵 요청
       const res = await fetchCalendarMonth({
         year: view.year,
-        month: view.month + 1,
+        month: view.month,
       })
       if (res.ok && res.data.monthlyData) {
         setMonthlyData(res.data.monthlyData)
@@ -53,7 +52,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
 
   // 1. Calendar에서 날짜가 선택되었을 때 호출
   const handleSelectDate = (date: { year: number; month: number; day: number }) => {
-    const newDate = { year: date.year, month: date.month + 1, day: date.day }
+    const newDate = { year: date.year, month: date.month, day: date.day }
     setSelectedDate(newDate)
 
     //2. 일별-일기, 메모 데이터

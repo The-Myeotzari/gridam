@@ -43,8 +43,8 @@ export default function Calendar({
   }
   // 다음 달
   const handleNextMonth = () => {
-    const { year, month } = getAdjacentMonth(currentView.year, currentView.month, 1)
-    onViewChange({ year, month })
+    const NextMonth = getAdjacentMonth(currentView.year, currentView.month, 1)
+    onViewChange(NextMonth)
   }
 
   return (
@@ -57,7 +57,7 @@ export default function Calendar({
         />
 
         <div className="text-2xl font-bold">
-          {currentView.year}년 {currentView.month + 1}월
+          {currentView.year}년 {currentView.month}월
         </div>
 
         <CircleChevronRight
@@ -79,7 +79,7 @@ export default function Calendar({
           const isSelected =
             selectedDate &&
             selectedDate.year === cell.year &&
-            selectedDate.month - 1 === cell.month &&
+            selectedDate.month === cell.month &&
             selectedDate.day === cell.day
 
           //현재 달에 속하는 셀에만 monthlyData 적용
