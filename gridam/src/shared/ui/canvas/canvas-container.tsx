@@ -29,8 +29,9 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
   const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
     onPointerUpOrLeave(e)
 
-    if (canvasRef.current) {
-      setImage(canvasImage)
+    const canvas = canvasRef.current
+    if (canvas) {
+    setImage(canvas.toDataURL('image/png'))
     }
   }
 

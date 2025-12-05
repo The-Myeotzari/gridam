@@ -15,6 +15,8 @@ export function useCanvasDrawing(initialImage?: string | null) {
   // 수정 시 기존 이미지를 배경으로 깔기 위한 ref
   const baseImgRef = useRef<HTMLImageElement | null>(null)
   const baseImgReadyRef = useRef(false)
+ // history 각 스냅샷 시점의 strokes 길이
+  const strokeCountsRef = useRef<number[]>([])
 
   // UI 상태
   const [canvasImage, setCanvasImage] = useState<string | null>(null)
@@ -42,6 +44,9 @@ export function useCanvasDrawing(initialImage?: string | null) {
 
   // 히스토리 snapshot 저장
   const pushSnapshot = useCallback((snap: ImageData) => {
+    strokeCountsRef.current.push(strokesRef.current.length)
+    if (strokeCountsRef.current.length > maxHistory) strokeCountsRef.current.shift()
+
     setHistory((prev) => {
       const next = [...prev, snap]
       if (next.length > maxHistory) next.shift()
@@ -49,47 +54,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
     })
   }, [])
 
-  // undo - 마지막 이전 스냅샷으로 복원
-  const handleUndo = useCallback(() => {
-    setHistory((prev) => {
-      if (prev.length <= 1) return prev
-      const next = prev.slice(0, -1)
-      const last = next[next.length - 1]
-      const ctx = ctxRef.current
-      if (ctx && last) ctx.putImageData(last, 0, 0)
-      saveCanvasImage()
-      return next
-    })
-  }, [saveCanvasImage])
-
-  // clear - 캔버스 비우고 히스토리 초기화
-  const clearHistory = () => {
-    const canvas = canvasRef.current
-    const ctx = ctxRef.current
-    // 준비 안된 상태 처리
-    if (!canvas || !ctx) {
-      setHistory([])
-      setCanvasImage(null)
-      return
-    }
-    // 초기화랑 동일한 로직 진행
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    const emptySnap = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    setHistory([emptySnap])
-    setCanvasImage(null)
-  }
-
-  // 포인터 좌표를 정규화 좌표(0~1)로 변환
-  const getNPoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current
-    if (!canvas) return null
-    const rect = canvas.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width
-    const y = (e.clientY - rect.top) / rect.height
-    return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) }
-  }
-
-  // 기존 이미지와 모든 스트로크를 현재 캔버스 크기에 맞게 재렌더
+   // 기존 이미지와 모든 스트로크를 현재 캔버스 크기에 맞게 재렌더
   const redrawAll = useCallback(() => {
     const canvas = canvasRef.current
     const ctx = ctxRef.current
@@ -131,6 +96,53 @@ export function useCanvasDrawing(initialImage?: string | null) {
       ctx.restore()
     }
   }, [])
+
+  // undo - 마지막 이전 스냅샷으로 복원
+  const handleUndo = useCallback(() => {
+    // 드로잉 중이면 종료 처리
+    isDrawingRef.current = false
+
+    setHistory((prev) => {
+      if (prev.length <= 1) return prev
+      const next = prev.slice(0, -1)
+      strokeCountsRef.current.pop()
+      const targetCount = strokeCountsRef.current[strokeCountsRef.current.length - 1] ?? 0
+      strokesRef.current = strokesRef.current.slice(0, targetCount)
+      redrawAll()
+      saveCanvasImage()
+      return next
+    })
+  }, [redrawAll, saveCanvasImage])
+
+  // clear - 캔버스 비우고 히스토리 초기화
+  const clearHistory = useCallback(() => {
+    const canvas = canvasRef.current
+    const ctx = ctxRef.current
+    if (!canvas || !ctx) {
+      setHistory([])
+      strokeCountsRef.current = []
+      setCanvasImage(null)
+      return
+    }
+    isDrawingRef.current = false
+    strokesRef.current = [] 
+    redrawAll()
+    const snap = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    setHistory([snap])
+    strokeCountsRef.current = [0]
+    saveCanvasImage()
+  }, [redrawAll, saveCanvasImage])
+
+  // 포인터 좌표를 정규화 좌표(0~1)로 변환
+  const getNPoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return null
+    const rect = canvas.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+    return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) }
+  }
+
 
   // 그림 그리기 시작
   const onPointerDown = useCallback(
