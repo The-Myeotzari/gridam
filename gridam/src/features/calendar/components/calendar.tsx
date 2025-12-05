@@ -29,8 +29,6 @@ export default function Calendar({
   onViewChange,
   monthlyData,
 }: CalendarProps) {
-  console.log('현재 선택된 날짜 (Props):', selectedDate)
-
   // 달력 셀
   const cells = useMemo(() => {
     return buildCalendar(currentView.year, currentView.month)
