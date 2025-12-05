@@ -1,6 +1,6 @@
 'use server'
 
-import { MonthlyData } from '@/features/calendar/components/calendar-client'
+import { MonthlyData } from '@/features/calendar/types/calendar.type'
 import type { Diary } from '@/features/feed/feed.type'
 import type { Memo } from '@/features/memo/api/memo.action'
 import { getDateParts } from '@/shared/utils/date'

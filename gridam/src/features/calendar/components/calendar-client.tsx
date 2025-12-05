@@ -9,9 +9,7 @@ import { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import { getFormatDate } from '@/shared/utils/date'
 import { useEffect, useState, useTransition } from 'react'
-
-//날짜를 키로 (1 ~ 31), 데이터 존재 여부를 값으로 가짐
-export type MonthlyData = Record<number, { hasDiary: boolean; hasMemo: boolean }>
+import { MonthlyData } from '../types/calendar.type'
 
 interface CalendarClientProps {
   initialDate: { year: number; month: number; day: number }
