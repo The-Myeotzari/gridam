@@ -1,9 +1,10 @@
+//콜백이 필요하다. 날짜를 누를 때마다 실행되는 거는 너무 비효율적이기 때문!
 'use client'
 import { fetchCalendar, fetchCalendarMonth } from '@/app/(main)/calendar/action'
 import Calendar from '@/features/calendar/components/calendar'
 import CalendarMemoList from '@/features/calendar/components/calendar-memo-list'
 import SelectedDateDiary from '@/features/calendar/components/selected-date-diary'
-import { Diary } from '@/features/feed/feed.type'
+import type { Diary } from '@/features/feed/feed.type'
 import { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import { getFormatDate } from '@/shared/utils/date'
@@ -17,15 +18,20 @@ interface CalendarClientProps {
   initialData: { diary?: Diary | null; memos?: Memo[]; monthlyData?: MonthlyData }
 }
 
+type initialDateView = Omit<CalendarClientProps['initialDate'], 'day'>
+
 export default function CalendarClient({ initialDate, initialData }: CalendarClientProps) {
-  const today = new Date()
+  console.log('초기날짜', initialDate)
   const [selectedDate, setSelectedDate] = useState(initialDate)
   const [diary, setDiary] = useState<Diary>(initialData.diary ?? ({} as Diary))
   const [memos, setMemos] = useState<Memo[]>(initialData.memos ?? [])
   const [isPending, startTransition] = useTransition()
   //날짜마다 메모나 일기가 있는지 표시
   const [monthlyData, setMonthlyData] = useState<MonthlyData>(initialData.monthlyData || {})
-  const [view, setView] = useState(() => ({ year: today.getFullYear(), month: today.getMonth() })) //0 ~11
+  const [view, setView] = useState<initialDateView>(() => ({
+    year: initialDate.year,
+    month: initialDate.month - 1,
+  }))
   //캘린더-날짜 클릭 시 메모란 날짜 업데이트
   const dateFormatting = new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day)
   const todayDate = getFormatDate(dateFormatting.toISOString())
