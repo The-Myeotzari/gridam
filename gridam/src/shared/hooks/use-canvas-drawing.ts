@@ -121,17 +121,22 @@ export function useCanvasDrawing(initialImage?: string | null) {
     if (!canvas || !ctx) {
       setHistory([])
       strokeCountsRef.current = []
+      strokesRef.current = []
+      baseImgRef.current = null
+      baseImgReadyRef.current = false
       setCanvasImage(null)
       return
     }
     isDrawingRef.current = false
-    strokesRef.current = [] 
-    redrawAll()
+    strokesRef.current = []
+    strokeCountsRef.current = [0]
+    baseImgRef.current = null
+    baseImgReadyRef.current = false
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     const snap = ctx.getImageData(0, 0, canvas.width, canvas.height)
     setHistory([snap])
-    strokeCountsRef.current = [0]
-    saveCanvasImage()
-  }, [redrawAll, saveCanvasImage])
+    setCanvasImage(null)
+  }, [])
 
   // 포인터 좌표를 정규화 좌표(0~1)로 변환
   const getNPoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
