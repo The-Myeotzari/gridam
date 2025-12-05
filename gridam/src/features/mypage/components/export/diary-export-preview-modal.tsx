@@ -102,7 +102,7 @@ export function DiaryExportPreviewModal({
                   )}
                 </section>
                 <section>
-                  <Textarea value={diary.content} />
+                  <Textarea value={diary.content} readOnly/>
                 </section>
               </article>
             )
