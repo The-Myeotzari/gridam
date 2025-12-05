@@ -15,6 +15,10 @@
       "name": "Me",
       "description": "내 정보( Supabase Auth User ) API"
     },
+     {
+      "name": "Diary",
+      "description": "일기 CRUD API"
+    },
     {
       "name": "Storage",
       "description": "이미지 업로드"
@@ -22,6 +26,10 @@
     {
       "name": "Drafts",
       "description": "임시저장(Drafts) CRUD 및 게시(publish) API. 모든 엔드포인트는 **로그인 사용자 전용**이며, Authorization 헤더로 Supabase access_token(JWT)을 전달해야 합니다."
+    },
+     {
+      "name": "Memos",
+      "description": "메모 CRUD API"
     }
   ],
   "components": {
@@ -52,51 +60,118 @@
         },
         "required": ["ok", "message"]
       },
-      "Draft": {
+      "Diary": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "7f9c7a87-bb69-4e35-8baf-1b6b0eac3e50"
-          },
+          "id": { "type": "string", "format": "uuid" },
           "user_id": { "type": "string", "format": "uuid" },
-          "content": { "type": "string", "maxLength": 200 },
-          "image_url": { "type": "string", "nullable": true, "example": "images/<uid>/canvas.png" },
-          "emoji": { "type": "string", "nullable": true, "example": "🙂" },
-          "status": { "type": "string", "enum": ["draft", "published"], "example": "draft" },
-          "date": { "type": "string", "format": "date", "example": "2025-11-07" },
+          "content": { "type": "string" },
+          "emoji": { "type": "string", "nullable": true },
+          "image_url": { "type": "string", "nullable": true },
+          "status": { "$ref": "#/components/schemas/DiaryStatus" },
+          "date": { "type": "string", "format": "date" },
+
           "published_at": { "type": "string", "format": "date-time", "nullable": true },
+          "deleted_at": { "type": "string", "format": "date-time", "nullable": true },
+
           "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" },
-          "deleted_at": { "type": "string", "format": "date-time", "nullable": true }
+          "updated_at": { "type": "string", "format": "date-time" }
         },
-        "required": ["id", "user_id", "content", "status", "date", "created_at"]
+        "required": [
+          "id",
+          "user_id",
+          "content",
+          "status",
+          "date",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "DiaryStatus": {
+        "type": "string",
+        "enum": ["draft", "published"],
+        "example": "published"
+      },
+      "DiariesListData": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Diary" }
+          },
+          "nextCursor": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hasMore": { "type": "boolean" },
+          "todayDiaryStatus": {
+            "type": "string",
+            "enum": ["published", "draft", "none"]
+          }
+        },
+        "required": ["items", "nextCursor", "hasMore", "todayDiaryStatus"]
+      },
+      "Draft": {
+        "allOf": [{ "$ref": "#/components/schemas/Diary" }],
+        "description": "diaries 테이블 Row. status='draft' 인 경우를 의미상 Draft로 부릅니다."
       },
       "DraftCreate": {
         "type": "object",
         "required": ["content", "date"],
         "properties": {
-          "content": {
+          "content": { "type": "string", "minLength": 1, "maxLength": 200, "example": "오늘은 해가 쨍쨍" },
+          "date": { "type": "string", "format": "date", "description": "YYYY-MM-DD", "example": "2025-11-07" },
+          "emoji": { "type": "string", "nullable": true, "example": "🌞" },
+
+          "imageUrl": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "example": "오늘은 해가 쨍쨍 🌞"
+            "nullable": true,
+            "description": "storage object path (구현 코드 기준 필드명)",
+            "example": "images/<uid>/canvas.png"
           },
+
+          "meta": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "timezone": { "type": "string", "example": "Asia/Seoul" }
+            },
+            "additionalProperties": false
+          },
+
           "image": {
             "type": "string",
             "nullable": true,
-            "description": "storage object path",
+            "deprecated": true,
+            "description": "이전 스펙 호환용(권장: imageUrl)",
             "example": "images/<uid>/canvas.png"
-          },
-          "emoji": { "type": "string", "nullable": true, "example": "🌞" },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "description": "YYYY-MM-DD",
-            "example": "2025-11-07"
           }
-        }
+        },
+        "additionalProperties": false
+      },
+      "DraftListResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": true },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Draft" }
+          }
+        },
+        "required": ["ok", "data"]
+      },
+      "DraftCreatedResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": true },
+          "data": {
+            "type": "object",
+            "properties": { "id": { "type": "string", "format": "uuid" } },
+            "required": ["id"]
+          }
+        },
+        "required": ["ok", "data"]
       },
       "DraftUpdate": {
         "type": "object",
@@ -107,8 +182,48 @@
             "maxLength": 200,
             "example": "수정본 내용"
           },
-          "image": { "type": "string", "nullable": true, "example": "images/<uid>/new.png" },
-          "emoji": { "type": "string", "nullable": true, "example": "✨" }
+          "imageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "storage object path or signed url (코드에서 image_url로 저장)",
+            "example": "images/<uid>/new.png"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true,
+            "description": "이전 스펙 호환용(권장: imageUrl)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PublishRequest": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "오늘 기록"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "storage object path",
+            "example": "images/<uid>/canvas.png"
+          },
+          "emoji": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true,
+            "description": "현재 publish 코드에서는 사용하지 않음(요청해도 반영되지 않을 수 있음)"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true,
+            "description": "이전 스펙 호환용(권장: imageUrl)"
+          }
         },
         "additionalProperties": false
       },
@@ -125,561 +240,146 @@
           "date": { "type": "string", "format": "date", "example": "2025-11-07" }
         },
         "required": ["id", "status", "published_at", "date"]
+      },
+      "CalendarDayFlags": {
+        "type": "object",
+        "properties": {
+          "hasDiary": { "type": "boolean", "example": true },
+          "hasMemo": { "type": "boolean", "example": false }
+        },
+        "required": ["hasDiary", "hasMemo"],
+        "additionalProperties": false
+      },
+      "MonthlyData": {
+        "type": "object",
+        "description": "키는 일(day, 1~31). JSON에서는 키가 문자열로 내려옵니다.",
+        "additionalProperties": { "$ref": "#/components/schemas/CalendarDayFlags" },
+        "example": {
+          "1": { "hasDiary": true, "hasMemo": false },
+          "3": { "hasDiary": false, "hasMemo": true },
+          "12": { "hasDiary": true, "hasMemo": true }
+        }
+      },
+      "CalendarMonthlyResponse": {
+        "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "monthlyData": { "$ref": "#/components/schemas/MonthlyData" }
+            },
+            "required": ["monthlyData"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "Memo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" },
+
+          "title": { "type": "string", "nullable": true },
+          "content": { "type": "string", "nullable": true },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "nullable": true
+          },
+
+          "created_at": { "type": "string", "format": "date-time", "nullable": true },
+          "updated_at": { "type": "string", "format": "date-time", "nullable": true },
+          "deleted_at": { "type": "string", "format": "date-time", "nullable": true }
+        },
+        "required": ["id", "user_id"]
+      },
+      "DiaryOrNull": {
+        "oneOf": [{ "$ref": "#/components/schemas/Diary" }, { "type": "null" }],
+        "description": "선택 날짜에 발행된 일기가 없으면 null"
+      },
+      "DayDetailData": {
+        "type": "object",
+        "properties": {
+          "diary": { "$ref": "#/components/schemas/DiaryOrNull" },
+          "memos": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Memo" }
+          }
+        },
+        "required": ["diary", "memos"],
+        "additionalProperties": false
+      },
+      "DayDetailResponse": {
+        "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+        "properties": {
+          "data": { "$ref": "#/components/schemas/DayDetailData" }
+        }
+      },
+      "Memos": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" },
+
+          "title": { "type": "string", "nullable": true },
+          "content": { "type": "string", "nullable": true },
+          "tags": { "type": "array", "items": { "type": "string" }, "nullable": true },
+
+          "created_at": { "type": "string", "format": "date-time", "nullable": true },
+          "updated_at": { "type": "string", "format": "date-time", "nullable": true },
+          "deleted_at": { "type": "string", "format": "date-time", "nullable": true }
+        },
+        "required": ["id", "user_id"]
+      },
+      "MemosCreate": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "nullable": true, "example": "장보기" },
+          "content": { "type": "string", "nullable": true, "example": "우유, 계란, 빵" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "nullable": true,
+            "example": ["todo", "shopping"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "MemosListResponse": {
+        "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Memo" } }
+        }
+      },
+      "MemosSingleResponse": {
+        "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+        "properties": { "data": { "$ref": "#/components/schemas/Memo" } }
+      },
+      "MemoUpdate": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "nullable": true, "example": "수정된 제목" },
+          "content": { "type": "string", "nullable": true, "example": "수정된 내용" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "nullable": true,
+            "example": ["updated", "tag"]
+          }
+        },
+        "additionalProperties": false,
+        "description": "title/content 둘 다 비어있으면(둘 다 falsy) 400을 반환합니다."
+      },
+      "OkOnlyResponse": {
+        "type": "object",
+        "properties": { "ok": { "type": "boolean", "example": true } },
+        "required": ["ok"],
+        "additionalProperties": false
       }
     }
   },
   "security": [{ "bearerAuth": [] }],
   "paths": {
-    "/apis/drafts": {
-      "post": {
-        "tags": ["Drafts"],
-        "summary": "Create a draft diary",
-        "description": "임시저장(초안) 생성. `date`는 **YYYY-MM-DD** 문자열이어야 함.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/DraftCreate" } }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "초안 생성 성공",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
-                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "UNAUTHORIZED",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "422": {
-            "description": "VALIDATION_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN (RLS)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          }
-        }
-      }
-    },
-    "/apis/drafts/latest": {
-      "get": {
-        "tags": ["Drafts"],
-        "summary": "Get latest draft",
-        "description": "본인 기준 최신 임시저장 1건 반환. 없으면 `data: null`.",
-        "responses": {
-          "200": {
-            "description": "조회 성공",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
-                  "properties": {
-                    "data": {
-                      "oneOf": [{ "$ref": "#/components/schemas/Draft" }, { "type": "null" }]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "UNAUTHORIZED",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN (RLS)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          }
-        }
-      }
-    },
-    "/apis/drafts/{id}": {
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": { "type": "string", "format": "uuid" },
-          "description": "Draft ID (uuid)"
-        }
-      ],
-      "get": {
-        "tags": ["Drafts"],
-        "summary": "Get a single draft (by id)",
-        "description": "본인 소유, `status='draft'`, `deleted_at IS NULL` 조건을 만족하는 초안 1건 조회.",
-        "responses": {
-          "200": {
-            "description": "조회 성공",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
-                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "UNAUTHORIZED",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN (RLS)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "404": {
-            "description": "NOT_FOUND (조건 불일치)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": ["Drafts"],
-        "summary": "Update a draft",
-        "description": "임시저장 일부 수정. body는 부분 필드만 포함 가능.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/DraftUpdate" } }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "수정 성공",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
-                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BAD_REQUEST (id 형식 오류 등)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "401": {
-            "description": "UNAUTHORIZED",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN (RLS)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "404": {
-            "description": "NOT_FOUND (조건 불일치)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "422": {
-            "description": "VALIDATION_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Drafts"],
-        "summary": "Soft delete a draft",
-        "description": "`deleted_at` 타임스탬프를 갱신하는 소프트 삭제.",
-        "responses": {
-          "204": { "description": "삭제 성공 (본문 없음)" },
-          "401": {
-            "description": "UNAUTHORIZED",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN (RLS)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "404": {
-            "description": "NOT_FOUND (조건 불일치)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          }
-        }
-      }
-    },
-    "/apis/drafts/{id}/publish": {
-      "post": {
-        "tags": ["Drafts"],
-        "summary": "Publish a draft",
-        "description": "초안을 게시 상태(`published`)로 전환. 하루 1게시 제한(같은 user_id+date published 유니크)에 걸리면 409.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string", "format": "uuid" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "게시 성공",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
-                  "properties": { "data": { "$ref": "#/components/schemas/PublishResult" } }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "UNAUTHORIZED",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN (RLS)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "404": {
-            "description": "NOT_FOUND (draft 없음)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "409": {
-            "description": "DAILY_LIMIT (유니크 충돌)",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
-            }
-          }
-        }
-      }
-    },
-    "/apis/diaries/export": {
-      "get": {
-        "tags": ["Diary"],
-        "summary": "월별 일기 PDF 다운로드",
-        "description": "지정한 연도와 월의 일기를 하나의 PDF 파일로 생성하여 다운로드합니다.",
-        "parameters": [
-          {
-            "name": "year",
-            "in": "query",
-            "required": true,
-            "description": "연도 (예: 2025)",
-            "schema": {
-              "type": "integer",
-              "example": 2025
-            }
-          },
-          {
-            "name": "month",
-            "in": "query",
-            "required": true,
-            "description": "월 (1~12)",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 12,
-              "example": 11
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "성공 - PDF 파일 바이너리 응답",
-            "headers": {
-              "Content-Type": {
-                "description": "application/pdf",
-                "schema": {
-                  "type": "string",
-                  "example": "application/pdf"
-                }
-              },
-              "Content-Disposition": {
-                "description": "파일 다운로드를 위한 헤더 (파일명 포함)",
-                "schema": {
-                  "type": "string",
-                  "example": "attachment; filename=\"Diaries(2025-11).pdf\""
-                }
-              }
-            },
-            "content": {
-              "application/pdf": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "잘못된 요청 (year 또는 month가 유효하지 않음)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "InvalidYearOrMonth": {
-                    "summary": "유효하지 않은 year/month",
-                    "value": {
-                      "ok": false,
-                      "message": "EXPORT_INVALID_DATA",
-                      "statusCode": 400
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "인증되지 않은 사용자 (UNAUTHORIZED)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "Unauthorized": {
-                    "summary": "로그인이 필요한 경우",
-                    "value": {
-                      "ok": false,
-                      "message": "UNAUTHORIZED_USER",
-                      "statusCode": 401
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "서버 오류 (PDF 생성 오류 등)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "ExportError": {
-                    "summary": "PDF 내보내기 실패",
-                    "value": {
-                      "ok": false,
-                      "message": "EXPORT_FAILED",
-                      "statusCode": 500
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/apis/diaries/monthly": {
-      "get": {
-        "tags": ["Diary"],
-        "summary": "월별 일기 조회",
-        "description": "지정한 연도와 월에 해당하는 일기 목록을 조회합니다.",
-        "parameters": [
-          {
-            "name": "year",
-            "in": "query",
-            "required": true,
-            "description": "연도 (예: 2025)",
-            "schema": {
-              "type": "integer",
-              "example": 2025
-            }
-          },
-          {
-            "name": "month",
-            "in": "query",
-            "required": true,
-            "description": "월 (1~12)",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 12,
-              "example": 11
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "성공 - 월별 일기 데이터 반환",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MonthlyDiariesResponse"
-                },
-                "examples": {
-                  "Success": {
-                    "summary": "월별 일기 조회 성공",
-                    "value": {
-                      "ok": true,
-                      "data": {
-                        "year": 2025,
-                        "month": 11,
-                        "diaries": [
-                          {
-                            "id": "a1b2c3",
-                            "date": "2025-11-01",
-                            "title": "첫 번째 일기",
-                            "content": "오늘은 ...",
-                            "emoji": "😊",
-                            "weather": "sunny",
-                            "imageUrl": "https://example.com/diary/1.png"
-                          }
-                        ]
-                      },
-                      "statusCode": 200
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "잘못된 요청 (year 또는 month가 유효하지 않음, 혹은 INVALID_YEAR_MONTH 에러)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "InvalidQueryParams": {
-                    "summary": "year/month 쿼리 파라미터가 없거나 숫자가 아님",
-                    "value": {
-                      "ok": false,
-                      "message": "EXPORT_INVALID_DATA",
-                      "statusCode": 400
-                    }
-                  },
-                  "InvalidYearMonthDomain": {
-                    "summary": "서비스 기준 유효하지 않은 year/month (INVALID_YEAR_MONTH)",
-                    "value": {
-                      "ok": false,
-                      "message": "EXPORT_INVALID_DATA",
-                      "statusCode": 400
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "인증되지 않은 사용자 (UNAUTHORIZED)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "Unauthorized": {
-                    "summary": "로그인이 필요한 경우",
-                    "value": {
-                      "ok": false,
-                      "message": "UNAUTHORIZED_USER",
-                      "statusCode": 401
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "서버 오류 (일기 조회 실패 등)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "ReadError": {
-                    "summary": "월별 일기 조회 실패",
-                    "value": {
-                      "ok": false,
-                      "message": "READ_DIARY_ERROR",
-                      "statusCode": 500
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/apis/auth/register": {
       "post": {
         "tags": ["Auth"],
@@ -1505,9 +1205,7 @@
             }
           }
         }
-      }
-    },
-    "/apis/uploads": {
+      },
       "delete": {
         "tags": ["Storage"],
         "summary": "프라이빗 버킷 객체 삭제",
@@ -1873,6 +1571,1078 @@
                   }
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "/apis/drafts": {
+      "get": {
+        "tags": ["Drafts"],
+        "summary": "List drafts",
+        "description": "임시저장 목록 전체 조회. 본인 소유 + status='draft' + published_at IS NULL + deleted_at IS NULL. 정렬: updated_at desc, created_at desc.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DraftListResponse" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Drafts"],
+        "summary": "Create a draft diary",
+        "description": "임시저장(초안) 생성. date(YYYY-MM-DD) 기준 해당 날짜(created_at 00:00~23:59:59.999Z)로 이미 일기가 존재하면 409.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/DraftCreate" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "초안 생성 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DraftCreatedResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (바디 누락/유효성 실패 등)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "409": {
+            "description": "CONFLICT (하루 1개 제한 / 기존 일기 존재)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          }
+        }
+      }
+    },
+    "/apis/drafts/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" },
+          "description": "Draft ID (uuid)"
+        }
+      ],
+      "get": {
+        "tags": ["Drafts"],
+        "summary": "Get a single draft (by id)",
+        "description": "본인 소유 + status='draft' + deleted_at IS NULL 조건으로 1건 조회 후, 이미지가 있으면 signed URL로 변환된 결과를 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR (조건 불일치/미존재도 현재 구현상 500으로 처리될 수 있음)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Drafts"],
+        "summary": "Update a draft",
+        "description": "임시저장 일부 수정. 현재 구현은 status 체크를 하지 않으며, content/imageUrl을 diaries 테이블에 업데이트합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/DraftUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Draft" } }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (ZodError 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (id/user 불일치 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR (유효성 실패도 현재 구현은 500을 반환할 수 있음)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Drafts"],
+        "summary": "Soft delete a draft",
+        "description": "deleted_at 타임스탬프를 갱신하는 소프트 삭제. 이미 삭제된 경우도 200으로 처리합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "삭제 성공/중복삭제",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (삭제 업데이트 실패 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/drafts/{id}/publish": {
+      "patch": {
+        "tags": ["Drafts"],
+        "summary": "Publish a draft (PATCH)",
+        "description": "초안을 published로 전환하고 published_at을 설정합니다. 요청 바디의 content/imageUrl도 함께 저장합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PublishRequest" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "게시(발행) 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/PublishResult" } }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (요청 바디 유효성 실패 / ZodError 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (id/user 불일치 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/diaries": {
+      "get": {
+        "tags": ["Diary"],
+        "summary": "일기 목록 조회(커서 페이지네이션) + 오늘 상태",
+        "description": "발행된 일기만 조회(status='published' AND published_at NOT NULL AND deleted_at IS NULL). year/month로 월 필터 가능. cursor는 published_at 기준(이전 페이지). limit 기본 5.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "example": 2025 }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1, "maximum": 12, "example": 11 }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "이 값보다 published_at이 작은 항목을 가져옵니다(ISO date-time).",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "가져올 개수(기본 5). 코드에서 상한 검증은 없음.",
+            "schema": { "type": "integer", "default": 5, "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/DiariesListResponse" },
+                    { "$ref": "#/components/schemas/DiariesListEmptyResponse_CurrentImplementation" }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Diary"],
+        "summary": "일기 생성(즉시 published)",
+        "description": "date(YYYY-MM-DD) 기준 해당 날짜(created_at 00:00~23:59:59.999Z)에 이미 일기가 있으면 409. 생성 시 status='published', published_at=now로 저장.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/DiaryCreate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "생성 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DiaryCreateResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (요청 바디 유효성 실패)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "409": {
+            "description": "CONFLICT (하루 1개 제한 / 기존 일기 존재)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } }
+          }
+        }
+      }
+    },
+     "/apis/diaries/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" },
+          "description": "Diary ID (uuid)"
+        }
+      ],
+      "get": {
+        "tags": ["Diary"],
+        "summary": "일기 단건 조회",
+        "description": "id로 일기 1건 조회 후 이미지가 있으면 signed URL로 변환합니다. (현재 구현은 user_id 조건을 명시적으로 걸지 않습니다.)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Diary" } }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR (조회 실패 등). 구현상 ok 없이 message만 내려갈 수 있음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorEnvelope" },
+                    {
+                      "type": "object",
+                      "properties": { "message": { "type": "string" } },
+                      "required": ["message"]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Diary"],
+        "summary": "일기 수정",
+        "description": "본인 소유(user_id 일치) 일기만 수정합니다. content/imageUrl을 업데이트합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/DiaryUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "$ref": "#/components/schemas/Diary" } }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (요청 바디 유효성 실패)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (id/user 불일치 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Diary"],
+        "summary": "일기 삭제(soft delete)",
+        "description": "deleted_at을 현재시각으로 업데이트합니다. (현재 구현은 update 시 user_id 조건을 명시적으로 걸지 않습니다.)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "삭제 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/SuccessEnvelope" }],
+                  "properties": { "data": { "type": "null", "nullable": true } }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR (존재하지 않거나 이미 삭제된 경우도 현재 구현은 500으로 처리)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+     "/apis/diaries/monthly": {
+      "get": {
+        "tags": ["Diary"],
+        "summary": "월별 일기 조회",
+        "description": "지정한 연도와 월에 해당하는 일기 목록을 조회합니다.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "description": "연도 (예: 2025)",
+            "schema": {
+              "type": "integer",
+              "example": 2025
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "description": "월 (1~12)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12,
+              "example": 11
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 - 월별 일기 데이터 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyDiariesResponse"
+                },
+                "examples": {
+                  "Success": {
+                    "summary": "월별 일기 조회 성공",
+                    "value": {
+                      "ok": true,
+                      "data": {
+                        "year": 2025,
+                        "month": 11,
+                        "diaries": [
+                          {
+                            "id": "a1b2c3",
+                            "date": "2025-11-01",
+                            "title": "첫 번째 일기",
+                            "content": "오늘은 ...",
+                            "emoji": "😊",
+                            "weather": "sunny",
+                            "imageUrl": "https://example.com/diary/1.png"
+                          }
+                        ]
+                      },
+                      "statusCode": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (year 또는 month가 유효하지 않음, 혹은 INVALID_YEAR_MONTH 에러)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "InvalidQueryParams": {
+                    "summary": "year/month 쿼리 파라미터가 없거나 숫자가 아님",
+                    "value": {
+                      "ok": false,
+                      "message": "EXPORT_INVALID_DATA",
+                      "statusCode": 400
+                    }
+                  },
+                  "InvalidYearMonthDomain": {
+                    "summary": "서비스 기준 유효하지 않은 year/month (INVALID_YEAR_MONTH)",
+                    "value": {
+                      "ok": false,
+                      "message": "EXPORT_INVALID_DATA",
+                      "statusCode": 400
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증되지 않은 사용자 (UNAUTHORIZED)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Unauthorized": {
+                    "summary": "로그인이 필요한 경우",
+                    "value": {
+                      "ok": false,
+                      "message": "UNAUTHORIZED_USER",
+                      "statusCode": 401
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류 (일기 조회 실패 등)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ReadError": {
+                    "summary": "월별 일기 조회 실패",
+                    "value": {
+                      "ok": false,
+                      "message": "READ_DIARY_ERROR",
+                      "statusCode": 500
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+      "/apis/diaries/export": {
+      "get": {
+        "tags": ["Diary"],
+        "summary": "월별 일기 PDF 다운로드",
+        "description": "지정한 연도/월의 일기를 하나의 PDF 파일로 생성하여 바이너리로 다운로드합니다. year/month가 누락되거나 정수가 아니면 400을 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "description": "연도 (정수)",
+            "schema": { "type": "integer", "example": 2025 }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "description": "월 (정수). 현재 구현은 정수 여부만 검사합니다.",
+            "schema": { "type": "integer", "example": 11 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 - PDF 파일 바이너리 응답",
+            "headers": {
+              "Content-Type": {
+                "description": "application/pdf",
+                "schema": { "type": "string", "example": "application/pdf" }
+              },
+              "Content-Disposition": {
+                "description": "파일 다운로드용 헤더(파일명 포함)",
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"Diaries(2025-11).pdf\""
+                }
+              }
+            },
+            "content": {
+              "application/pdf": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (year/month 누락 또는 정수가 아님)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "인증 필요(내부 로직에서 인증 실패 시)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "서버 오류 (PDF 생성 실패 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/calendar/monthly": {
+      "get": {
+        "tags": ["Calendar"],
+        "summary": "캘린더 월간 표시 데이터(일기/메모 존재 여부)",
+        "description": "요청한 연/월 기준으로, 각 날짜(1~31)에 일기(published) 또는 메모가 있는지 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 2025 }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "description": "현재 구현은 숫자 여부만 검사합니다(1~12 범위 검증 없음).",
+            "schema": { "type": "integer", "example": 11 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/CalendarMonthlyResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (year/month 누락 또는 형식 오류)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR (diaries/memos 조회 실패 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+     "/apis/calendar/day": {
+      "get": {
+        "tags": ["Calendar"],
+        "summary": "선택 날짜의 일기(1개) + 메모 목록 조회",
+        "description": "year/month/day로 선택한 날짜 범위에서 발행된 일기 1개(최신 published_at)와, 같은 날짜 created_at 범위의 메모 목록을 반환합니다. 일기가 없으면 diary는 null입니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 2025 }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 11 }
+          },
+          {
+            "name": "day",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 7 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DayDetailResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (year/month/day 누락)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR (diaries 또는 memos 조회 실패)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/apis/memos": {
+      "get": {
+        "tags": ["Memos"],
+        "summary": "메모 목록 조회",
+        "description": "본인 메모 중 deleted_at IS NULL인 항목을 created_at desc로 조회합니다. limit은 1~100으로 클램프되며 기본값은 50입니다.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "기본 50, 최소 1, 최대 100",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/MemoListResponse" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Memos"],
+        "summary": "메모 생성",
+        "description": "메모를 생성하고 생성된 row를 반환합니다.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/MemoCreate" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "생성 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/MemoSingleResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (요청 바디 유효성 실패)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+     "/apis/memos/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" },
+          "description": "Memo ID (uuid)"
+        }
+      ],
+
+      "get": {
+        "tags": ["Memos"],
+        "summary": "메모 단건 조회",
+        "description": "본인 소유 + deleted_at IS NULL 조건의 메모 1건을 조회합니다. 없으면 404.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/MemoSingleResponse" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (없거나 권한 없음/삭제됨)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+
+      "patch": {
+        "tags": ["Memos"],
+        "summary": "메모 수정",
+        "description": "본인 소유 + 삭제되지 않은 메모만 수정합니다. title/content가 모두 비어있으면 400.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/MemoUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/MemoSingleResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (유효성 실패 또는 title/content 모두 비어있음)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "404": {
+            "description": "NOT_FOUND (없거나 권한 없음/삭제됨)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Memos"],
+        "summary": "메모 삭제(soft delete)",
+        "description": "본인 소유이면서 삭제되지 않은 메모만 deleted_at을 설정합니다. 이미 삭제/권한 없음이면 400.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "삭제 성공",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/OkOnlyResponse" } }
+            }
+          },
+          "400": {
+            "description": "BAD_REQUEST (이미 삭제됨/권한 없음 등)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "401": {
+            "description": "UNAUTHORIZED",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "403": {
+            "description": "FORBIDDEN (RLS)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
+            }
+          },
+          "500": {
+            "description": "INTERNAL_ERROR",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }
             }
           }
         }

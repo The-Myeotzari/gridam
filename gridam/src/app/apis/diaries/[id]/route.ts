@@ -2,6 +2,7 @@ import { MESSAGES } from '@/shared/constants/messages'
 import type { Params } from '@/shared/types/params.type'
 import { updateSchema } from '@/shared/types/zod/apis/diaries'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
+import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(_req: NextRequest, { params }: Params) {
@@ -16,7 +17,9 @@ export async function GET(_req: NextRequest, { params }: Params) {
       return NextResponse.json({ message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
     }
 
-    return NextResponse.json({ ok: true, data })
+    const [signedDiary] = await withSignedImageUrls(supabase, [data])
+
+    return NextResponse.json({ ok: true, data: signedDiary })
   } catch (err) {
     console.error(err)
     return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })

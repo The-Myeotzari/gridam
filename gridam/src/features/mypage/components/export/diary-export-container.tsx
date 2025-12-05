@@ -57,7 +57,7 @@ export default function DiaryExportContainer({
         diaries={diaries}
         onClose={close}
       />
-    ))
+    ), '2xl')
   }
 
   return (
