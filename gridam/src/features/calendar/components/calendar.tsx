@@ -4,6 +4,7 @@ import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 import { MonthlyData } from './calendar-client'
 import buildCalendar, { weekday } from '../lib/build-calendar'
+import { getAdjacentMonth } from '@/shared/utils/date'
 
 interface CalendarProps {
   // 캘린더가 외부에서 관리하는 데이터를 받는다.
@@ -37,25 +38,12 @@ export default function Calendar({
 
   // 이전 달
   const handlePrevMonth = () => {
-    let year = currentView.year
-    let month = currentView.month - 1
-
-    if (month < 0) {
-      month = 11
-      year -= 1
-    }
-    onViewChange({ year, month })
+    const preveMonth = getAdjacentMonth(currentView.year, currentView.month, -1)
+    onViewChange(preveMonth)
   }
   // 다음 달
   const handleNextMonth = () => {
-    let year = currentView.year
-    let month = currentView.month + 1
-
-    if (month > 11) {
-      month = 0
-      year += 1
-    }
-
+    const { year, month } = getAdjacentMonth(currentView.year, currentView.month, 1)
     onViewChange({ year, month })
   }
 
