@@ -80,7 +80,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
           <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
         </div>
       </Card>
-      <Card className="flex flex-col md:flex-row p-6 gap-7 max-h-[640]">
+      <Card className="flex flex-col md:flex-row p-6 gap-7">
         <div className="mb-4 flex flex-col flex-1 gap h-full">
           <h3 className="font-handwritten text-xl mb-2 text-navy-gray font-bold">메모</h3>
           <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 mb-2 ">

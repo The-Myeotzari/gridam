@@ -2,7 +2,7 @@ import { MESSAGES } from '@/shared/constants/messages'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest, NextResponse } from 'next/server'
 import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
-import type { Diary } from '@/features/feed/feed.type' // ✅ 타입 임포트
+import type { Diary } from '@/features/feed/feed.type'
 
 export async function GET(req: NextRequest) {
   try {

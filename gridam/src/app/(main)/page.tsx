@@ -21,17 +21,15 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const ym = `${year}년 ${month}월`
   const title = `${ym} 그림일기 | Gridam`
   const description = `${ym}에 작성된 모두의 하루를 담은 그림 일기`
-  const url = new URL(`/?year=${year}&month=${month}`, SITE_URL)
   return {
     metadataBase: new URL(SITE_URL),
     title,
     description,
     keywords: ['그리담', 'Gridam', '그림일기', `${year}`, `${month}`],
-    alternates: { canonical: url },
+    alternates: { canonical: SITE_URL },
     openGraph: {
       title,
       description,
-      url,
       siteName: 'Gridam',
       type: 'website',
       locale: 'ko_KR',
@@ -74,7 +72,7 @@ export default async function Home({ searchParams }: PageProps) {
         </div>
       )
     }
-    return <FeedList year={year} month={month} initialPage={firstPage} />
+    return <FeedList key={`${year}-${month}`} year={year} month={month} initialPage={firstPage} />
   }
 
   return (
