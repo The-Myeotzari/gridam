@@ -42,6 +42,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
         year: view.year,
         month: view.month,
       })
+
       if (res.ok && res.data.monthlyData) {
         setMonthlyData(res.data.monthlyData)
       }
@@ -59,9 +60,6 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
       if (res.ok) {
         setDiary(res.data.diary ?? ({} as Diary))
         setMemos(res.data.memos ?? [])
-        if (res.data.monthlyData) {
-          setMonthlyData(res.data.monthlyData)
-        }
       }
     })
   }

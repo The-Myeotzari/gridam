@@ -92,7 +92,6 @@ export default function Calendar({
                 onSelectDate({ year: cell.year, month: cell.month, day: cell.day })
               }}
               className={cn(
-                // 달력에 표시할게 많지 않으면 center로 바꾸기
                 'aspect-square flex justify-start items-start',
                 `p-2 ${cell.inCurrentMonth ? '' : 'text-muted-foreground/40'}`,
                 'hover:cursor-pointer',
