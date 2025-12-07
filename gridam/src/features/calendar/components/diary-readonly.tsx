@@ -27,16 +27,14 @@ export function DiaryReadOnly({ diary }: DiaryReadOnlyProps) {
       {/* 이미지 */}
       <div className="border rounded-2xl">
         {diary.image_url && (
-          <>
-            <Image
-              src={diary.image_url}
-              alt="사용자가 그린 그림"
-              width={800}
-              height={800}
-              className="w-full h-full object-cover"
-              unoptimized
-            />
-          </>
+          <Image
+            src={diary.image_url}
+            alt="사용자가 그린 그림"
+            width={800}
+            height={800}
+            className="w-full h-full object-cover"
+            unoptimized
+          />
         )}
       </div>
       <hr />
