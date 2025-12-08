@@ -15,7 +15,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
   // 수정 시 기존 이미지를 배경으로 깔기 위한 ref
   const baseImgRef = useRef<HTMLImageElement | null>(null)
   const baseImgReadyRef = useRef(false)
-  // history 각 스냅샷 시점의 strokes 길이
+ // history 각 스냅샷 시점의 strokes 길이
   const strokeCountsRef = useRef<number[]>([])
 
   // UI 상태
@@ -26,6 +26,13 @@ export function useCanvasDrawing(initialImage?: string | null) {
   // 스냅샷 기반 히스토리
   const [history, setHistory] = useState<ImageData[]>([])
   const maxHistory = 50
+
+  // size 변경 시 현재 context 선 두께 반영
+  useEffect(() => {
+    const ctx = ctxRef.current
+    if (!ctx) return
+    ctx.lineWidth = size
+  }, [size])
 
   const toggleEraser = () => setIsEraser((v) => !v)
 
@@ -47,7 +54,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
     })
   }, [])
 
-  // 기존 이미지와 모든 스트로크를 현재 캔버스 크기에 맞게 재렌더
+   // 기존 이미지와 모든 스트로크를 현재 캔버스 크기에 맞게 재렌더
   const redrawAll = useCallback(() => {
     const canvas = canvasRef.current
     const ctx = ctxRef.current
@@ -141,6 +148,7 @@ export function useCanvasDrawing(initialImage?: string | null) {
     return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) }
   }
 
+
   // 그림 그리기 시작
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -220,20 +228,10 @@ export function useCanvasDrawing(initialImage?: string | null) {
     ctxRef.current = ctx
   }, [size])
 
-  // size 변경 시 현재 context 선 두께 반영
-  useEffect(() => {
-    const ctx = ctxRef.current
-    if (!ctx) return
-    ctx.lineWidth = size
-  }, [size])
-
   // 초기 세팅 1번 캔버스 만들기
-  const didInitRef = useRef(false)
   useEffect(() => {
-    if (didInitRef.current) return
-    didInitRef.current = true
-
     setupCanvas()
+
     const canvas = canvasRef.current
     const ctx = ctxRef.current
     if (canvas && ctx) {
