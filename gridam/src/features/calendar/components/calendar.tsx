@@ -102,7 +102,6 @@ export default function Calendar({
                 <div>{cell.day}</div>
                 <div className="flex items-center gap-0.5 h-full">
                   {hasDiary && <div className="w-2 h-2 rounded-full bg-blue-400" />}
-
                   {hasMemo && <div className="w-2 h-2 rounded-full bg-pink-400" />}
                 </div>
               </div>
