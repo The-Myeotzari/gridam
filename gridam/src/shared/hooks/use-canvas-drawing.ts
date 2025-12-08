@@ -2,28 +2,51 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+type NPoint = { x: number; y: number } // 0~1
+type Stroke = { mode: 'draw' | 'erase'; color: string; size: number; points: NPoint[] }
+
 export function useCanvasDrawing(initialImage?: string | null) {
+  // canvas / context / 드로잉 상태
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const isDrawingRef = useRef(false)
+  // 리사이즈/재렌더를 위해 스트로크를 저장
+  const strokesRef = useRef<Stroke[]>([])
+  // 수정 시 기존 이미지를 배경으로 깔기 위한 ref
+  const baseImgRef = useRef<HTMLImageElement | null>(null)
+  const baseImgReadyRef = useRef(false)
+ // history 각 스냅샷 시점의 strokes 길이
+  const strokeCountsRef = useRef<number[]>([])
 
-  // 상태
+  // UI 상태
   const [canvasImage, setCanvasImage] = useState<string | null>(null)
-  const [color, setColor] = useState('var(--color-canva-red)')
+  const [color, setColor] = useState('#111827')
   const [isEraser, setIsEraser] = useState(false)
+  const [size, setSize] = useState(10)
+  // 스냅샷 기반 히스토리
   const [history, setHistory] = useState<ImageData[]>([])
   const maxHistory = 50
 
+  // size 변경 시 현재 context 선 두께 반영
+  useEffect(() => {
+    const ctx = ctxRef.current
+    if (!ctx) return
+    ctx.lineWidth = size
+  }, [size])
+
   const toggleEraser = () => setIsEraser((v) => !v)
 
-  // 저장
+  // 현재 캔버스를 이미지로 저장 -> 추후 미리보기 기능 제공?
   const saveCanvasImage = useCallback(() => {
     const canvas = canvasRef.current
     if (canvas) setCanvasImage(canvas.toDataURL('image/png'))
   }, [])
 
-  // snapshot 저장
+  // 히스토리 snapshot 저장
   const pushSnapshot = useCallback((snap: ImageData) => {
+    strokeCountsRef.current.push(strokesRef.current.length)
+    if (strokeCountsRef.current.length > maxHistory) strokeCountsRef.current.shift()
+
     setHistory((prev) => {
       const next = [...prev, snap]
       if (next.length > maxHistory) next.shift()
@@ -31,47 +54,102 @@ export function useCanvasDrawing(initialImage?: string | null) {
     })
   }, [])
 
-  // undo
+   // 기존 이미지와 모든 스트로크를 현재 캔버스 크기에 맞게 재렌더
+  const redrawAll = useCallback(() => {
+    const canvas = canvasRef.current
+    const ctx = ctxRef.current
+    if (!canvas || !ctx) return
+    // 해상도 세팅
+    const dpr = window.devicePixelRatio || 1
+    const cssW = canvas.width / dpr
+    const cssH = canvas.height / dpr
+    // clear는 픽셀 좌표계(1:1)에서 처리
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    // 다시 CSS 픽셀 좌표계로 복귀
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    // 기존 이미지를 먼저 그려 배경으로 사용
+    if (baseImgRef.current && baseImgReadyRef.current) {
+      ctx.drawImage(baseImgRef.current, 0, 0, cssW, cssH)
+    }
+    // 저장된 스트로크를 순서대로 재생
+    for (const s of strokesRef.current) {
+      if (s.points.length < 1) continue
+      ctx.save()
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.lineWidth = s.size
+      if (s.mode === 'erase') {
+        ctx.globalCompositeOperation = 'destination-out'
+        ctx.strokeStyle = 'rgba(0,0,0,1)'
+      } else {
+        ctx.globalCompositeOperation = 'source-over'
+        ctx.strokeStyle = s.color
+      }
+      // 정규화 좌표 -> 현재 캔버스 CSS 크기 좌표로 환산
+      ctx.beginPath()
+      ctx.moveTo(s.points[0].x * cssW, s.points[0].y * cssH)
+      for (let i = 1; i < s.points.length; i++) {
+        ctx.lineTo(s.points[i].x * cssW, s.points[i].y * cssH)
+      }
+      ctx.stroke()
+      ctx.restore()
+    }
+  }, [])
+
+  // undo - 마지막 이전 스냅샷으로 복원
   const handleUndo = useCallback(() => {
+    // 드로잉 중이면 종료 처리
+    isDrawingRef.current = false
+
     setHistory((prev) => {
       if (prev.length <= 1) return prev
-
       const next = prev.slice(0, -1)
-      const last = next[next.length - 1]
-
-      const ctx = ctxRef.current
-      if (ctx && last) ctx.putImageData(last, 0, 0)
-
+      strokeCountsRef.current.pop()
+      const targetCount = strokeCountsRef.current[strokeCountsRef.current.length - 1] ?? 0
+      strokesRef.current = strokesRef.current.slice(0, targetCount)
+      redrawAll()
       saveCanvasImage()
       return next
     })
-  }, [saveCanvasImage])
+  }, [redrawAll, saveCanvasImage])
 
-  // clear
-  const clearHistory = () => {
+  // clear - 캔버스 비우고 히스토리 초기화
+  const clearHistory = useCallback(() => {
     const canvas = canvasRef.current
     const ctx = ctxRef.current
-    // 준비 안된 상태 처리
     if (!canvas || !ctx) {
       setHistory([])
+      strokeCountsRef.current = []
+      strokesRef.current = []
+      baseImgRef.current = null
+      baseImgReadyRef.current = false
       setCanvasImage(null)
       return
     }
-    // 초기화랑 동일한 로직 진행
+    isDrawingRef.current = false
+    strokesRef.current = []
+    strokeCountsRef.current = [0]
+    baseImgRef.current = null
+    baseImgReadyRef.current = false
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    const emptySnap = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    setHistory([emptySnap])
+    const snap = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    setHistory([snap])
     setCanvasImage(null)
-  }
-
-  // css 색상 해석
-  const resolveColor = useCallback((input: string): string => {
-    if (!input.startsWith('var(')) return input
-    const name = input.slice(4, -1).trim()
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#000'
   }, [])
 
-  // 그림 그리기
+  // 포인터 좌표를 정규화 좌표(0~1)로 변환
+  const getNPoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return null
+    const rect = canvas.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+    return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) }
+  }
+
+
+  // 그림 그리기 시작
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLCanvasElement>) => {
       const ctx = ctxRef.current
@@ -80,32 +158,37 @@ export function useCanvasDrawing(initialImage?: string | null) {
       isDrawingRef.current = true
       ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
 
-      if (isEraser) {
-        ctx.globalCompositeOperation = 'destination-out'
-        ctx.strokeStyle = 'rgba(0,0,0,1)'
-        ctx.lineWidth = 15
-      } else {
-        ctx.globalCompositeOperation = 'source-over'
-        ctx.strokeStyle = resolveColor(color)
-        ctx.lineWidth = 4
-      }
+      const point = getNPoint(e)
+      if (!point) return
 
-      const { offsetX, offsetY } = e.nativeEvent
-      ctx.beginPath()
-      ctx.moveTo(offsetX, offsetY)
+      const stroke: Stroke = {
+        mode: isEraser ? 'erase' : 'draw',
+        color: isEraser ? 'rgba(0,0,0,1)' : color,
+        size,
+        points: [point],
+      }
+      strokesRef.current.push(stroke)
+
+      redrawAll()
     },
-    [color, isEraser, resolveColor]
+    [color, isEraser, size, redrawAll]
   )
 
-  const onPointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
-    const ctx = ctxRef.current
-    if (!ctx || !isDrawingRef.current) return
+  // 그리는 중
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLCanvasElement>) => {
+      if (!isDrawingRef.current) return
+      const porint = getNPoint(e)
+      if (!porint) return
+      const last = strokesRef.current[strokesRef.current.length - 1]
+      if (!last) return
+      last.points.push(porint)
+      redrawAll()
+    },
+    [redrawAll]
+  )
 
-    const { offsetX, offsetY } = e.nativeEvent
-    ctx.lineTo(offsetX, offsetY)
-    ctx.stroke()
-  }, [])
-
+  // 그리기 종료
   const onPointerUpOrLeave = useCallback(
     (e?: React.PointerEvent<HTMLCanvasElement>) => {
       const canvas = canvasRef.current
@@ -128,24 +211,22 @@ export function useCanvasDrawing(initialImage?: string | null) {
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-
+    // 해상도 세팅
     const dpr = window.devicePixelRatio || 1
     const cssW = canvas.clientWidth || 600
     const cssH = canvas.clientHeight || 300
-
     canvas.width = Math.floor(cssW * dpr)
     canvas.height = Math.floor(cssH * dpr)
-
     const ctx = canvas.getContext('2d', { willReadFrequently: true })
     if (!ctx) return
-
+    // CSS 좌표계로 그릴 수 있게 transform 적용
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.lineCap = 'round'
-    ctx.lineWidth = 4
+    ctx.lineWidth = size
     ctx.globalCompositeOperation = 'source-over'
 
     ctxRef.current = ctx
-  }, [])
+  }, [size])
 
   // 초기 세팅 1번 캔버스 만들기
   useEffect(() => {
@@ -159,31 +240,38 @@ export function useCanvasDrawing(initialImage?: string | null) {
     }
   }, [setupCanvas, pushSnapshot])
 
-  // 캔버스 만들어진 이후에 세팅 진행
+  // 리사이즈 - 캔버스 재세팅 후 스트로크 기반으로 다시 렌더
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    let raf = 0
+    const resize = new ResizeObserver(() => {
+      if (isDrawingRef.current) return
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        setupCanvas()
+        redrawAll()
+      })
+    })
+    resize.observe(canvas)
+    return () => {
+      cancelAnimationFrame(raf)
+      resize.disconnect()
+    }
+  }, [setupCanvas, redrawAll])
+
+  // initialImage를 배경 이미지로 로드하고 다시 그리기
   useEffect(() => {
     if (!initialImage) return
-    if (!canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = ctxRef.current
-    if (!canvas || !ctx) return
-
     const img = new Image()
     img.crossOrigin = 'anonymous'
-    img.src = initialImage
-
     img.onload = () => {
-      const canvas = canvasRef.current
-      const ctx = ctxRef.current
-      if (!canvas || !ctx) return
-
-      const cssW = canvas.clientWidth
-      const cssH = canvas.clientHeight
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, 0, 0, cssW, cssH)
+      baseImgRef.current = img
+      baseImgReadyRef.current = true
+      redrawAll()
     }
-  }, [initialImage])
+    img.src = initialImage
+  }, [initialImage, redrawAll])
 
   return {
     canvasRef,
@@ -193,11 +281,13 @@ export function useCanvasDrawing(initialImage?: string | null) {
     // 상태
     color,
     isEraser,
+    size,
     history,
 
     // 액션
     setColor,
     toggleEraser,
+    setSize,
     handleUndo,
     clearHistory,
     saveCanvasImage,

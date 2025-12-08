@@ -1,6 +1,8 @@
 import { MESSAGES } from '@/shared/constants/messages'
 import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { NextRequest, NextResponse } from 'next/server'
+import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
+import type { Diary } from '@/features/feed/feed.type'
 
 export async function GET(req: NextRequest) {
   try {
@@ -38,8 +40,20 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.READ }, { status: 500 })
     }
 
-    const diary = diaryData?.length ? diaryData[0] : null
+    // 기본값은 null
+    let diary: Diary | null = null
 
+    // 2) 여기서 fresh signed URL 생성
+    if (diaryData && diaryData.length > 0) {
+      const [signedDiary] = await withSignedImageUrls<Diary>(
+        supabase,
+        diaryData as Diary[],
+        60 * 60 // 옵션: 1시간 TTL (안 넣으면 기본 5분)
+      )
+      diary = signedDiary
+    }
+
+    // 선택 날짜의 메모 조회
     const { data: memosData, error: memoError } = await supabase
       .from('memos')
       .select('*')

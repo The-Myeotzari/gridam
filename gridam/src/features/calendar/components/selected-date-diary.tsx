@@ -8,6 +8,7 @@ interface SelectedDateDiaryProps {
 }
 
 export default function SelectedDateDiary({ isLoading, diary }: SelectedDateDiaryProps) {
+  //로딩 중일 때
   if (isLoading && !diary.id) {
     return (
       <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
@@ -15,14 +16,14 @@ export default function SelectedDateDiary({ isLoading, diary }: SelectedDateDiar
       </div>
     )
   }
-
-  if (!isLoading && diary.id) {
+  //로딩 중이 아니고 일기가 없을 때
+  if (!diary.id) {
     return (
       <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
         선택한 날짜에 일기가 없습니다
       </div>
     )
   }
-
+  //로딩 중이 아니고 일기가 있을 때
   return <DiaryReadOnly diary={diary} />
 }

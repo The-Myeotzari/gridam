@@ -7,7 +7,7 @@ import { useCanvasStore } from '@/store/canvas-store'
 import { memo } from 'react'
 
 function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
-  const { setImage } = useCanvasStore()
+  const setImage = useCanvasStore((s) => s.setImage)
   const {
     canvasRef,
     canvasImage,
@@ -16,6 +16,8 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
     setColor,
     isEraser,
     toggleEraser,
+    size,
+    setSize,
     handleUndo,
     clearHistory,
 
@@ -27,8 +29,9 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
   const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
     onPointerUpOrLeave(e)
 
-    if (canvasRef.current) {
-      setImage(canvasImage)
+    const canvas = canvasRef.current
+    if (canvas) {
+    setImage(canvas.toDataURL('image/png'))
     }
   }
 
@@ -39,13 +42,14 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
         setColor={setColor}
         isEraser={isEraser}
         toggleEraser={toggleEraser}
+        size={size}
+        setSize={setSize}
         handleUndo={handleUndo}
         clearHistory={clearHistory}
       />
 
       <CanvasView
         canvasRef={canvasRef}
-        height={45}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUpOrLeave={handlePointerUp}

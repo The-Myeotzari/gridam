@@ -23,16 +23,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: false, message: '년/월 형식이 올바르지 않습니다.' })
     }
 
-    // month 처리
-    //마지막 날 구하기
-    const mm = String(month).padStart(2, '0')
-    const lastDay = new Date(year, month, 0).getDate()
-
-    // diaries용 문자열 날짜 범위
-    const monthStartDate = `${year}-${mm}-01`
-    const monthEndDate = `${year}-${mm}-${String(lastDay).padStart(2, '0')}`
-
-    // memos용 created_at 범위
     const monthStart = new Date(year, month - 1, 1, 0, 0, 0)
     const monthEnd = new Date(year, month, 0, 23, 59, 59, 999)
     const monthStartISO = monthStart.toISOString()
@@ -45,8 +35,8 @@ export async function GET(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('status', 'published')
       .is('deleted_at', null)
-      .gte('date', monthStartDate)
-      .lte('date', monthEndDate)
+      .gte('published_at', monthStartISO)
+      .lte('published_at', monthEndISO)
 
     if (diariesError) {
       console.error(diariesError)
