@@ -126,7 +126,11 @@ export function CanvasToolbar(props: Props) {
           step={1}
           max={MAX_SIZE}
           min={MIN_SIZE}
-          onChange={(e) => setSize(Number(e.target.value))}
+          onChange={(e) => {
+            const n = Number(e.target.value)
+            if (!Number.isFinite(n)) return
+            setSize(Math.min(MAX_SIZE, Math.max(MIN_SIZE, n)))
+          }}
           className="w-15"
         />
         <ClientButton
