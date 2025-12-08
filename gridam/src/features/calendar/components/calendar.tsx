@@ -2,8 +2,9 @@
 import { useMemo } from 'react'
 import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
-import { MonthlyData } from './calendar-client'
 import buildCalendar, { weekday } from '../lib/build-calendar'
+import { getAdjacentMonth } from '@/shared/utils/date'
+import { MonthlyData } from '../types/calendar.type'
 
 interface CalendarProps {
   // 캘린더가 외부에서 관리하는 데이터를 받는다.
@@ -28,8 +29,6 @@ export default function Calendar({
   onViewChange,
   monthlyData,
 }: CalendarProps) {
-  console.log('현재 선택된 날짜 (Props):', selectedDate)
-
   // 달력 셀
   const cells = useMemo(() => {
     return buildCalendar(currentView.year, currentView.month)
@@ -37,26 +36,13 @@ export default function Calendar({
 
   // 이전 달
   const handlePrevMonth = () => {
-    let year = currentView.year
-    let month = currentView.month - 1
-
-    if (month < 0) {
-      month = 11
-      year -= 1
-    }
-    onViewChange({ year, month })
+    const preveMonth = getAdjacentMonth(currentView.year, currentView.month, -1)
+    onViewChange(preveMonth)
   }
   // 다음 달
   const handleNextMonth = () => {
-    let year = currentView.year
-    let month = currentView.month + 1
-
-    if (month > 11) {
-      month = 0
-      year += 1
-    }
-
-    onViewChange({ year, month })
+    const NextMonth = getAdjacentMonth(currentView.year, currentView.month, 1)
+    onViewChange(NextMonth)
   }
 
   return (
@@ -69,7 +55,7 @@ export default function Calendar({
         />
 
         <div className="text-2xl font-bold">
-          {currentView.year}년 {currentView.month + 1}월
+          {currentView.year}년 {currentView.month}월
         </div>
 
         <CircleChevronRight
@@ -91,7 +77,7 @@ export default function Calendar({
           const isSelected =
             selectedDate &&
             selectedDate.year === cell.year &&
-            selectedDate.month - 1 === cell.month &&
+            selectedDate.month === cell.month &&
             selectedDate.day === cell.day
 
           //현재 달에 속하는 셀에만 monthlyData 적용
@@ -106,7 +92,6 @@ export default function Calendar({
                 onSelectDate({ year: cell.year, month: cell.month, day: cell.day })
               }}
               className={cn(
-                // 달력에 표시할게 많지 않으면 center로 바꾸기
                 'aspect-square flex justify-start items-start',
                 `p-2 ${cell.inCurrentMonth ? '' : 'text-muted-foreground/40'}`,
                 'hover:cursor-pointer',
