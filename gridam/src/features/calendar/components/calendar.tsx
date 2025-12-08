@@ -4,7 +4,7 @@ import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 import buildCalendar, { weekday } from '../lib/build-calendar'
 import { getAdjacentMonth } from '@/shared/utils/date'
-import { MonthlyData } from '../types/calendar.type'
+import type { MonthlyData } from '../types/calendar.type'
 
 interface CalendarProps {
   // 캘린더가 외부에서 관리하는 데이터를 받는다.
