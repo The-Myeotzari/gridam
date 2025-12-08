@@ -10,7 +10,6 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
   const setImage = useCanvasStore((s) => s.setImage)
   const {
     canvasRef,
-    canvasImage,
 
     color,
     setColor,
@@ -31,7 +30,7 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
 
     const canvas = canvasRef.current
     if (canvas) {
-    setImage(canvas.toDataURL('image/png'))
+      setImage(canvas.toDataURL('image/png'))
     }
   }
 
