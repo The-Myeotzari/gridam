@@ -21,10 +21,12 @@ export default function DiaryCancelButton() {
             label={MESSAGES.COMMON.CANCEL}
           />
           <ClientButton
+            type="button"
             className="bg-black text-white px-3 py-2 rounded"
-            onClick={() => {
-              router.back()
+            onClick={(e) => {
+              e.preventDefault()
               close()
+              router.push('/draft')
             }}
             label={MESSAGES.COMMON.CONFIRM}
           />
