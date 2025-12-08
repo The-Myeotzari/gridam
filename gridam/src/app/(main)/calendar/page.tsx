@@ -1,14 +1,11 @@
 import { fetchCalendar } from '@/app/(main)/calendar/action'
 import CalendarClient from '@/features/calendar/components/calendar-client'
+import { getDateParts } from '@/shared/utils/date'
 
 export default async function Page() {
   // 오늘 날짜 (전역 관리)
   const today = new Date()
-  const initialDate = {
-    year: today.getFullYear(),
-    month: today.getMonth() + 1,
-    day: today.getDate(),
-  }
+  const initialDate = getDateParts()
 
   //서버에서 초기 데이터 로드
   const { ok, data: initialData } = await fetchCalendar(initialDate)

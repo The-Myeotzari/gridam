@@ -9,7 +9,7 @@ interface SelectedDateDiaryProps {
 
 export default function SelectedDateDiary({ isLoading, diary }: SelectedDateDiaryProps) {
   //로딩 중일 때
-  if (isLoading) {
+  if (isLoading && !diary.id) {
     return (
       <div className="h-full flex items-center justify-center text-muted-foreground font-handwritten p-4 text-center text-sm">
         일기를 불러오고 있어요!

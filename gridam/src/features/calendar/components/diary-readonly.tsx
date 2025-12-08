@@ -1,4 +1,5 @@
 'use client'
+import Textarea from '@/shared/ui/textarea.client'
 import Image from 'next/image'
 
 interface DiaryReadOnlyProps {
@@ -32,12 +33,13 @@ export function DiaryReadOnly({ diary }: DiaryReadOnlyProps) {
             width={800}
             height={800}
             className="w-full h-full object-cover"
+            unoptimized
           />
         )}
       </div>
       <hr />
       {/* 글 */}
-      <div>{diary.content}</div>
+      <Textarea value={diary.content} readOnly={true}></Textarea>
     </div>
   )
 }

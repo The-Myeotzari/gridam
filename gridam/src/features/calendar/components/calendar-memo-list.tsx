@@ -3,9 +3,10 @@
 import { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import cn from '@/shared/utils/cn'
-import StripMarkDown from '@/shared/utils/strip-markdown'
 import { FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface CalendarMemoList {
   memos: Memo[]
@@ -47,9 +48,9 @@ export default function CalendarMemoList({ memos, isLoading }: CalendarMemoList)
               <FileText className="w-4 h-4 shrink-0" />
               <div className="flex-1">
                 <p className="font-medium text-foreground truncate">{memo.title}</p>
-                <p className=" text-sm text-muted-foreground line-clamp-1 ">
-                  {StripMarkDown(memo.content)}
-                </p>
+                <div className="text-sm text-muted-foreground line-clamp-1 ">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{memo.content}</ReactMarkdown>
+                </div>
               </div>
             </div>
           </Card>
