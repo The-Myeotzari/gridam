@@ -3,10 +3,16 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Image from 'next/image'
 
-export default function SocialLoginButtons() {
+type Props = {
+  setLoading: (v: boolean) => void
+}
+
+export default function SocialLoginButtons({ setLoading }: Props) {
   const supabase = createClientComponentClient()
 
   const handleGoogle = async () => {
+    setLoading(true)
+
     const redirectTo = `${window.location.origin}/callback`
     console.log('google:', redirectTo)
 
@@ -19,6 +25,8 @@ export default function SocialLoginButtons() {
   }
 
   const handleKakao = async () => {
+    setLoading(true)
+
     const redirectTo = `${window.location.origin}/callback`
     console.log('kakao:', redirectTo)
 
