@@ -1,9 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useRef } from 'react'
 import ReactMarkdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
+import MarkdownToolbar from './markdown-toolbar'
 
 type Props = {
   value: string
@@ -66,27 +67,48 @@ const markdownComponents: Components = {
 }
 
 export default function MarkdownEditor({ value, onChange }: Props) {
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
   return (
-    <div className="mt-4 grid h-[520px] grid-cols-[2fr_2fr] gap-6">
+    <div className="mt-4 grid gap-4 md:grid-cols-[2fr_2fr] md:gap-6">
       <div className="flex flex-col">
         <span className="mb-2 text-xs font-medium text-muted-foreground">메모 작성</span>
-        <div className="flex-1 rounded-2xl bg-white shadow-sm">
+
+        <div
+          className="
+          flex flex-col
+          rounded-2xl border border-border bg-white shadow-sm
+          focus-within:ring-2 focus-within:ring-primary
+          min-h-[220px] 
+          md:min-h-[520px] 
+        "
+        >
+          <MarkdownToolbar textareaRef={textareaRef} onChange={onChange} />
+
           <textarea
-            className="
-              h-full w-full resize-none rounded-2xl
-              bg-transparent px-4 py-3 text-sm text-foreground
-              outline-none focus-visible:ring-2 focus-visible:ring-primary
-            "
-            placeholder="메모를 자유롭게 기록해보세요..."
+            ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
+            className="
+            flex-1 w-full resize-none
+            bg-transparent px-4 py-3 text-sm text-foreground outline-none
+            overflow-y-auto
+          "
+            placeholder="메모를 자유롭게 기록해보세요..."
           />
         </div>
       </div>
 
       <div className="flex flex-col">
         <span className="mb-2 text-xs font-medium text-muted-foreground">미리보기</span>
-        <div className="flex-1 overflow-y-auto rounded-2xl bg-white p-4 shadow-sm">
+
+        <div
+          className="
+          rounded-2xl bg-white p-4 shadow-sm
+          min-h-[220px] max-h-[220px] overflow-y-auto
+          md:min-h-[520px]
+        "
+        >
           {value.trim().length === 0 ? (
             <p className="text-sm text-muted-foreground">
               작성 중인 메모가 여기에 실시간으로 표시됩니다.

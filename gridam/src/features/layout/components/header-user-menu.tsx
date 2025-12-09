@@ -24,7 +24,7 @@ export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
         // TODO 상수화 처리 필요 - 추후 API 및 페이지 경로 전체 상수화 진행 필요
         items={[
           { key: 'mypage', label: '마이페이지', onSelect: () => router.push('/mypage') },
-          { key: 'draft', label: '임시 글', onSelect: () => router.push('/draft') },
+          { key: 'draft', label: '보관함', onSelect: () => router.push('/draft') },
           {
             key: 'logout',
             label: '로그아웃',
