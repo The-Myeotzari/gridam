@@ -11,7 +11,7 @@ export default function DiaryCancelButton({ disabled }: { disabled: boolean }) {
 
   const handleCancel = useCallback(() => {
     if (!disabled) {
-      router.push('/draft')
+      router.back()
       return
     }
     modalStore.open((close) => (
@@ -30,7 +30,7 @@ export default function DiaryCancelButton({ disabled }: { disabled: boolean }) {
             onClick={(e) => {
               e.preventDefault()
               close()
-              router.push('/draft')
+              router.back()
             }}
             label={MESSAGES.COMMON.CONFIRM}
           />
