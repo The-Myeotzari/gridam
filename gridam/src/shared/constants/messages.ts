@@ -45,9 +45,9 @@ export const MESSAGES = {
       UPDATE: '일기가 수정되었습니다!',
       DELETE: '일기가 성공적으로 삭제되었습니다.',
       READ_NO_DATA: '아직 이 달에 작성된 일기가 없어요.',
-      DRAFT_SAVE: '임시 게시글이 발행되었습니다!',
-      DRAFT_CREATE: '임시 게시글이 저장되었습니다!',
-      DRAFT_UPDATE: '임시 게시글이 수정되었습니다!',
+      DRAFT_SAVE: '임시 일기가 발행되었습니다!',
+      DRAFT_CREATE: '임시 일기가 저장되었습니다!',
+      DRAFT_UPDATE: '임시 일기가 수정되었습니다!',
       EXPORT: '일기 다운로드에 성공했습니다!',
     },
     ERROR: {
@@ -63,14 +63,14 @@ export const MESSAGES = {
       DELETE: '일기 삭제에 실패했습니다.',
       DELETE_OVER: '이미 삭제된 일기입니다.',
       META: '일기의 메타 데이터 생성에 실패했습니다.',
-      DRAFT_SAVE: '임시 게시글이 발행에 실패했습니다.',
-      DRAFT_CREATE: '임시 저장에 실패했습니다.',
-      DRAFT_CREATE_NO_DATA: '임시 저장에 필요한 데이터가 없습니다.',
-      DRAFT_UPDATE: '임시 게시글 수정에 실패했습니다.',
-      DRAFT_UPDATE_NO_DATA: '임시 수정에 필요한 데이터가 없습니다.',
-      DRAFT_DELETE: '임시 게시글 삭제에 실패했습니다.',
+      DRAFT_SAVE: '임시 일기 발행에 실패했습니다.',
+      DRAFT_CREATE: '임시 일기 저장에 실패했습니다.',
+      DRAFT_CREATE_NO_DATA: '임시 일기 저장에 필요한 데이터가 없습니다.',
+      DRAFT_UPDATE: '임시 일기 수정에 실패했습니다.',
+      DRAFT_UPDATE_NO_DATA: '임시 일기 수정에 필요한 데이터가 없습니다.',
+      DRAFT_DELETE: '임시 일기 삭제에 실패했습니다.',
       DRAFT_DELETE_OVER: '이미 삭제된 일기입니다.',
-      DRAFT_READ: '임시 게시글 조회에 실패했습니다.',
+      DRAFT_READ: '임시 일기 조회에 실패했습니다.',
       IMAGE: '이미지 업로드에 실패했습니다.',
       WEATHER: '날씨 조회에 실패했습니다.',
       PUBLISHED: '오늘의 일기를 이미 발행했어요!',
@@ -104,8 +104,8 @@ export const MESSAGES = {
 
   MYPAGE: {
     ERROR: {
-      READ: '마이페이지 조회에 실패했습니다.'
-    }
+      READ: '마이페이지 조회에 실패했습니다.',
+    },
   },
 
   COMMON: {
