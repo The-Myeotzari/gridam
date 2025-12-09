@@ -14,7 +14,7 @@ export type DiaryStatus = (typeof DIARY_STATUS)[keyof typeof DIARY_STATUS]
 
 type DiaryFormButtonsProps = {
   status: DiaryStatus
-  isPending: boolean
+  disabled: boolean
   onSave: () => void
   onUpdate: () => void
   onTempSave: () => void
@@ -23,7 +23,7 @@ type DiaryFormButtonsProps = {
 
 export default function DiaryFormButtons({
   status,
-  isPending,
+  disabled,
   onSave,
   onUpdate,
   onTempSave,
@@ -32,7 +32,7 @@ export default function DiaryFormButtons({
   return (
     <div className="text-center mb-4">
       {/* 취소 */}
-      <DiaryCancelButton />
+      <DiaryCancelButton disabled={disabled} />
 
       {/* 수정: 발행된 글 */}
       {status === DIARY_STATUS.PUBLISHED && (
@@ -40,7 +40,7 @@ export default function DiaryFormButtons({
           label={MESSAGES.COMMON.UPDATE_BUTTON}
           type="button"
           variant="blue"
-          isPending={isPending}
+          disabled={disabled}
           onClick={onUpdate}
           className="ml-2"
         />
@@ -51,7 +51,7 @@ export default function DiaryFormButtons({
         <DiaryFormButton
           label={MESSAGES.COMMON.DRAFT_SAVE_BUTTON}
           type="button"
-          isPending={isPending}
+          disabled={disabled}
           onClick={onTempSave}
           className="ml-2"
         />
@@ -62,7 +62,7 @@ export default function DiaryFormButtons({
         <DiaryFormButton
           label={MESSAGES.COMMON.DRAFT_UPDATE_BUTTON}
           type="button"
-          isPending={isPending}
+          disabled={disabled}
           onClick={onTempUpdate}
           className="ml-2"
         />
@@ -74,7 +74,7 @@ export default function DiaryFormButtons({
           label={MESSAGES.COMMON.SAVE_BUTTON}
           type="button"
           variant="blue"
-          isPending={isPending}
+          disabled={disabled}
           className="ml-2"
           onClick={onSave}
         />
