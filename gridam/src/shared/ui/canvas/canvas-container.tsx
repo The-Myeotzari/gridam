@@ -11,7 +11,7 @@ function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
 
   useEffect(() => {
     if (initialImage) setImage(initialImage)
-  }, [initialImage, setImage])
+  }, [initialImage])
 
   const {
     canvasRef,
