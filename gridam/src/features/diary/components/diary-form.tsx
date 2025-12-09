@@ -58,30 +58,30 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
   const commonParams = { diary, text, canvas, dateValue, weather }
 
-  const handleSave = () => {
+  const runIfValid = (type: Parameters<typeof run>[0]['type']) => {
     if (isInvalid()) return
-    if (diary?.status === DIARY_STATUS.DRAFT) {
-      run({ type: 'publishDraft', ...commonParams })
-    } else {
-      run({ type: 'create', ...commonParams })
-    }
+    run({ type, ...commonParams })
   }
 
-  const handleDraftSave = () => {
-    if (isInvalid()) return
-    run({ type: 'draftCreate', ...commonParams })
+  const handleSave = () => {
+    if (diary?.status === DIARY_STATUS.DRAFT) runIfValid('publishDraft')
+    else runIfValid('create')
   }
+
+  const handleDraftSave = () => runIfValid('draftCreate')
 
   const handleUpdate = () => {
-    if (isDirty) return
-    if (isInvalid()) return
-    run({ type: 'update', ...commonParams })
+    if (isDirty) {
+      toast.error(MESSAGES.DIARY.ERROR.UPDATE_NO_CHANGE)
+      return
+    }
+    runIfValid('update')
   }
 
   const handleDraftUpdate = () => {
+    toast.error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_CHANGE)
     if (isDirty) return
-    if (isInvalid()) return
-    run({ type: 'draftUpdate', ...commonParams })
+    runIfValid('draftUpdate')
   }
 
   return (
