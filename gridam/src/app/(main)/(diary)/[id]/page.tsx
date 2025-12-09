@@ -59,12 +59,7 @@ export default async function Page({ params }: PageProps) {
   const { id } = await params
   const { ok, data: diary } = await getDiaryAction(id)
 
-  const dateValue = diary.date
-  const formattedDate = getFormatDate(dateValue)
-  // TODO 날씨 예외처리 고민 필요 - 기본이미지 출력?
-  const weatherIcon = diary.emoji ?? '/fallback-weather.png'
-
-  if (!ok) {
+  if (!ok || !diary) {
     return (
       <div className="h-50 flex flex-col justify-center items-center">
         <p className="mb-4">{MESSAGES.DIARY.ERROR.READ}</p>
@@ -81,6 +76,11 @@ export default async function Page({ params }: PageProps) {
       </div>
     )
   }
+
+  const dateValue = diary.date
+  const formattedDate = getFormatDate(dateValue)
+  // TODO 날씨 예외처리 고민 필요 - 기본이미지 출력?
+  const weatherIcon = diary.emoji ?? '/fallback-weather.png'
 
   return (
     <DiaryLayout

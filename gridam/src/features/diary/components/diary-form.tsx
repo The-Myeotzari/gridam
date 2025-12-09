@@ -1,10 +1,8 @@
 'use client'
 
-import DiaryFormButtons, {
-  DIARY_STATUS,
-  type DiaryStatus,
-} from '@/features/diary/components/diary-form-buttons'
+import DiaryFormButtons from '@/features/diary/components/diary-form-buttons'
 import { useDiaryActions } from '@/features/diary/hook/use-diary-action'
+import { DIARY_STATUS, type DiaryStatus } from '@/features/diary/types/diary.type'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
@@ -18,12 +16,12 @@ type DiaryFormProps = {
   isEdit?: boolean
   diary?: Diary | null
 }
-
 export default function DiaryForm({ dateValue, weather, isEdit = false, diary }: DiaryFormProps) {
   const [text, setText] = useState(diary?.content ?? '')
   const canvas = useCanvasStore((s) => s.image)
-
   const { run, isPending } = useDiaryActions()
+
+  const trimmedText = text.trim()
 
   const status: DiaryStatus = (() => {
     if (!isEdit) return DIARY_STATUS.NEW
@@ -31,21 +29,12 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     return DIARY_STATUS.PUBLISHED
   })()
 
-  const commonParams = {
-    diary,
-    text,
-    canvas,
-    dateValue,
-    weather,
-  }
-
-  // TODO: 수정일 때는 canvas의 값이 false로 뜸 -> store 구독 상태 떄문인가?
   const isInvalid = () => {
-    if ((!text || text.trim().length === 0) && !canvas) {
+    if (!trimmedText && !canvas) {
       toast.error(MESSAGES.DIARY.ERROR.INVALID_ALL)
       return true
     }
-    if (!text || text.trim().length === 0) {
+    if (!trimmedText) {
       toast.error(MESSAGES.DIARY.ERROR.INVALID_TEXT)
       return true
     }
@@ -56,29 +45,23 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
     return false
   }
 
+  const commonParams = { diary, text, canvas, dateValue, weather }
+
+  const runIfValid = (type: Parameters<typeof run>[0]['type']) => {
+    if (isInvalid()) return
+    run({ type, ...commonParams })
+  }
+
   const handleSave = () => {
-    if (isInvalid()) return
-    if (diary?.status === DIARY_STATUS.DRAFT) {
-      run({ type: 'publishDraft', ...commonParams })
-    } else {
-      run({ type: 'create', ...commonParams })
-    }
+    if (diary?.status === DIARY_STATUS.DRAFT) runIfValid('publishDraft')
+    else runIfValid('create')
   }
 
-  const handleDraftSave = () => {
-    if (isInvalid()) return
-    run({ type: 'draftCreate', ...commonParams })
-  }
+  const handleDraftSave = () => runIfValid('draftCreate')
 
-  const handleUpdate = () => {
-    if (isInvalid()) return
-    run({ type: 'update', ...commonParams })
-  }
+  const handleUpdate = () => runIfValid('update')
 
-  const handleDraftUpdate = () => {
-    if (isInvalid()) return
-    run({ type: 'draftUpdate', ...commonParams })
-  }
+  const handleDraftUpdate = () => runIfValid('draftUpdate')
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
@@ -88,7 +71,7 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
       <DiaryFormButtons
         status={status}
-        isPending={isPending}
+        disabled={isPending}
         onSave={handleSave}
         onUpdate={handleUpdate}
         onTempSave={handleDraftSave}
