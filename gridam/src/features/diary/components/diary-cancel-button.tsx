@@ -6,11 +6,11 @@ import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
 
-export default function DiaryCancelButton({ disabled }: { disabled: boolean }) {
+export default function DiaryCancelButton({ isDirty }: { isDirty: boolean }) {
   const router = useRouter()
 
   const handleCancel = useCallback(() => {
-    if (!disabled) {
+    if (isDirty) {
       router.back()
       return
     }
