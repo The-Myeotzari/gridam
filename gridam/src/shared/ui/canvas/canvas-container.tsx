@@ -4,10 +4,15 @@ import { useCanvasDrawing } from '@/shared/hooks/use-canvas-drawing'
 import { CanvasToolbar } from '@/shared/ui/canvas/canvas-toolbar'
 import { CanvasView } from '@/shared/ui/canvas/canvas-view'
 import { useCanvasStore } from '@/store/canvas-store'
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 
 function CanvasContainer({ initialImage }: { initialImage?: string | null }) {
   const setImage = useCanvasStore((s) => s.setImage)
+
+  useEffect(() => {
+    if (initialImage) setImage(initialImage)
+  }, [initialImage, setImage])
+
   const {
     canvasRef,
 
