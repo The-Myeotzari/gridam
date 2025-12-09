@@ -2,15 +2,8 @@
 
 import DiaryCancelButton from '@/features/diary/components/diary-cancel-button'
 import DiaryFormButton from '@/features/diary/components/diary-form-button'
+import { DIARY_STATUS, type DiaryStatus } from '@/features/diary/types/diary.type'
 import { MESSAGES } from '@/shared/constants/messages'
-
-export const DIARY_STATUS = {
-  NEW: 'new',
-  DRAFT: 'draft',
-  PUBLISHED: 'published',
-} as const
-
-export type DiaryStatus = (typeof DIARY_STATUS)[keyof typeof DIARY_STATUS]
 
 type DiaryFormButtonsProps = {
   status: DiaryStatus
@@ -32,7 +25,7 @@ export default function DiaryFormButtons({
   return (
     <div className="text-center mb-4">
       {/* 취소 */}
-      <DiaryCancelButton />
+      <DiaryCancelButton status={status} />
 
       {/* 수정: 발행된 글 */}
       {status === DIARY_STATUS.PUBLISHED && (

@@ -18,3 +18,11 @@ export interface DiaryImageData {
   path: string
   url: string | null
 }
+
+export const DIARY_STATUS = {
+  NEW: 'new',
+  DRAFT: 'draft',
+  PUBLISHED: 'published',
+} as const
+
+export type DiaryStatus = (typeof DIARY_STATUS)[keyof typeof DIARY_STATUS]

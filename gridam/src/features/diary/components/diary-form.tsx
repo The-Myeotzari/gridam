@@ -1,10 +1,8 @@
 'use client'
 
-import DiaryFormButtons, {
-  DIARY_STATUS,
-  type DiaryStatus,
-} from '@/features/diary/components/diary-form-buttons'
+import DiaryFormButtons from '@/features/diary/components/diary-form-buttons'
 import { useDiaryActions } from '@/features/diary/hook/use-diary-action'
+import { DIARY_STATUS, type DiaryStatus } from '@/features/diary/types/diary.type'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
