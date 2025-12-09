@@ -32,7 +32,7 @@ export default function DiaryFormButtons({
   return (
     <div className="text-center mb-4">
       {/* 취소 */}
-      <DiaryCancelButton disabled={disabled} />
+      <DiaryCancelButton />
 
       {/* 수정: 발행된 글 */}
       {status === DIARY_STATUS.PUBLISHED && (

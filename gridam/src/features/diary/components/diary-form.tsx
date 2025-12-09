@@ -10,7 +10,7 @@ import { MESSAGES } from '@/shared/constants/messages'
 import Textarea from '@/shared/ui/textarea'
 import { useCanvasStore } from '@/store/canvas-store'
 import { toast } from '@/store/toast-store'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 type DiaryFormProps = {
   dateValue: string
@@ -18,27 +18,18 @@ type DiaryFormProps = {
   isEdit?: boolean
   diary?: Diary | null
 }
-
 export default function DiaryForm({ dateValue, weather, isEdit = false, diary }: DiaryFormProps) {
   const [text, setText] = useState(diary?.content ?? '')
   const canvas = useCanvasStore((s) => s.image)
   const { run, isPending } = useDiaryActions()
+
+  const trimmedText = text.trim()
 
   const status: DiaryStatus = (() => {
     if (!isEdit) return DIARY_STATUS.NEW
     if (diary?.status === DIARY_STATUS.DRAFT) return DIARY_STATUS.DRAFT
     return DIARY_STATUS.PUBLISHED
   })()
-
-  const trimmedText = text.trim()
-  const originalText = (diary?.content ?? '').trim()
-  const originalCanvas = diary?.image_url ?? null
-
-  const isDirty = useMemo(() => {
-    const textChanged = trimmedText === originalText
-    const canvasChanged = canvas === originalCanvas
-    return textChanged && canvasChanged
-  }, [trimmedText, originalText, canvas, originalCanvas])
 
   const isInvalid = () => {
     if (!trimmedText && !canvas) {
@@ -70,19 +61,9 @@ export default function DiaryForm({ dateValue, weather, isEdit = false, diary }:
 
   const handleDraftSave = () => runIfValid('draftCreate')
 
-  const handleUpdate = () => {
-    if (isDirty) {
-      toast.error(MESSAGES.DIARY.ERROR.UPDATE_NO_CHANGE)
-      return
-    }
-    runIfValid('update')
-  }
+  const handleUpdate = () => runIfValid('update')
 
-  const handleDraftUpdate = () => {
-    toast.error(MESSAGES.DIARY.ERROR.DRAFT_UPDATE_NO_CHANGE)
-    if (isDirty) return
-    runIfValid('draftUpdate')
-  }
+  const handleDraftUpdate = () => runIfValid('draftUpdate')
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
