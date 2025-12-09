@@ -10,12 +10,12 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: '임시 글 목록 | Gridam',
+  title: '일기 보관함 | Gridam',
   description: '작성 중이던 일기를 불러오고 수정/삭제할 수 있어요.',
   alternates: { canonical: new URL('/draft', SITE_URL) },
   robots: { index: false, follow: false },
   openGraph: {
-    title: '임시 글 목록 | Gridam',
+    title: '일기 보관함 | Gridam',
     description: '작성 중이던 일기를 불러오고 수정/삭제할 수 있어요.',
     url: new URL('/draft', SITE_URL),
     siteName: 'Gridam',
@@ -30,7 +30,7 @@ export default async function Page() {
   return (
     <div className="flex flex-col gap-4 p-4 mt-10 text-center">
       <div className="mb-8 text-center animate-fade-in">
-        <h1 className="font-bold text-4xl mb-2 text-navy-gray">임시 글 목록</h1>
+        <h1 className="font-bold text-4xl mb-2 text-navy-gray">일기 보관함</h1>
         <p className="font-bold text-xl text-muted-foreground">
           작성 중이던 일기를 불러올 수 있어요
         </p>
