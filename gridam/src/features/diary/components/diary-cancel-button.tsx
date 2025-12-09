@@ -6,10 +6,14 @@ import { modalStore } from '@/store/modal-store'
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
 
-export default function DiaryCancelButton() {
+export default function DiaryCancelButton({ disabled }: { disabled: boolean }) {
   const router = useRouter()
 
   const handleCancel = useCallback(() => {
+    if (!disabled) {
+      router.push('/draft')
+      return
+    }
     modalStore.open((close) => (
       <>
         <ModalHeader>{MESSAGES.DIARY.CANCEL.TITLE}</ModalHeader>
