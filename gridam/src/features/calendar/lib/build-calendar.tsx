@@ -4,12 +4,15 @@ export const weekday = ['일', '월', '화', '수', '목', '금', '토']
 
 type CalendarCell = {
   year: number
-  month: number // 0~11
+  month: number
   day: number
   inCurrentMonth: boolean
 }
 
 export default function buildCalendar(year: number, month: number) {
+  // 외부에서 1~12로 들어온 월을 0~11로 변환
+  month = month - 1
+
   // 이번 달 달력 만들기 - 이번 달 1일, 요일, 이번달 총 일수
   const firstDay = new Date(year, month, 1)
   const firstDayOfWeek = firstDay.getDay()
@@ -26,28 +29,27 @@ export default function buildCalendar(year: number, month: number) {
   for (let i = 0; i < totalCells; i++) {
     const cellIndex = i
     let cellYear = year
-    let cellMonth = month
+    let cellMonth = month // cellMonth도 0~11 기준
     let cellDay: number
     let inCurrentMonth = true
 
     //달력 앞 부분- 지난달 날짜로 채우기
     if (cellIndex < firstDayOfWeek) {
-      cellDay = daysInPrevMonth - (firstDayOfWeek - cellIndex) + 1
+      cellDay = daysInPrevMonth - firstDayOfWeek + cellIndex + 1
       inCurrentMonth = false
 
-      // 지난달로 이동
+      // 지난달로 이동 (0~11 기준)
       if (month === 0) {
         cellMonth = 11
         cellYear = year - 1
       } else {
         cellMonth = month - 1
       }
-      // 뒷부분: 다음 날 날짜로 채우기
     } else if (cellIndex >= firstDayOfWeek + daysInMonth) {
       const nextIndex = cellIndex - (firstDayOfWeek + daysInMonth)
       cellDay = nextIndex + 1
       inCurrentMonth = false
-      // 다음달로 이동
+      // 다음달로 이동 (0~11 기준)
       if (month === 11) {
         cellMonth = 0
         cellYear = year + 1
@@ -61,7 +63,8 @@ export default function buildCalendar(year: number, month: number) {
     }
     cells.push({
       year: cellYear,
-      month: cellMonth,
+      // 0~11로 계산된 cellMonth를 다시 1~12로 변환하여 외부로 반환
+      month: cellMonth + 1,
       day: cellDay,
       inCurrentMonth,
     })
