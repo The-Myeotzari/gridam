@@ -5,11 +5,11 @@ import Calendar from '@/features/calendar/components/calendar'
 import CalendarMemoList from '@/features/calendar/components/calendar-memo-list'
 import SelectedDateDiary from '@/features/calendar/components/selected-date-diary'
 import type { Diary } from '@/features/feed/feed.type'
-import { Memo } from '@/features/memo/api/memo.action'
+import type { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import { getFormatDate } from '@/shared/utils/date'
 import { useEffect, useState, useTransition } from 'react'
-import { MonthlyData } from '../types/calendar.type'
+import type { MonthlyData } from '../types/calendar.type'
 
 interface CalendarClientProps {
   initialDate: { year: number; month: number; day: number }
@@ -78,7 +78,7 @@ export default function CalendarClient({ initialDate, initialData }: CalendarCli
           <SelectedDateDiary isLoading={isPending} selectedDate={selectedDate} diary={diary} />
         </div>
       </Card>
-      <Card className="flex flex-col md:flex-row p-6 gap-7 max-h-[640]">
+      <Card className="flex flex-col md:flex-row p-6 gap-7 max-h-[300px] sm:max-h-[450px] md:max-h-[500px] lg:max-h-[640px]">
         <div className="mb-4 flex flex-col flex-1 gap h-full">
           <h3 className="font-handwritten text-xl mb-2 text-navy-gray font-bold">메모</h3>
           <div className="bg-pink-400 text-xs w-34 text-center text-white rounded-full p-1.5 mb-2 ">

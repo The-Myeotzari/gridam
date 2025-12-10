@@ -4,7 +4,7 @@ import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 import buildCalendar, { weekday } from '../lib/build-calendar'
 import { getAdjacentMonth } from '@/shared/utils/date'
-import { MonthlyData } from '../types/calendar.type'
+import type { MonthlyData } from '../types/calendar.type'
 
 interface CalendarProps {
   // 캘린더가 외부에서 관리하는 데이터를 받는다.
@@ -102,7 +102,6 @@ export default function Calendar({
                 <div>{cell.day}</div>
                 <div className="flex items-center gap-0.5 h-full">
                   {hasDiary && <div className="w-2 h-2 rounded-full bg-blue-400" />}
-
                   {hasMemo && <div className="w-2 h-2 rounded-full bg-pink-400" />}
                 </div>
               </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { Memo } from '@/features/memo/api/memo.action'
+import type { Memo } from '@/features/memo/api/memo.action'
 import { Card } from '@/shared/ui/card'
 import cn from '@/shared/utils/cn'
 import { FileText } from 'lucide-react'

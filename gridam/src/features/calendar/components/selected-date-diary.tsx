@@ -1,4 +1,4 @@
-import { Diary } from '@/features/feed/feed.type'
+import type { Diary } from '@/features/feed/feed.type'
 import { DiaryReadOnly } from './diary-readonly'
 
 interface SelectedDateDiaryProps {
