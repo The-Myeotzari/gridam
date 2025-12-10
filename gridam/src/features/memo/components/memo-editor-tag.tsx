@@ -82,7 +82,7 @@ export default function MemoTagField({ tags, onChange }: MemoTagFieldProps) {
             <span>{tag}</span>
 
             <span
-              className="ml-2 rounded-full px-1 text-[10px]"
+              className="ml-2 rounded-full px-1 text-[10px] cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation()
                 removeTag(tag)
