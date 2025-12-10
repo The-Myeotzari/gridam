@@ -114,7 +114,7 @@ export default function MemoListClient({ memos }: Props) {
 
                 return (
                   <Link key={memo.id} href={`/memo/${memo.id}`} className="block">
-                    <Card className="w-full cursor-pointer rounded-3xl px-6 py-4 hover:bg-accent/5">
+                    <Card className="w-full cursor-pointer rounded-3xl px-6 py-4 hover:bg-accent/70">
                       <div className="flex items-center justify-between gap-4">
                         <span className="truncate text-base font-medium text-foreground">
                           {memo.title || '(제목 없음)'}

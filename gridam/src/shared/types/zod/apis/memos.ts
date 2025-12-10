@@ -1,14 +1,15 @@
 import z from 'zod'
+import { memoTagSchema } from './tag'
 
 export const createMemoSchema = z.object({
   title: z.string().min(1),
   content: z.string().min(1),
-  tags: z.array(z.string()).optional().default([]),
+  tags: memoTagSchema.optional().default([]),
 })
 
 export const updateMemoSchema = z.object({
   id: z.string(),
   title: z.string().min(1).optional(),
   content: z.string().min(1).optional(),
-  tags: z.array(z.string()).optional(),
+  tags: memoTagSchema.optional(),
 })
