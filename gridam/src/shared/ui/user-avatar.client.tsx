@@ -1,23 +1,20 @@
 'use client'
 
-import { useCurrentUserImage } from '@/shared/hooks/use-current-user-image'
-import { useCurrentUserName } from '@/shared/hooks/use-current-user-name'
 import { Avatar } from '@/shared/ui/avatar'
 
 type UserAvatarProps = {
   size?: number
   className?: string
+  image: string | null
+  name: string
 }
 
-export function UserAvatar({ size = 32, className }: UserAvatarProps) {
-  const image = useCurrentUserImage()
-  const name = useCurrentUserName()
-
+export function UserAvatarClient({ size = 32, className, image, name }: UserAvatarProps) {
   const fallback =
     name
       ?.trim()
       .split(/\s+/)
-      .map((word) => word[0]?.toUpperCase())
+      .map((w) => w[0]?.toUpperCase())
       .join('') ?? undefined
 
   return (
