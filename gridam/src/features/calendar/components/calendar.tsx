@@ -1,10 +1,10 @@
 'use client'
-import { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { CircleChevronLeft, CircleChevronRight } from 'lucide-react'
 import cn from '@/shared/utils/cn'
 import buildCalendar, { weekday } from '../lib/build-calendar'
 import { getAdjacentMonth } from '@/shared/utils/date'
-import { MonthlyData } from '../types/calendar.type'
+import type { MonthlyData } from '../types/calendar.type'
 
 interface CalendarProps {
   // 캘린더가 외부에서 관리하는 데이터를 받는다.
@@ -18,11 +18,9 @@ interface CalendarProps {
   monthlyData: MonthlyData
   currentView: { year: number; month: number }
   onViewChange: (view: { year: number; month: number }) => void
-
-  //월 상태를 Prop으로 받음.
 }
 
-export default function Calendar({
+export default React.memo(function Calendar({
   selectedDate,
   onSelectDate,
   currentView,
@@ -35,15 +33,15 @@ export default function Calendar({
   }, [currentView.year, currentView.month])
 
   // 이전 달
-  const handlePrevMonth = () => {
-    const preveMonth = getAdjacentMonth(currentView.year, currentView.month, -1)
-    onViewChange(preveMonth)
-  }
+  const handlePrevMonth = useCallback(() => {
+    const prevMonth = getAdjacentMonth(currentView.year, currentView.month, -1)
+    onViewChange(prevMonth)
+  }, [currentView.year, currentView.month, onViewChange])
   // 다음 달
-  const handleNextMonth = () => {
+  const handleNextMonth = useCallback(() => {
     const NextMonth = getAdjacentMonth(currentView.year, currentView.month, 1)
     onViewChange(NextMonth)
-  }
+  }, [currentView.year, currentView.month, onViewChange])
 
   return (
     <div className="flex flex-col gap-4 border-b-2 pb-7 border-accent-foreground lg:border-none lg:pb-0">
@@ -102,7 +100,6 @@ export default function Calendar({
                 <div>{cell.day}</div>
                 <div className="flex items-center gap-0.5 h-full">
                   {hasDiary && <div className="w-2 h-2 rounded-full bg-blue-400" />}
-
                   {hasMemo && <div className="w-2 h-2 rounded-full bg-pink-400" />}
                 </div>
               </div>
@@ -122,4 +119,4 @@ export default function Calendar({
       </div>
     </div>
   )
-}
+})

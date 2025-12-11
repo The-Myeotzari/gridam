@@ -16,6 +16,13 @@ export async function GET(req: NextRequest) {
     if (!year || !month || !day) {
       return NextResponse.json({ ok: false, message: '날짜 데이터가 없습니다.' }, { status: 400 })
     }
+    const y = Number(year)
+    const m = Number(month)
+    const d = Number(day)
+
+    //일기용: YYYY-MM-DD 문자열
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const targetDate = `${y}-${pad(m)}-${pad(d)}`
 
     // 선택한 날짜의 시작/끝 범위 계산
     const start = new Date(Number(year), Number(month) - 1, Number(day), 0, 0, 0)
@@ -31,8 +38,9 @@ export async function GET(req: NextRequest) {
       .eq('user_id', user.id)
       .eq('status', 'published')
       .is('deleted_at', null)
-      .gte('published_at', startISO)
-      .lte('published_at', endISO)
+      .eq('date', targetDate)
+      // .gte('published_at', startISO)
+      // .lte('published_at', endISO)
       .order('published_at', { ascending: false })
       .limit(1)
 

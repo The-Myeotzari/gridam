@@ -39,7 +39,7 @@ export function DiaryReadOnly({ diary }: DiaryReadOnlyProps) {
       </div>
       <hr />
       {/* 글 */}
-      <Textarea value={diary.content} readOnly={true}></Textarea>
+      <Textarea value={diary.content} readOnly={true} />
     </div>
   )
 }

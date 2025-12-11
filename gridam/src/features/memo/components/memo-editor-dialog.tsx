@@ -47,12 +47,15 @@ export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSu
     const formData = new FormData(event.currentTarget)
     const title = String(formData.get('title') ?? '').trim()
 
-    if (!title && !content.trim()) {
-      const msg = isEditMode
-        ? MESSAGES.MEMO.ERROR.UPDATE_NO_DATA
-        : MESSAGES.MEMO.ERROR.CREATE_NO_DATA
+    if (!title.trim()) {
+      toast.error('제목을 입력해주세요.')
+      document.getElementById('memo-title')?.focus()
+      return
+    }
 
-      toast.error(msg ?? '제목 또는 내용을 입력해주세요.')
+    if (!content.trim()) {
+      toast.error('내용을 입력해주세요.')
+      document.getElementById('memo-content')?.focus()
       return
     }
 
@@ -110,7 +113,7 @@ export default function MemoEditorDialog({ open, onOpenChange, initialMemo, onSu
       size="2xl"
       closeOnBackdrop
       closeOnEscape
-      className="bg-background w-full max-w-5xl"
+      className="bg-background w-full max-w-5xl overflow-auto"
     >
       <form onSubmit={handleSubmit} className="flex h-full flex-col">
         <ModalHeader className="flex items-center justify-between px-6 py-4">

@@ -9,6 +9,8 @@ import remarkGfm from 'remark-gfm'
 import MemoDeleteTrigger from './memo-delete-trigger'
 import MemoEditTrigger from './memo-edit-trigger'
 import TagBadge from '@/shared/ui/tagbadge'
+import remarkBreaks from 'remark-breaks'
+import { markdownComponents } from '@/features/memo/components/markdown-components'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -58,7 +60,12 @@ export default async function Page({ params }: PageProps) {
         <Card className="mt-4">
           <CardBody>
             <div className="prose max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{memo.content}</ReactMarkdown>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={markdownComponents}
+              >
+                {memo.content}
+              </ReactMarkdown>
             </div>
           </CardBody>
         </Card>
