@@ -19,7 +19,7 @@ export default function HeaderUserMenu({ userName }: HeaderUserMenuProps) {
         id="header-user-menu"
         trigger={
           <button className="flex gap-2 items-center text-xs sm:text-sm md:text-base text-primary cursor-pointer">
-            <span className="text-black">{userName}</span>
+            <span className="hidden sm:block text-black">{userName}</span>
             <UserAvatar size={35} />
           </button>
         }
