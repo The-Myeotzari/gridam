@@ -15,7 +15,7 @@ type AvatarProps = {
 export const Avatar: React.FC<AvatarProps> = ({
   src,
   alt,
-  fallback = '?',
+  fallback = '',
   size = 32,
   className,
 }) => {
