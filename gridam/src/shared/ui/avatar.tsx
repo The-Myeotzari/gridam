@@ -35,6 +35,8 @@ export const Avatar: React.FC<AvatarProps> = ({
         <Image
           src={src}
           alt={alt ?? initials}
+          width={size}
+          height={size}
           className="h-full w-full object-cover"
           onError={() => setHasError(true)}
         />
