@@ -3,14 +3,13 @@
 import { useCurrentUserImage } from '@/shared/hooks/use-current-user-image'
 import { useCurrentUserName } from '@/shared/hooks/use-current-user-name'
 import { Avatar } from '@/shared/ui/avatar'
-import React from 'react'
 
-type props = {
+type UserAvatarProps = {
   size?: number
   className?: string
 }
 
-export const UserAvatar: React.FC<props> = ({ size = 32, className }) => {
+export function UserAvatar({ size = 32, className }: UserAvatarProps) {
   const image = useCurrentUserImage()
   const name = useCurrentUserName()
 
@@ -19,7 +18,7 @@ export const UserAvatar: React.FC<props> = ({ size = 32, className }) => {
       ?.trim()
       .split(/\s+/)
       .map((word) => word[0]?.toUpperCase())
-      .join('') || '?'
+      .join('') ?? undefined
 
   return (
     <Avatar
