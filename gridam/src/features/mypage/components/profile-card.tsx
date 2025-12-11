@@ -22,7 +22,7 @@ export default function ProfileCard({ email, nickname, createdAt }: ProfileCardP
   return (
     <Card className="w-full">
       <CardBody className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-        <ProfileImage />
+        <ProfileImage name={nickname} />
         <div className="flex flex-col items-center sm:items-start gap-2">
           {fields.map(({ label, value }) => (
             <div key={label} className="text-center sm:text-left">
