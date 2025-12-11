@@ -1,5 +1,5 @@
+import ProfileImage from '@/features/mypage/components/profile-image'
 import { Card, CardBody } from '@/shared/ui/card'
-import { UserAvatar } from '@/shared/ui/user-avatar'
 
 interface ProfileCardProps {
   email: string
@@ -22,7 +22,7 @@ export default function ProfileCard({ email, nickname, createdAt }: ProfileCardP
   return (
     <Card className="w-full">
       <CardBody className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-        <UserAvatar size={75} className="text-lg" />
+        <ProfileImage />
         <div className="flex flex-col items-center sm:items-start gap-2">
           {fields.map(({ label, value }) => (
             <div key={label} className="text-center sm:text-left">
