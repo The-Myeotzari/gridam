@@ -44,34 +44,34 @@ export default function SocialLoginButtons({ setLoading }: Props) {
         type="button"
         onClick={handleGoogle}
         className="w-full h-12 rounded-full border border-[#F2F2F2] bg-[#F2F2F2]
-               flex items-center justify-center gap-3 cursor-pointer"
+             flex items-center justify-center gap-2 cursor-pointer"
       >
-        <div className="relative" style={{ width: 190, height: 40 }}>
-          <Image
-            src="/image/google-login.png"
-            alt="Google"
-            fill
-            className="object-contain"
-            sizes="190px"
-          />
-        </div>
+        <Image
+          src="/icon/google.svg"
+          alt="Google"
+          width={40}
+          height={40}
+          className="object-contain"
+        />
+
+        <span className="text-sm text-[#3C4043] font-medium">Google 계정으로 계속하기</span>
       </button>
 
       <button
         type="button"
         onClick={handleKakao}
-        className="w-full h-12 rounded-full bg-[#FEE500]
-               flex items-center justify-center px-4 cursor-pointer"
+        className="w-full h-12 rounded-full bg-[#FFEC00]
+               flex items-center justify-center gap-2 cursor-pointer"
       >
-        <div className="relative" style={{ width: 190, height: 48 }}>
-          <Image
-            src="/image/kakao-login.png"
-            alt="Login with Kakao"
-            fill
-            className="object-contain"
-            sizes="190px"
-          />
-        </div>
+        <Image
+          src="/icon/kakao.svg"
+          alt="Kakao"
+          width={40}
+          height={40}
+          className="object-contain"
+        />
+
+        <span className="text-sm text-[#3C4043] font-medium">Kakao 계정으로 계속하기</span>
       </button>
     </div>
   )
