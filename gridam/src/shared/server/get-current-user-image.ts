@@ -1,18 +1,8 @@
-import getSupabaseServer from '@/shared/utils/supabase/server'
+import { getAuthenticatedUser } from '@/shared/utils/get-authenticated-user'
 import { withSignedImageUrls } from '@/shared/utils/with-signed-image-urls'
 
 export async function getCurrentUserImage(): Promise<string | null> {
-  const supabase = await getSupabaseServer()
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
-    console.error(error)
-    return null
-  }
+  const { supabase, user } = await getAuthenticatedUser()
 
   const rawUrl = user.user_metadata?.avatar_url as string | undefined
   if (!rawUrl) return null
