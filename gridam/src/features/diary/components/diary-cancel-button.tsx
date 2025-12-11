@@ -27,7 +27,6 @@ export default function DiaryCancelButton({ status }: { status: DiaryStatus }) {
             onClick={(e) => {
               e.preventDefault()
               close()
-              console.log(status)
               if (status === DIARY_STATUS.NEW || status === DIARY_STATUS.PUBLISHED) {
                 router.push('/')
               } else {
@@ -39,7 +38,7 @@ export default function DiaryCancelButton({ status }: { status: DiaryStatus }) {
         </ModalFooter>
       </>
     ))
-  }, [router])
+  }, [router, status])
 
   return (
     <DiaryFormButton label={MESSAGES.COMMON.CANCEL_BUTTON} type="button" onClick={handleCancel} />
