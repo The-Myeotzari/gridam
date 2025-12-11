@@ -15,9 +15,37 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
   const parsed = LoginSchema.safeParse(raw)
 
   if (!parsed.success) {
-    const firstError = parsed.error.issues[0]?.message ?? MESSAGES.AUTH.ERROR.LOGIN
+    const email = raw.email.trim()
+    const password = raw.password.trim()
 
-    return { ok: false, message: firstError }
+    if (!email && !password) {
+      return { ok: false, message: MESSAGES.AUTH.ERROR.EMPTY_EMAIL_PASSWORD }
+    }
+
+    if (!email) {
+      return { ok: false, message: MESSAGES.AUTH.ERROR.EMPTY_EMAIL }
+    }
+
+    if (!password) {
+      return { ok: false, message: MESSAGES.AUTH.ERROR.EMPTY_PASSWORD }
+    }
+
+    const emailIssue = parsed.error.issues.find((issue) => issue.path[0] === 'email')
+    const passwordIssue = parsed.error.issues.find((issue) => issue.path[0] === 'password')
+
+    if (emailIssue) {
+      return { ok: false, message: MESSAGES.AUTH.ERROR.INVALID_EMAIL_FORMAT }
+    }
+
+    if (passwordIssue) {
+      if (passwordIssue.code === 'too_small') {
+        return { ok: false, message: MESSAGES.AUTH.ERROR.INVALID_PASSWORD_LENGTH }
+      }
+
+      return { ok: false, message: MESSAGES.AUTH.ERROR.INVALID_PASSWORD_FORMAT }
+    }
+
+    return { ok: false, message: MESSAGES.AUTH.ERROR.LOGIN }
   }
 
   const { email, password } = parsed.data

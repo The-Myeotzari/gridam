@@ -1,7 +1,7 @@
 import { Card } from '@/shared/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
-import LoginForm from './login-form'
+import LoginForm from '@/features/auth/login/components/login-form'
 
 export default function Page() {
   return (
