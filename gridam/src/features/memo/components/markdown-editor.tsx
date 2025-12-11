@@ -35,6 +35,7 @@ export default function MarkdownEditor({ value, onChange }: Props) {
             ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
+            id="memo-content"
             className="
             flex-1 w-full resize-none
             bg-transparent px-4 py-3 text-sm text-foreground outline-none
