@@ -4,6 +4,7 @@ import FeedWriteBtn from '@/features/feed/components/feed-write-btn'
 import HydrateDiaryStatus from '@/features/feed/components/hydrate-diary-status'
 import Month from '@/features/feed/components/month'
 import { MESSAGES } from '@/shared/constants/messages'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import Button from '@/shared/ui/button'
 import { resolveYearMonth } from '@/shared/utils/date'
 import { SITE_URL } from '@/shared/utils/url'
@@ -48,7 +49,7 @@ export default async function Home({ searchParams }: PageProps) {
       return (
         <div className="h-50 flex flex-col justify-center items-center">
           <p className="mb-4">{MESSAGES.DIARY.ERROR.READ}</p>
-          <Link href="/">
+          <Link href={URL_CONSTANTS.HOME}>
             <Button
               label={
                 <div className="flex items-center">

@@ -1,9 +1,8 @@
 'use server'
 
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/get-cookies'
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export type Memo = {
   id: string
@@ -25,7 +24,7 @@ type ApiResponse<T> = {
 export async function getMemoListAction(limit = 50) {
   const cookieHeader = await getCookies()
 
-  const url = new URL(`${BASE_URL}/memos`)
+  const url = new URL(`${API_ENDPOINTS.MEMO.BASE}`)
   url.searchParams.set('limit', String(limit))
 
   const res = await fetch(url.toString(), {
@@ -61,7 +60,7 @@ export async function getMemoDetailAction(id: string) {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${BASE_URL}/memos/${id}`, {
+  const res = await fetch(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
@@ -96,7 +95,7 @@ export type CreateMemoInput = {
 export async function createMemoAction(input: CreateMemoInput) {
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${BASE_URL}/memos`, {
+  const res = await fetch(`${API_ENDPOINTS.MEMO.BASE}`, {
     method: 'POST',
     credentials: 'include',
     cache: 'no-store',
@@ -129,7 +128,7 @@ export async function updateMemoAction(input: UpdateMemoInput) {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${BASE_URL}/memos/${id}`, {
+  const res = await fetch(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
     method: 'PATCH',
     credentials: 'include',
     cache: 'no-store',
@@ -153,7 +152,7 @@ export async function deleteMemoAction(id: string) {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${BASE_URL}/memos/${id}`, {
+  const res = await fetch(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
     method: 'DELETE',
     credentials: 'include',
     cache: 'no-store',

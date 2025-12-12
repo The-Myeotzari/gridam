@@ -2,6 +2,7 @@
 
 import { updateImageAction } from '@/features/diary/apis/image.action'
 import type { Diary } from '@/features/feed/feed.type'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/get-cookies'
 
@@ -9,7 +10,7 @@ export async function getDiaryAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
+  const res = await fetch(`${API_ENDPOINTS.DIARIES.BY_ID(id)}`, {
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',

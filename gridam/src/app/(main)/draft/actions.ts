@@ -1,12 +1,14 @@
 'use server'
 
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { getCookies } from '@/shared/utils/get-cookies'
 import { revalidatePath } from 'next/cache'
 
 export async function fetchDraftAction() {
   const cookieHeader = await getCookies()
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/drafts`, {
+  const res = await fetch(`${API_ENDPOINTS.DRAFT.BASE}`, {
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
@@ -23,7 +25,7 @@ export async function fetchDraftAction() {
 export async function deleteDraftAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
   const cookieHeader = await getCookies()
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/drafts/${id}`, {
+  const res = await fetch(`${API_ENDPOINTS.DRAFT.BY_ID(id)}`, {
     method: 'DELETE',
     credentials: 'include',
     cache: 'no-store',
@@ -34,7 +36,7 @@ export async function deleteDraftAction(id: string) {
   })
 
   if (res.ok) {
-    revalidatePath('/draft')
+    revalidatePath(URL_CONSTANTS.DRAFT)
   }
 
   return res.json()

@@ -54,5 +54,3 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE, 500)
   }
 }
-
-export { OPTIONS } from '@/app/apis/_lib/http'

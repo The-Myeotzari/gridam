@@ -3,6 +3,7 @@
 import type { MonthlyData } from '@/features/calendar/types/calendar.type'
 import type { Diary } from '@/features/feed/feed.type'
 import type { Memo } from '@/features/memo/api/memo.action'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { getDateParts } from '@/shared/utils/date'
 import { getCookies } from '@/shared/utils/get-cookies'
 
@@ -37,18 +38,15 @@ export async function fetchCalendar(params: FetchCalendarParams = {}): Promise<C
     day: String(day),
   })
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/calendar/day?${searchParams.toString()}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      cache: 'no-store',
-      next: { revalidate: 0 },
-      headers: {
-        Cookie: cookieHeader,
-      },
-    }
-  )
+  const res = await fetch(`${API_ENDPOINTS.CALENDAR.DAY}?${searchParams.toString()}`, {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      Cookie: cookieHeader,
+    },
+  })
 
   return res.json()
 }
@@ -67,15 +65,12 @@ export async function fetchCalendarMonth(params: fetchCalendarMonthParams = {}) 
     month: String(month),
   })
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/calendar/month?${searchParams.toString()}`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      cache: 'no-cache',
-      next: { revalidate: 0 },
-      headers: { Cookie: cookieHeader },
-    }
-  )
+  const res = await fetch(`${API_ENDPOINTS.CALENDAR.MONTH}?${searchParams.toString()}`, {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-cache',
+    next: { revalidate: 0 },
+    headers: { Cookie: cookieHeader },
+  })
   return res.json()
 }
