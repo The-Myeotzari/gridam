@@ -1,6 +1,7 @@
 'use client'
 
 import { Diary } from '@/features/mypage/types/mypage'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
 import { useSmoothProgress } from '@/shared/hooks/use-smooth-progress'
 import ClientButton from '@/shared/ui/client-button'
@@ -27,9 +28,12 @@ export function DiaryExportPreviewModal({
   const { open, progress } = useSmoothProgress(isDownloading, { minDuration: 1000 })
 
   const handleDownload = async () => {
-    setIsDownloading(true)
     try {
-      const res = await fetch(`/apis/diaries/export?year=${year}&month=${month}`, { method: 'GET' })
+      setIsDownloading(true)
+
+      const res = await fetch(`${API_ENDPOINTS.DIARIES.EXPORT_BASE}?year=${year}&month=${month}`, {
+        method: 'GET',
+      })
 
       if (!res.ok) {
         // 에러 토스트 처리

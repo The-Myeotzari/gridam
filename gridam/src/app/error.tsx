@@ -1,4 +1,5 @@
 'use client'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import ClientButton from '@/shared/ui/client-button'
 import { AlertTriangle, Home, RefreshCcw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -59,7 +60,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
             </div>
           }
           onClick={() => {
-            router.push('/')
+            router.push(URL_CONSTANTS.HOME)
           }}
           variant="basic"
           className="lg: h-11 rounded-md px-8 hover:cursor-pointer "

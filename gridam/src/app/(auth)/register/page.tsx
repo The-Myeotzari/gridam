@@ -1,3 +1,4 @@
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card, CardFooter, CardHeader } from '@/shared/ui/card'
 import Toast from '@/shared/ui/toast'
 import Image from 'next/image'
@@ -31,7 +32,7 @@ export default function Page() {
             이미 계정이 있으신가요?
           </div>
 
-          <Link href="/login" className="text-base text-primary hover:underline">
+          <Link href={URL_CONSTANTS.AUTH.LOGIN} className="text-base text-primary hover:underline">
             로그인
           </Link>
           <Toast />
