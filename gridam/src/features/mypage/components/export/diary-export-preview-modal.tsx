@@ -1,6 +1,7 @@
 'use client'
 
 import { Diary } from '@/features/mypage/types/mypage'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
 import ClientButton from '@/shared/ui/client-button'
 import { ModalBody, ModalHeader } from '@/shared/ui/modal/modal'
@@ -29,7 +30,9 @@ export function DiaryExportPreviewModal({
     try {
       setIsDownloading(true)
 
-      const res = await fetch(`/apis/diaries/export?year=${year}&month=${month}`, { method: 'GET' })
+      const res = await fetch(`${API_ENDPOINTS.DIARIES.EXPORT_BASE}?year=${year}&month=${month}`, {
+        method: 'GET',
+      })
 
       if (!res.ok) {
         // 에러 토스트 처리
@@ -102,7 +105,7 @@ export function DiaryExportPreviewModal({
                   )}
                 </section>
                 <section>
-                  <Textarea value={diary.content} readOnly/>
+                  <Textarea value={diary.content} readOnly />
                 </section>
               </article>
             )

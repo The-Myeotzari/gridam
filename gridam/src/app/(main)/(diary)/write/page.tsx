@@ -1,6 +1,7 @@
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/diary/components/weather-icon'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
 import { getFormatDate, getTodayISODate } from '@/shared/utils/date'
 import { SITE_URL } from '@/shared/utils/url'
@@ -43,10 +44,10 @@ export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
 
-  const weatherRes = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/weather?lat=${coords.lat}&lon=${coords.lon}`,
-    { method: 'GET', cache: 'no-store' }
-  )
+  const weatherRes = await fetch(`${API_ENDPOINTS.WEATHER}?lat=${coords.lat}&lon=${coords.lon}`, {
+    method: 'GET',
+    cache: 'no-store',
+  })
   const weather = await weatherRes.json()
 
   const dateValue = getTodayISODate()
