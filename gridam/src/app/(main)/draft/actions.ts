@@ -2,6 +2,7 @@
 
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { getCookies } from '@/shared/utils/get-cookies'
 import { revalidatePath } from 'next/cache'
 
@@ -35,7 +36,7 @@ export async function deleteDraftAction(id: string) {
   })
 
   if (res.ok) {
-    revalidatePath('/draft')
+    revalidatePath(URL_CONSTANTS.DRAFT)
   }
 
   return res.json()

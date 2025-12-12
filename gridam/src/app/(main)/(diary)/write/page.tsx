@@ -2,6 +2,7 @@ import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/diary/components/weather-icon'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
 import { getFormatDate, getTodayISODate } from '@/shared/utils/date'
 import { SITE_URL } from '@/shared/utils/url'
@@ -22,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const formattedDate = getFormatDate(dateValue)
   const title = `${formattedDate} 일기 쓰기 | Gridam`
   const description = `${formattedDate}의 그림 일기를 작성해보세요.`
-  const url = new URL('/write', SITE_URL)
+  const url = new URL(URL_CONSTANTS.DIARY.WRITE, SITE_URL)
   return {
     metadataBase: new URL(SITE_URL),
     title,

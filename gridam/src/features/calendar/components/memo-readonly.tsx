@@ -1,9 +1,10 @@
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
+import { Card } from '@/shared/ui/card'
+import { FileText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { CalendarMemoListProps } from './calendar-memo-list'
-import { Card } from '@/shared/ui/card'
-import { FileText } from 'lucide-react'
 export default function MemoReadOnly({ memos }: CalendarMemoListProps) {
   const router = useRouter()
 
@@ -15,7 +16,7 @@ export default function MemoReadOnly({ memos }: CalendarMemoListProps) {
             key={memo.id}
             className="flex flex-col gap-5 cursor-pointer p-3 hover:bg-accent/50 transition-colors"
             onClick={() => {
-              router.push(`/memo/${memo.id}`)
+              router.push(`${URL_CONSTANTS.MEMO.BY_ID(memo.id)}`)
             }}
           >
             <div className="flex gap-2">
