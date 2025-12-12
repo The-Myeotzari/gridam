@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/get-cookies'
 
@@ -5,7 +6,7 @@ import { getCookies } from '@/shared/utils/get-cookies'
 export async function getUserData() {
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/mypage`, {
+  const res = await fetch(`${API_ENDPOINTS.MYPAGE.BASE}`, {
     method: 'GET',
     cache: 'no-store',
     credentials: 'include',
@@ -28,21 +29,18 @@ export async function getMonthlyDiaries(params: {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/monthly?${setParams.toString()}`,
-    {
-      method: 'GET',
-      cache: 'no-store',
-      credentials: 'include',
-      next: { revalidate: 0 },
-      headers: {
-        Cookie: cookieHeader,
-      },
-    }
-  )
+  const res = await fetch(`${API_ENDPOINTS.DIARIES.MONTHLY}?${setParams.toString()}`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+    next: { revalidate: 0 },
+    headers: {
+      Cookie: cookieHeader,
+    },
+  })
   const json = await res.json()
 
-  if(!json.ok){
+  if (!json.ok) {
     throw new Error(json.message ?? MESSAGES.DIARY.ERROR.READ)
   }
 

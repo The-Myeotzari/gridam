@@ -1,5 +1,6 @@
 'use client'
 
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { useLogout } from '@/shared/hooks/use-logout'
 import DropBox from '@/shared/ui/dropbox'
 import { useRouter } from 'next/navigation'
@@ -25,8 +26,12 @@ export default function HeaderUserMenuClinet({ userName, avatar }: HeaderUserMen
         }
         // TODO 상수화 처리 필요 - 추후 API 및 페이지 경로 전체 상수화 진행 필요
         items={[
-          { key: 'mypage', label: '마이페이지', onSelect: () => router.push('/mypage') },
-          { key: 'draft', label: '보관함', onSelect: () => router.push('/draft') },
+          {
+            key: 'mypage',
+            label: '마이페이지',
+            onSelect: () => router.push(URL_CONSTANTS.MYPAGE.BASE),
+          },
+          { key: 'draft', label: '보관함', onSelect: () => router.push(URL_CONSTANTS.DRAFT) },
           {
             key: 'logout',
             label: '로그아웃',

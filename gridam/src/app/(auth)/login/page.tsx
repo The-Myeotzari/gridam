@@ -1,7 +1,8 @@
+import LoginForm from '@/features/auth/login/components/login-form'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card } from '@/shared/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
-import LoginForm from '@/features/auth/login/components/login-form'
 
 export default function Page() {
   return (
@@ -25,12 +26,15 @@ export default function Page() {
 
         {/* 푸터 */}
         <div className="mt-6 text-center font-handwritten text-base text-muted-foreground">
-          <Link href="/forgot" className="hover:underline">
+          <Link href={URL_CONSTANTS.AUTH.FORGOT} className="hover:underline">
             비밀번호를 잊으셨나요?
           </Link>
           <div className="mt-3">
             계정이 없으신가요?{' '}
-            <Link href="/register" className="text-primary hover:underline font-semibold">
+            <Link
+              href={URL_CONSTANTS.AUTH.REGISTER}
+              className="text-primary hover:underline font-semibold"
+            >
               회원가입
             </Link>
           </div>

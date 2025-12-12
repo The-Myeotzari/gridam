@@ -28,7 +28,6 @@ export default function SocialLoginButtons({ setLoading }: Props) {
     setLoading(true)
 
     const redirectTo = `${window.location.origin}/callback`
-    console.log('kakao:', redirectTo)
 
     await supabase.auth.signInWithOAuth({
       provider: 'kakao',

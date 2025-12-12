@@ -1,5 +1,6 @@
-import { MESSAGES } from "@/shared/constants/messages"
-import { ApiResponse } from "@/features/mypage/types/mypage"
+import { ApiResponse } from '@/features/mypage/types/mypage'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
+import { MESSAGES } from '@/shared/constants/messages'
 
 type ChangePasswordPayload = {
   password: string
@@ -7,11 +8,9 @@ type ChangePasswordPayload = {
   confirmPassword: string
 }
 
-export async function changePasswordAction(
-  values: ChangePasswordPayload
-): Promise<ApiResponse> {
+export async function changePasswordAction(values: ChangePasswordPayload): Promise<ApiResponse> {
   try {
-    const res = await fetch('/apis/auth/change-password', {
+    const res = await fetch(`${API_ENDPOINTS.AUTH.CHANGE_PASSWORD}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),

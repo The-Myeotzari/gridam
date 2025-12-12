@@ -1,4 +1,7 @@
 // NOTE: 2차 개발 기간에 폴더 구조 확정 이후 위치 이동 필요
+
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
+
 // File을 bole로
 export async function getDataURLToBlob(dataURL: string): Promise<Blob> {
   const res = await fetch(dataURL)
@@ -26,7 +29,7 @@ export async function saveImageAction({
   const uploadForm = new FormData()
   uploadForm.append('file', file)
 
-  const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads`, {
+  const uploadRes = await fetch(`${API_ENDPOINTS.UPLOADS.BASE}`, {
     method: 'POST',
     credentials: 'include',
     cache: 'no-store',
@@ -66,7 +69,7 @@ export async function updateImageAction({
   const form = new FormData()
   form.append('file', file)
 
-  const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads`, {
+  const uploadRes = await fetch(`${API_ENDPOINTS.UPLOADS.BASE}/uploads`, {
     method: 'POST',
     credentials: 'include',
     headers: { Cookie: cookieHeader },
