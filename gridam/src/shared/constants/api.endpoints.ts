@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
     REGISTER: `${AUTH}/register`,
     RESET_COMPLETE: `${AUTH_BASE}/reset/complete`,
     RESET_REQUEST: `${AUTH}/reset/request`,
+    FORGOT: `${AUTH}/forgot`,
   },
   CALENDAR: {
     DAY: `${CALENDAR}/day`,

@@ -4,8 +4,6 @@ import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
 import { getCookies } from '@/shared/utils/get-cookies'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-
 export type Memo = {
   id: string
   user_id: string

@@ -69,7 +69,7 @@ export async function updateImageAction({
   const form = new FormData()
   form.append('file', file)
 
-  const uploadRes = await fetch(`${API_ENDPOINTS.UPLOADS.BASE}/uploads`, {
+  const uploadRes = await fetch(`${API_ENDPOINTS.UPLOADS.BASE}`, {
     method: 'POST',
     credentials: 'include',
     headers: { Cookie: cookieHeader },
