@@ -2,13 +2,13 @@
 
 import { Diary } from '@/features/mypage/types/mypage'
 import { MESSAGES } from '@/shared/constants/messages'
+import { useSmoothProgress } from '@/shared/hooks/use-smooth-progress'
 import ClientButton from '@/shared/ui/client-button'
 import { ModalBody, ModalHeader } from '@/shared/ui/modal/modal'
-import Textarea from '@/shared/ui/textarea'
-import { getFormatDate } from '@/shared/utils/date'
+import LoadingOverlay from '@/shared/ui/three/loading-overlay'
 import { toast } from '@/store/toast-store'
-import Image from 'next/image'
 import { useState } from 'react'
+import DiaryPreviewCard from './diary-preview-card'
 
 type DiaryExportPreviewModalProps = {
   year: number
@@ -24,11 +24,11 @@ export function DiaryExportPreviewModal({
   onClose,
 }: DiaryExportPreviewModalProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const { open, progress } = useSmoothProgress(isDownloading, { minDuration: 1000 })
 
   const handleDownload = async () => {
+    setIsDownloading(true)
     try {
-      setIsDownloading(true)
-
       const res = await fetch(`/apis/diaries/export?year=${year}&month=${month}`, { method: 'GET' })
 
       if (!res.ok) {
@@ -66,6 +66,7 @@ export function DiaryExportPreviewModal({
 
   return (
     <>
+      <LoadingOverlay open={open} label='PDF 변환 및 다운로드 중...' progress={progress} />
       <ModalHeader
         align="horizontal"
         cardTitle={
@@ -79,34 +80,7 @@ export function DiaryExportPreviewModal({
       />
       <ModalBody className="max-w-3xl max-h-[70vh] flex flex-col">
         <div className="flex-1 overflow-y-auto space-y-4 mt-2 rounded-md p-2">
-          {diaries.map((diary) => {
-            const formattedDate = getFormatDate(diary.date)
-            return (
-              <article
-                key={diary.id}
-                className="rounded-md bg-white p-3 border border-border space-y-2"
-              >
-                <header className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="text-base sm:text-lg">{formattedDate}</span>
-                  {diary.emoji && <Image src={diary.emoji} alt="날씨" width={40} height={40} />}
-                </header>
-                <section className="bg-white border">
-                  {diary.image_url && (
-                    <Image
-                      src={diary.image_url}
-                      alt="그림"
-                      width={40}
-                      height={40}
-                      className="w-full"
-                    />
-                  )}
-                </section>
-                <section>
-                  <Textarea value={diary.content} readOnly/>
-                </section>
-              </article>
-            )
-          })}
+          {diaries.map((diary) => <DiaryPreviewCard key={diary.id} diary={diary} />)}
         </div>
 
         <div className="mt-3 flex justify-between items-center">
