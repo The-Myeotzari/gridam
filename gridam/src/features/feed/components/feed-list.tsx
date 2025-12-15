@@ -54,7 +54,12 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
       <LoadingOverlay open={open} label="삭제 중 입니다..." progress={progress} />
 
       {displayedItems.map((diary, idx) => (
-        <FeedCard key={diary.id} diary={diary} isFirst={idx === 0} onDelete={openDeleteModal} />
+        <FeedCard
+          key={diary.id}
+          diary={diary}
+          isFirst={idx === 0}
+          onDelete={() => openDeleteModal(diary)}
+        />
       ))}
 
       {isFetchingMore && <FeedCardSkeleton />}

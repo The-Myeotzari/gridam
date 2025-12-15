@@ -1,6 +1,7 @@
 'use server'
 
 import { DEFAULT_LIMIT } from '@/app/apis/diaries/route'
+import { deleteImageAction } from '@/features/diary/apis/image.action'
 import type { Diary } from '@/features/feed/feed.type'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
@@ -45,9 +46,18 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
   return res.json()
 }
 
-export async function deleteDiary(id: string) {
+export async function deleteDiary(id: string, imagePath?: string | null) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
   const cookieHeader = await getCookies()
+
+  if (imagePath) {
+    try {
+      await deleteImageAction({ imagePath, cookieHeader })
+    } catch (e) {
+      console.warn('게시글 삭제 전 이미지 삭제 실패', e)
+    }
+  }
+
   const res = await fetch(`${API_ENDPOINTS.DIARIES.BY_ID(id)}`, {
     method: 'DELETE',
     credentials: 'include',
@@ -57,5 +67,6 @@ export async function deleteDiary(id: string) {
       Cookie: cookieHeader,
     },
   })
+
   return res.json()
 }
