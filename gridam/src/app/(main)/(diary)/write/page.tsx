@@ -45,10 +45,13 @@ export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
 
-  const weatherRes = await fetch(`${API_ENDPOINTS.WEATHER}?lat=${coords.lat}&lon=${coords.lon}`, {
-    method: 'GET',
-    cache: 'no-store',
-  })
+  const weatherRes = await fetch(
+    `${API_ENDPOINTS.WEATHER.BASE}?lat=${coords.lat}&lon=${coords.lon}`,
+    {
+      method: 'GET',
+      cache: 'no-store',
+    }
+  )
   const weather = await weatherRes.json()
 
   const dateValue = getTodayISODate()

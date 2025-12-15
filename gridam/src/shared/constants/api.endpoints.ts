@@ -10,7 +10,7 @@ const MEMO = `${BASE_API}/memos`
 const MYPAGE = `${BASE_API}/mypage`
 const OPENAPI = `${BASE_API}/openapi`
 const UPLOADS = `${BASE_API}/uploads`
-const WEATHER = `${BASE_API}/mypage`
+const WEATHER = `${BASE_API}/weather`
 
 export const API_ENDPOINTS = {
   AUTH: {
