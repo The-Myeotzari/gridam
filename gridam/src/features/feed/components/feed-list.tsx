@@ -7,6 +7,8 @@ import type { Diary, FetchDiaryResponseType } from '@/features/feed/feed.type'
 import { useDiaryDeleteModal } from '@/features/feed/hooks/use-diary-delete-modal'
 import { useFeedPagination } from '@/features/feed/hooks/use-feed-pagination'
 import { useIntersection } from '@/features/feed/hooks/use-intersection'
+import { useSmoothProgress } from '@/shared/hooks/use-smooth-progress'
+import LoadingOverlay from '@/shared/ui/three/loading-overlay'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 
@@ -33,6 +35,7 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
     removeItemById,
     rollbackPages,
   })
+  const { open, progress } = useSmoothProgress(isDeleting, { minDuration: 1000 })
 
   const ref = useIntersection(loadMore)
 
@@ -48,7 +51,7 @@ export default function FeedList({ year, month, initialPage }: FeedListProps) {
 
   return (
     <div className="flex flex-col gap-4 sm:w-xl md:w-2xl sm:mx-auto">
-      {isDeleting && <div>로딩중입니다</div>}
+      <LoadingOverlay open={open} label="삭제 중 입니다..." progress={progress} />
 
       {displayedItems.map((diary, idx) => (
         <FeedCard key={diary.id} diary={diary} isFirst={idx === 0} onDelete={openDeleteModal} />
