@@ -3,8 +3,18 @@ import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card } from '@/shared/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 
-export default function Page() {
+export default async function Page() {
+  const supabase = await getSupabaseServer()
+  const { data } = await supabase.auth.getUser()
+
+  // 이미 로그인된 상태면 홈으로 튕김
+  if (data.user) {
+    redirect(URL_CONSTANTS.HOME)
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center">
       <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto shadow-card">
