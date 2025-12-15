@@ -28,7 +28,7 @@ export default function LoginForm() {
 
     if (result.ok) {
       toast.success(result.message)
-      router.push(URL_CONSTANTS.HOME)
+      router.replace(URL_CONSTANTS.HOME)
     } else {
       toast.error(result.message)
     }
