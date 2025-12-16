@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/fetch-api'
 import { LoginSchema } from '@/shared/types/zod/apis/auth'
 
 export type LoginResult = {
@@ -51,11 +52,10 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
 
   const { email, password } = parsed.data
 
-  const res = await fetch(`${API_ENDPOINTS.AUTH.LOGIN}`, {
+  const res = await api(`${API_ENDPOINTS.AUTH.LOGIN}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
-    cache: 'no-store',
   })
 
   const json = await res.json()

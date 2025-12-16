@@ -1,6 +1,7 @@
 'use server'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/fetch-api'
 import { cookies } from 'next/headers'
 
 export async function resetAction(formData: FormData) {
@@ -15,14 +16,9 @@ export async function resetAction(formData: FormData) {
     .join('; ')
 
   try {
-    const response = await fetch(`${API_ENDPOINTS.AUTH.RESET_COMPLETE}}`, {
+    const response = await api(`${API_ENDPOINTS.AUTH.RESET_COMPLETE}}`, {
       method: 'POST',
-      cache: 'no-store',
-      credentials: 'include',
-      next: { revalidate: 0 },
-      headers: {
-        Cookie: cookieHeader,
-      },
+      cookieHeader,
       body: JSON.stringify({
         newPassword: password,
         confirmPassword,

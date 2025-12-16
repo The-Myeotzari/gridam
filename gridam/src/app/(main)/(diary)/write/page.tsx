@@ -3,6 +3,7 @@ import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/diary/components/weather-icon'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { URL_CONSTANTS } from '@/shared/constants/url.constants'
+import { api } from '@/shared/lib/fetch-api'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
 import { getFormatDate, getTodayISODate } from '@/shared/utils/date'
 import { SITE_URL } from '@/shared/utils/url'
@@ -45,11 +46,10 @@ export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
 
-  const weatherRes = await fetch(
+  const weatherRes = await api(
     `${API_ENDPOINTS.WEATHER.BASE}?lat=${coords.lat}&lon=${coords.lon}`,
     {
-      method: 'GET',
-      cache: 'no-store',
+      withCredentials: false
     }
   )
   const weather = await weatherRes.json()

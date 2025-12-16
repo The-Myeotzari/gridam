@@ -1,10 +1,11 @@
 import { ApiResponse } from '@/features/mypage/types/mypage'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/fetch-api'
 
 export async function logoutAction(): Promise<ApiResponse> {
   try {
-    const res = await fetch(`${API_ENDPOINTS.AUTH.LOGOUT}`, {
+    const res = await api(`${API_ENDPOINTS.AUTH.LOGOUT}`, {
       method: 'POST',
     })
 
