@@ -1,10 +1,20 @@
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card, CardFooter, CardHeader } from '@/shared/ui/card'
 import Toast from '@/shared/ui/toast'
 import Image from 'next/image'
 import Link from 'next/link'
 import RegisterForm from './register-form'
+import { redirect } from 'next/navigation'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 
-export default function Page() {
+export default async function Page() {
+  const supabase = await getSupabaseServer()
+  const { data } = await supabase.auth.getUser()
+
+  // 로그인된 상태면 회원가입 페이지 접근 불가
+  if (data.user) {
+    redirect(URL_CONSTANTS.HOME)
+  }
   return (
     <Card
       indent="none"
@@ -31,7 +41,7 @@ export default function Page() {
             이미 계정이 있으신가요?
           </div>
 
-          <Link href="/login" className="text-base text-primary hover:underline">
+          <Link href={URL_CONSTANTS.AUTH.LOGIN} className="text-base text-primary hover:underline">
             로그인
           </Link>
           <Toast />

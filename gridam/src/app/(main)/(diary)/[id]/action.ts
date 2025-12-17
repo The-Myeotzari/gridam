@@ -2,21 +2,17 @@
 
 import { updateImageAction } from '@/features/diary/apis/image.action'
 import type { Diary } from '@/features/feed/feed.type'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/fetch-api'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 export async function getDiaryAction(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
-    method: 'GET',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
-    headers: {
-      Cookie: cookieHeader,
-    },
+  const res = await api(`${API_ENDPOINTS.DIARIES.BY_ID(id)}`, {
+    cookieHeader,
   })
 
   const json = await res.json()
@@ -59,14 +55,11 @@ export async function updateDiaryAction(form: DiaryDrafcAction) {
   })
 
   const endpoint = ENDPOINTS[type](id)
-  const patchRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}`, {
+  const patchRes = await api(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}`, {
     method: 'PATCH',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
+    cookieHeader,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader,
     },
     body: JSON.stringify({
       id,
