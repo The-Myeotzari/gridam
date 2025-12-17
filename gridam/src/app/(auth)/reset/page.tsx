@@ -1,4 +1,5 @@
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card } from '@/shared/ui/card'
 import Link from 'next/link'
 import ResetForm from './reset-form'
@@ -22,7 +23,7 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
         <div className="mt-6 text-center">
           <div className="font-handwritten text-base text-muted-foreground">
             비밀번호를 기억하셨나요?{' '}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href={URL_CONSTANTS.AUTH.LOGIN} className="text-primary hover:underline">
               로그인
             </Link>
           </div>

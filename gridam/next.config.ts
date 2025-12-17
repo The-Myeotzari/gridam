@@ -14,8 +14,15 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'usdumrvpdudznlkvmufn.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/sign/diary-images/**',
+        pathname: '/storage/v1/object/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com'
+      },
+      {
+        protocol: 'http',
+        hostname: 'k.kakaocdn.net'
       },
     ],
     // 또는 전체 Supabase 스토리지를 허용하고 싶으면:
