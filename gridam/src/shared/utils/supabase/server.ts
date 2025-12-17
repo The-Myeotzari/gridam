@@ -30,5 +30,5 @@ export default async function getSupabaseServer() {
 
 export async function getOrigin(): Promise<string> {
   const h = await headers()
-  return h.get('origin') ?? process.env.NEXT_PUBLIC_BASE_URL ?? 'https://main.d3d0cswlhdk822.amplifyapp.com'
+  return h.get('origin') ?? process.env.NEXT_PUBLIC_BASE_URL ?? 'https://gridam.life'
 }
