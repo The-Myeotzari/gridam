@@ -1,4 +1,8 @@
 // NOTE: 2차 개발 기간에 폴더 구조 확정 이후 위치 이동 필요
+
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
+import { api } from '@/shared/lib/fetch-api'
+
 // File을 bole로
 export async function getDataURLToBlob(dataURL: string): Promise<Blob> {
   const res = await fetch(dataURL)
@@ -11,6 +15,60 @@ export async function getDataURLToBlob(dataURL: string): Promise<Blob> {
 // Blob를 File로
 export function getBlobToFile(blob: Blob, filename: string): File {
   return new File([blob], filename, { type: blob.type })
+}
+
+const BUCKET = 'diary-images'
+
+function toStoragePath(oldImagePath?: string | null) {
+  if (!oldImagePath) return null
+
+  if (!oldImagePath.startsWith('http')) return oldImagePath
+
+  try {
+    const u = new URL(oldImagePath)
+    const marker = `/${BUCKET}/`
+    const idx = u.pathname.indexOf(marker)
+    if (idx === -1) return null
+    return u.pathname.slice(idx + marker.length)
+  } catch {
+    return null
+  }
+}
+
+export async function deleteImageAction({
+  imagePath,
+  cookieHeader,
+}: {
+  imagePath?: string | null
+  cookieHeader: string
+}) {
+  const path = toStoragePath(imagePath)
+  if (!path) {
+    console.warn('imagePath에서 스토리지 path를 추출하지 못했습니다:', imagePath)
+    return false
+  }
+
+  try {
+    const deleteRes = await api(`${API_ENDPOINTS.UPLOADS.BASE}?path=${encodeURIComponent(path)}`, {
+      method: 'DELETE',
+      cookieHeader,
+    })
+
+    if (!deleteRes.ok) {
+      let msg = '이미지 삭제에 실패하였습니다.'
+      try {
+        const j = await deleteRes.json()
+        msg = j?.message ?? msg
+      } catch {}
+      console.warn(msg)
+      return false
+    }
+
+    return true
+  } catch (e) {
+    console.warn('이미지 삭제 요청 실패', e)
+    return false
+  }
 }
 
 export async function saveImageAction({
@@ -26,14 +84,9 @@ export async function saveImageAction({
   const uploadForm = new FormData()
   uploadForm.append('file', file)
 
-  const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads`, {
+  const uploadRes = await api(`${API_ENDPOINTS.UPLOADS.BASE}`, {
     method: 'POST',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
-    headers: {
-      Cookie: cookieHeader,
-    },
+    cookieHeader,
     body: uploadForm,
   })
 
@@ -66,16 +119,20 @@ export async function updateImageAction({
   const form = new FormData()
   form.append('file', file)
 
-  const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads`, {
+  const uploadRes = await api(`${API_ENDPOINTS.UPLOADS.BASE}`, {
     method: 'POST',
-    credentials: 'include',
-    headers: { Cookie: cookieHeader },
+    cookieHeader,
     body: form,
   })
 
   const uploadJson = await uploadRes.json()
   if (!uploadRes.ok) throw new Error(uploadJson.message || '이미지 업로드 실패')
 
-  return uploadJson.data?.url ?? null
-  // NOTE: 이미지 파일 교체 이후 기존 이미지 삭제 여부 필요? -> 히스토리 기능이 들어갈까?
+  const newUrl = uploadJson.data?.url ?? null
+
+  if (newUrl && oldImagePath) {
+    await deleteImageAction({ imagePath: oldImagePath, cookieHeader })
+  }
+
+  return newUrl
 }

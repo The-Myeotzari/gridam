@@ -120,5 +120,3 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     return fail(MESSAGES.DIARY.ERROR.DRAFT_DELETE, 500)
   }
 }
-
-export { OPTIONS } from '@/app/apis/_lib/http'

@@ -1,12 +1,13 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import Link from 'next/link'
+import type { Memo } from '@/features/memo/api/memo.action'
+import MemoSearch from '@/features/memo/components/memo-search'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card } from '@/shared/ui/card'
 import TagBadge from '@/shared/ui/tagbadge'
 import { formatDotDateKR } from '@/shared/utils/date'
-import MemoSearch from '@/features/memo/components/memo-search'
-import type { Memo } from '@/features/memo/api/memo.action'
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
 
 type Props = {
   memos: Memo[]
@@ -113,7 +114,11 @@ export default function MemoListClient({ memos }: Props) {
                 const tags = memo.tags ?? []
 
                 return (
-                  <Link key={memo.id} href={`/memo/${memo.id}`} className="block">
+                  <Link
+                    key={memo.id}
+                    href={`${URL_CONSTANTS.MEMO.BY_ID(memo.id)}`}
+                    className="block"
+                  >
                     <Card className="w-full cursor-pointer rounded-3xl px-6 py-4 hover:bg-accent/70">
                       <div className="flex items-center justify-between gap-4">
                         <span className="truncate text-base font-medium text-foreground">

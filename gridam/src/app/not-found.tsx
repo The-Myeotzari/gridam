@@ -1,8 +1,9 @@
 // NOTE: 디자인 보완 필요
 'use client'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import ClientButton from '@/shared/ui/client-button'
 import { ArrowLeft, Home } from 'lucide-react'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function NotFound() {
   const router = useRouter()
@@ -11,7 +12,7 @@ export default function NotFound() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 space-y-6">
       <div className="text-center space-y-6">
         <div className="relative">
-          <h1 className="text-[150px] md:text-[200px] font-bold leading-none text-transparent bg-clip-text bg-gradient-to-br from-primary via-primary/60 to-primary/20">
+          <h1 className="text-[150px] md:text-[200px] font-bold leading-none text-transparent bg-clip-text bg-linear-to-br from-primary via-primary/60 to-primary/20">
             404
           </h1>
           <div className="absolute inset-0 text-[150px] md:text-[200px] font-bold leading-none text-primary/5 blur-2xl">
@@ -43,7 +44,7 @@ export default function NotFound() {
             </div>
           }
           onClick={() => {
-            router.push('/')
+            router.push(URL_CONSTANTS.HOME)
           }}
           isActive={true}
           variant="blue"

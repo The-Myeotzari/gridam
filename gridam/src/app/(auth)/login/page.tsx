@@ -1,9 +1,20 @@
+import LoginForm from '@/features/auth/login/components/login-form'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card } from '@/shared/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
-import LoginForm from './login-form'
+import { redirect } from 'next/navigation'
+import getSupabaseServer from '@/shared/utils/supabase/server'
 
-export default function Page() {
+export default async function Page() {
+  const supabase = await getSupabaseServer()
+  const { data } = await supabase.auth.getUser()
+
+  // 이미 로그인된 상태면 홈으로 튕김
+  if (data.user) {
+    redirect(URL_CONSTANTS.HOME)
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center">
       <Card className="w-full max-w-md p-8 paper-texture crayon-border animate-fade-in mx-auto my-auto shadow-card">
@@ -25,12 +36,15 @@ export default function Page() {
 
         {/* 푸터 */}
         <div className="mt-6 text-center font-handwritten text-base text-muted-foreground">
-          <Link href="/forgot" className="hover:underline">
+          <Link href={URL_CONSTANTS.AUTH.FORGOT} className="hover:underline">
             비밀번호를 잊으셨나요?
           </Link>
           <div className="mt-3">
             계정이 없으신가요?{' '}
-            <Link href="/register" className="text-primary hover:underline font-semibold">
+            <Link
+              href={URL_CONSTANTS.AUTH.REGISTER}
+              className="text-primary hover:underline font-semibold"
+            >
               회원가입
             </Link>
           </div>
