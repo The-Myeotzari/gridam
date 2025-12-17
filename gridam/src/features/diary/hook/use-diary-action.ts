@@ -5,7 +5,6 @@ import { saveDiaryAction } from '@/app/(main)/(diary)/write/action'
 import { checkImageChanged } from '@/features/diary/utils/check-image-changed'
 import type { Diary } from '@/features/feed/feed.type'
 import { MESSAGES } from '@/shared/constants/messages'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { toast } from '@/store/toast-store'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
@@ -64,7 +63,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
         },
         success: MESSAGES.DIARY.SUCCESS.CREATE,
         error: MESSAGES.DIARY.ERROR.CREATE,
-        redirect: URL_CONSTANTS.HOME,
+        redirect: '/',
       }
 
     case 'draftCreate':
@@ -80,7 +79,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
         },
         success: MESSAGES.DIARY.SUCCESS.DRAFT_CREATE,
         error: MESSAGES.DIARY.ERROR.DRAFT_CREATE,
-        redirect: URL_CONSTANTS.DRAFT,
+        redirect: '/draft',
       }
 
     case 'publishDraft': {
@@ -109,7 +108,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
         payload,
         success: MESSAGES.DIARY.SUCCESS.DRAFT_SAVE,
         error: MESSAGES.DIARY.ERROR.DRAFT_SAVE,
-        redirect: URL_CONSTANTS.HOME,
+        redirect: '/',
       }
     }
 
@@ -139,7 +138,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
         payload,
         success: MESSAGES.DIARY.SUCCESS.UPDATE,
         error: MESSAGES.DIARY.ERROR.UPDATE,
-        redirect: URL_CONSTANTS.HOME,
+        redirect: '/',
       }
     }
 
@@ -169,7 +168,7 @@ function buildConfig({ type, diary, text, canvas, dateValue, weather }: RunActio
         payload,
         success: MESSAGES.DIARY.SUCCESS.DRAFT_UPDATE,
         error: MESSAGES.DIARY.ERROR.DRAFT_UPDATE,
-        redirect: URL_CONSTANTS.DRAFT,
+        redirect: '/draft',
       }
     }
 

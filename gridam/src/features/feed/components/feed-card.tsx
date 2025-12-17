@@ -1,7 +1,6 @@
 'use client'
 
 import { Diary } from '@/features/feed/feed.type'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card, CardBody, CardFooter, CardHeader } from '@/shared/ui/card'
 import DropBox from '@/shared/ui/dropbox'
 import Textarea from '@/shared/ui/textarea'
@@ -25,7 +24,7 @@ export default function FeedCard({ diary, isFirst, onDelete }: FeedCardProps) {
   const router = useRouter()
   const hasEmoji = typeof diary.emoji === 'string' && diary.emoji.trim() !== ''
 
-  const handleEdit = () => router.push(`${URL_CONSTANTS.DIARY.BY_ID(diary.id)}`)
+  const handleEdit = () => router.push(`/${diary.id}`)
 
   const textareaMax = useMemo(() => calcTextareaMax(diary.content?.length ?? 0), [diary.content])
 
