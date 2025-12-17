@@ -1,11 +1,11 @@
 'use client'
-import { resetAction } from '@/app/(auth)/reset/action'
-import { MESSAGES } from '@/shared/constants/messages'
 import Button from '@/shared/ui/button'
 import Input from '@/shared/ui/input'
 import Label from '@/shared/ui/label'
-import { toast } from '@/store/toast-store'
+import { resetAction } from '@/features/auth/reset/api/reset-action'
 import { useActionState } from 'react'
+import { toast } from '@/store/toast-store'
+import { MESSAGES } from '@/shared/constants/messages'
 
 type ResetFormProps = {
   token: string

@@ -1,16 +1,15 @@
 'use client'
-import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
 import Input from '@/shared/ui/input'
 import Label from '@/shared/ui/label'
-import Toast from '@/shared/ui/toast'
-import { toast } from '@/store/toast-store'
+import { forgetAction } from '@/features/auth/forgot/api/forgot-action'
 import Form from 'next/form'
 import Link from 'next/link'
 import { startTransition, useActionState } from 'react'
+import Toast from '@/shared/ui/toast'
+import { toast } from '@/store/toast-store'
 
-import ForgotButton from '@/app/(auth)/forgot/forgot-button'
+import ForgotButton from './forgot-button'
 import { MESSAGES } from '@/shared/constants/messages'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import ClientButton from '@/shared/ui/client-button'
 
 interface ForgotState {
@@ -118,7 +117,7 @@ export default function ForgotPassword({ isSubmitted, email, error }: ForgotStat
       <div className="mt-6 text-center">
         <div className="font-handwritten text-base text-muted-foreground">
           계정이 없으신가요?{' '}
-          <Link href={URL_CONSTANTS.AUTH.REGISTER} className="text-primary hover:underline">
+          <Link href="/signup" className="text-primary hover:underline">
             회원가입
           </Link>
         </div>

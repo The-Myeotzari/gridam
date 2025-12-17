@@ -105,3 +105,5 @@ export async function POST(req: NextRequest) {
     return fail(MESSAGES.DIARY.ERROR.DRAFT_CREATE, 500)
   }
 }
+
+export { OPTIONS } from '@/app/apis/_lib/http'
