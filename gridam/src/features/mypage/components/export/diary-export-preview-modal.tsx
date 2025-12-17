@@ -10,6 +10,7 @@ import LoadingOverlay from '@/shared/ui/three/loading-overlay'
 import { toast } from '@/store/toast-store'
 import { useState } from 'react'
 import DiaryPreviewCard from './diary-preview-card'
+import { api } from '@/shared/lib/fetch-api'
 
 type DiaryExportPreviewModalProps = {
   year: number
@@ -31,9 +32,7 @@ export function DiaryExportPreviewModal({
     try {
       setIsDownloading(true)
 
-      const res = await fetch(`${API_ENDPOINTS.DIARIES.EXPORT_BASE}?year=${year}&month=${month}`, {
-        method: 'GET',
-      })
+      const res = await api(`${API_ENDPOINTS.DIARIES.EXPORT_BASE}?year=${year}&month=${month}`)
 
       if (!res.ok) {
         // 에러 토스트 처리

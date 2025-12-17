@@ -2,6 +2,7 @@
 
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/fetch-api'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 export type Memo = {
@@ -27,14 +28,10 @@ export async function getMemoListAction(limit = 50) {
   const url = new URL(`${API_ENDPOINTS.MEMO.BASE}`)
   url.searchParams.set('limit', String(limit))
 
-  const res = await fetch(url.toString(), {
-    method: 'GET',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
+  const res = await api(url.toString(), {
+    cookieHeader,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader,
     },
   })
 
@@ -60,14 +57,10 @@ export async function getMemoDetailAction(id: string) {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
-    method: 'GET',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
+  const res = await api(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
+    cookieHeader,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader,
     },
   })
 
@@ -95,14 +88,11 @@ export type CreateMemoInput = {
 export async function createMemoAction(input: CreateMemoInput) {
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${API_ENDPOINTS.MEMO.BASE}`, {
+  const res = await api(`${API_ENDPOINTS.MEMO.BASE}`, {
     method: 'POST',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
+    cookieHeader,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader,
     },
     body: JSON.stringify(input),
   })
@@ -128,14 +118,11 @@ export async function updateMemoAction(input: UpdateMemoInput) {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
+  const res = await api(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
     method: 'PATCH',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
+    cookieHeader,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader,
     },
     body: JSON.stringify({ title, content, tags }),
   })
@@ -152,14 +139,11 @@ export async function deleteMemoAction(id: string) {
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
+  const res = await api(`${API_ENDPOINTS.MEMO.BY_ID(id)}`, {
     method: 'DELETE',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
+    cookieHeader,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: cookieHeader,
     },
   })
 

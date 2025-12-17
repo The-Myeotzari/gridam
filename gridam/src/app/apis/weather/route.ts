@@ -1,3 +1,4 @@
+import { api } from '@/shared/lib/fetch-api'
 import { NextResponse } from 'next/server'
 
 const FALLBACK = {
@@ -35,7 +36,7 @@ export async function GET(req: Request) {
     const key = process.env.OPENWEATHER_KEY
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${key}&units=metric&lang=kr`
 
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await api(url, { cache: 'no-store', withCredentials: false })
 
     if (!res.ok) return NextResponse.json(FALLBACK)
 

@@ -3,6 +3,7 @@
 import { MonthlyDiaries } from '@/features/mypage/types/mypage'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { QUERY_KEYS } from '@/shared/constants/query-key'
+import { api } from '@/shared/lib/fetch-api'
 import { useQuery } from '@tanstack/react-query'
 
 type UseMonthlyDiariesOptions = {
@@ -14,9 +15,7 @@ export function useMonthlyDiaries(year: number, month: number, options?: UseMont
     queryKey: QUERY_KEYS.DIARY.MONTHLY_EXPORT(year, month),
     queryFn: async () => {
       const setParams = new URLSearchParams({ year: year.toString(), month: month.toString() })
-      const res = await fetch(`${API_ENDPOINTS.DIARIES.MONTHLY_BASE}?${setParams.toString()}`, {
-        method: 'GET',
-      })
+      const res = await api(`${API_ENDPOINTS.DIARIES.MONTHLY_BASE}?${setParams.toString()}`)
       const json = await res.json()
       return json.data
     },

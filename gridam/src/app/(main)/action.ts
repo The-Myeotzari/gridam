@@ -5,6 +5,7 @@ import { deleteImageAction } from '@/features/diary/apis/image.action'
 import type { Diary } from '@/features/feed/feed.type'
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
+import { api } from '@/shared/lib/fetch-api'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 type FetchDiaryType = {
@@ -33,14 +34,8 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
 
   const cookieHeader = await getCookies()
 
-  const res = await fetch(`${API_ENDPOINTS.DIARIES.BASE}?${setParams.toString()}`, {
-    method: 'GET',
-    cache: 'no-store',
-    credentials: 'include',
-    next: { revalidate: 0 },
-    headers: {
-      Cookie: cookieHeader,
-    },
+  const res = await api(`${API_ENDPOINTS.DIARIES.BASE}?${setParams.toString()}`, {
+    cookieHeader,
   })
 
   return res.json()
@@ -58,14 +53,9 @@ export async function deleteDiary(id: string, imagePath?: string | null) {
     }
   }
 
-  const res = await fetch(`${API_ENDPOINTS.DIARIES.BY_ID(id)}`, {
+  const res = await api(`${API_ENDPOINTS.DIARIES.BY_ID(id)}`, {
     method: 'DELETE',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
-    headers: {
-      Cookie: cookieHeader,
-    },
+    cookieHeader,
   })
 
   return res.json()

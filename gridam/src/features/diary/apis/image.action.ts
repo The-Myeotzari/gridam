@@ -1,6 +1,7 @@
 // NOTE: 2차 개발 기간에 폴더 구조 확정 이후 위치 이동 필요
 
 import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
+import { api } from '@/shared/lib/fetch-api'
 
 // File을 bole로
 export async function getDataURLToBlob(dataURL: string): Promise<Blob> {
@@ -48,14 +49,10 @@ export async function deleteImageAction({
   }
 
   try {
-    const deleteRes = await fetch(
-      `${API_ENDPOINTS.UPLOADS.BASE}?path=${encodeURIComponent(path)}`,
-      {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { Cookie: cookieHeader },
-      }
-    )
+    const deleteRes = await api(`${API_ENDPOINTS.UPLOADS.BASE}?path=${encodeURIComponent(path)}`, {
+      method: 'DELETE',
+      cookieHeader,
+    })
 
     if (!deleteRes.ok) {
       let msg = '이미지 삭제에 실패하였습니다.'
@@ -87,14 +84,9 @@ export async function saveImageAction({
   const uploadForm = new FormData()
   uploadForm.append('file', file)
 
-  const uploadRes = await fetch(`${API_ENDPOINTS.UPLOADS.BASE}`, {
+  const uploadRes = await api(`${API_ENDPOINTS.UPLOADS.BASE}`, {
     method: 'POST',
-    credentials: 'include',
-    cache: 'no-store',
-    next: { revalidate: 0 },
-    headers: {
-      Cookie: cookieHeader,
-    },
+    cookieHeader,
     body: uploadForm,
   })
 
@@ -127,10 +119,9 @@ export async function updateImageAction({
   const form = new FormData()
   form.append('file', file)
 
-  const uploadRes = await fetch(`${API_ENDPOINTS.UPLOADS.BASE}`, {
+  const uploadRes = await api(`${API_ENDPOINTS.UPLOADS.BASE}`, {
     method: 'POST',
-    credentials: 'include',
-    headers: { Cookie: cookieHeader },
+    cookieHeader,
     body: form,
   })
 
