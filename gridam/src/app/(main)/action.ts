@@ -1,11 +1,8 @@
 'use server'
 
 import { DEFAULT_LIMIT } from '@/app/apis/diaries/route'
-import { deleteImageAction } from '@/features/diary/apis/image.action'
 import type { Diary } from '@/features/feed/feed.type'
-import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
-import { api } from '@/shared/lib/fetch-api'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 type FetchDiaryType = {
@@ -34,29 +31,33 @@ export async function fetchDiaryPage(params: FetchDiaryType): Promise<FetchDiary
 
   const cookieHeader = await getCookies()
 
-  const res = await api(`${API_ENDPOINTS.DIARIES.BASE}?${setParams.toString()}`, {
-    cookieHeader,
-  })
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries?${setParams.toString()}`,
+    {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'include',
+      next: { revalidate: 0 },
+      headers: {
+        Cookie: cookieHeader,
+      },
+    }
+  )
 
   return res.json()
 }
 
-export async function deleteDiary(id: string, imagePath?: string | null) {
+export async function deleteDiary(id: string) {
   if (!id) throw new Error(MESSAGES.DIARY.ERROR.READ)
   const cookieHeader = await getCookies()
-
-  if (imagePath) {
-    try {
-      await deleteImageAction({ imagePath, cookieHeader })
-    } catch (e) {
-      console.warn('게시글 삭제 전 이미지 삭제 실패', e)
-    }
-  }
-
-  const res = await api(`${API_ENDPOINTS.DIARIES.BY_ID(id)}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/diaries/${id}`, {
     method: 'DELETE',
-    cookieHeader,
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
+    headers: {
+      Cookie: cookieHeader,
+    },
   })
-
   return res.json()
 }

@@ -29,7 +29,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
     }
   )
 
-  const openDeleteModal = (diary: Diary) => {
+  const openDeleteModal = (id: string) => {
     modalStore.open((close) => (
       <>
         <ModalHeader>정말 삭제할까요?</ModalHeader>
@@ -50,10 +50,10 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
               startTransition(async () => {
                 const previousDrafts = [...drafts]
 
-                updateOptimistic(diary.id)
-                setDeletingId(diary.id)
+                updateOptimistic(id)
+                setDeletingId(id)
 
-                const res = await deleteDraftAction(diary.id, diary.image_url)
+                const res = await deleteDraftAction(id)
 
                 if (res.ok) {
                   toast.success(MESSAGES.DIARY.SUCCESS.DELETE)
@@ -96,7 +96,7 @@ export default function DraftList({ initialDrafts }: { initialDrafts: Diary[] })
                 <DropBox
                   id={diary.id}
                   onEdit={() => handleEdit(diary.id)}
-                  onDelete={() => openDeleteModal(diary)}
+                  onDelete={() => openDeleteModal(diary.id)}
                 />
               }
               align="horizontal"

@@ -1,14 +1,11 @@
-import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
 import { MESSAGES } from '@/shared/constants/messages'
-import { api } from '@/shared/lib/fetch-api'
 
 export async function forgetAction(prevState: { error: string | null }, formData: FormData) {
   const email = formData.get('email') as string
 
   try {
-    const res = await api(`${API_ENDPOINTS.AUTH.RESET_REQUEST}`, {
+    const res = await fetch(`/apis/auth/reset/request`, {
       method: 'POST',
-      withCredentials: false,
       headers: {
         'Content-Type': 'application/json',
       },

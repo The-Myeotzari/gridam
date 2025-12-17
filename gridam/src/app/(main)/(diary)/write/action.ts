@@ -1,7 +1,6 @@
 'use server'
 
 import { saveImageAction } from '@/features/diary/apis/image.action'
-import { api } from '@/shared/lib/fetch-api'
 import { getCookies } from '@/shared/utils/get-cookies'
 
 type SaveDiaryAction = {
@@ -23,11 +22,14 @@ export async function saveDiaryAction(form: SaveDiaryAction) {
     uploadURL = await saveImageAction({ imageUrl, cookieHeader })
   }
 
-  const res = await api(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${type}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${type}`, {
     method: 'POST',
-    cookieHeader,
+    credentials: 'include',
+    cache: 'no-store',
+    next: { revalidate: 0 },
     headers: {
       'Content-Type': 'application/json',
+      Cookie: cookieHeader,
     },
     body: JSON.stringify({
       date,

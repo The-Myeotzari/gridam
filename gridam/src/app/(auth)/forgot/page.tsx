@@ -1,23 +1,12 @@
 import { AuthHeader } from '@/features/auth/forgot/components/forgot-header'
 import { Card } from '@/shared/ui/card'
 import ForgotPassword from './forgot-password'
-import { redirect } from 'next/navigation'
-import getSupabaseServer from '@/shared/utils/supabase/server'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 
 type PageProps = {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const supabase = await getSupabaseServer()
-  const { data } = await supabase.auth.getUser()
-
-  // 로그인된 상태면 회원가입 페이지 접근 불가
-  if (data.user) {
-    redirect(URL_CONSTANTS.HOME)
-  }
-
   const params = (await searchParams) ?? {}
 
   const isSubmitted = params?.sent === '1'
