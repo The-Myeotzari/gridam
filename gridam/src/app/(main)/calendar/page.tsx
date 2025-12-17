@@ -4,7 +4,6 @@ import { getDateParts } from '@/shared/utils/date'
 
 export default async function Page() {
   // 오늘 날짜 (전역 관리)
-  const today = new Date()
   const initialDate = getDateParts()
 
   //서버에서 초기 데이터 로드

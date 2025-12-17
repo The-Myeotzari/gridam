@@ -1,6 +1,9 @@
 import DiaryForm from '@/features/diary/components/diary-form'
 import DiaryLayout from '@/features/diary/components/diary-layout'
 import WeatherIcon from '@/features/diary/components/weather-icon'
+import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
+import { api } from '@/shared/lib/fetch-api'
 import CanvasContainer from '@/shared/ui/canvas/canvas-container'
 import { getFormatDate, getTodayISODate } from '@/shared/utils/date'
 import { SITE_URL } from '@/shared/utils/url'
@@ -21,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const formattedDate = getFormatDate(dateValue)
   const title = `${formattedDate} 일기 쓰기 | Gridam`
   const description = `${formattedDate}의 그림 일기를 작성해보세요.`
-  const url = new URL('/write', SITE_URL)
+  const url = new URL(URL_CONSTANTS.DIARY.WRITE, SITE_URL)
   return {
     metadataBase: new URL(SITE_URL),
     title,
@@ -43,9 +46,11 @@ export default async function Page() {
   const cookie = await cookies()
   const coords = getCoordsFromCookies(cookie)
 
-  const weatherRes = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/weather?lat=${coords.lat}&lon=${coords.lon}`,
-    { method: 'GET', cache: 'no-store' }
+  const weatherRes = await api(
+    `${API_ENDPOINTS.WEATHER.BASE}?lat=${coords.lat}&lon=${coords.lon}`,
+    {
+      withCredentials: false
+    }
   )
   const weather = await weatherRes.json()
 
