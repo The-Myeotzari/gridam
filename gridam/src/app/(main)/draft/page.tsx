@@ -1,6 +1,7 @@
 import { fetchDraftAction } from '@/app/(main)/draft/actions'
 import DraftList from '@/app/(main)/draft/draft-list'
 import { MESSAGES } from '@/shared/constants/messages'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import Button from '@/shared/ui/button'
 import { SITE_URL } from '@/shared/utils/url'
 import { Link, RefreshCcw } from 'lucide-react'
@@ -12,12 +13,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: '일기 보관함 | Gridam',
   description: '작성 중이던 일기를 불러오고 수정/삭제할 수 있어요.',
-  alternates: { canonical: new URL('/draft', SITE_URL) },
+  alternates: { canonical: new URL(URL_CONSTANTS.DRAFT, SITE_URL) },
   robots: { index: false, follow: false },
   openGraph: {
     title: '일기 보관함 | Gridam',
     description: '작성 중이던 일기를 불러오고 수정/삭제할 수 있어요.',
-    url: new URL('/draft', SITE_URL),
+    url: new URL(URL_CONSTANTS.DRAFT, SITE_URL),
     siteName: 'Gridam',
     type: 'website',
     locale: 'ko_KR',
@@ -40,7 +41,7 @@ export default async function Page() {
       ) : (
         <div className="h-50 flex flex-col justify-center items-center">
           <p className="mb-4">{MESSAGES.DIARY.ERROR.DRAFT_READ}</p>
-          <Link href="/draft">
+          <Link href={URL_CONSTANTS.DRAFT}>
             <Button
               label={
                 <div className="flex items-center">

@@ -1,7 +1,7 @@
 'use client'
 
 import { deleteDiary } from '@/app/(main)/action'
-import type { FetchDiaryResponseType } from '@/features/feed/feed.type'
+import type { Diary, FetchDiaryResponseType } from '@/features/feed/feed.type'
 import { useDiaryStatusStore } from '@/features/feed/store/diary-status-store'
 import { MESSAGES } from '@/shared/constants/messages'
 import ClientButton from '@/shared/ui/client-button'
@@ -20,7 +20,7 @@ export function useDiaryDeleteModal({ getPagesSnapshot, removeItemById, rollback
   const [isPending, startTransition] = useTransition()
 
   const openDeleteModal = useCallback(
-    (id: string) => {
+    (diary: Diary) => {
       modalStore.open((close) => (
         <>
           <ModalHeader>정말 삭제할까요?</ModalHeader>
@@ -38,9 +38,9 @@ export function useDiaryDeleteModal({ getPagesSnapshot, removeItemById, rollback
               onClick={() => {
                 startTransition(async () => {
                   const snapshot = getPagesSnapshot()
-                  removeItemById(id)
+                  removeItemById(diary.id)
 
-                  const res = await deleteDiary(id)
+                  const res = await deleteDiary(diary.id, diary.image_url)
 
                   if (res.ok) {
                     useDiaryStatusStore.getState().setStatus('none')

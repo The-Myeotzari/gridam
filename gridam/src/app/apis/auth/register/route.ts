@@ -1,4 +1,4 @@
-import { fail, ok, withCORS } from '@/app/apis/_lib/http'
+import { fail, ok } from '@/app/apis/_lib/http'
 import { MESSAGES } from '@/shared/constants/messages'
 import { SignUpSchema } from '@/shared/types/zod/apis/auth'
 import getSupabaseAdmin from '@/shared/utils/supabase/admin'
@@ -50,14 +50,12 @@ export async function POST(req: NextRequest) {
       return fail(MESSAGES.AUTH.ERROR.REGISTER, error.status)
     }
 
-    return withCORS(
-      ok(
-        {
-          user: data.user,
-          message: MESSAGES.AUTH.SUCCESS.REGISTER_EMAIL,
-        },
-        201
-      )
+    return ok(
+      {
+        user: data.user,
+        message: MESSAGES.AUTH.SUCCESS.REGISTER_EMAIL,
+      },
+      201
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : MESSAGES.AUTH.ERROR.REGISTER

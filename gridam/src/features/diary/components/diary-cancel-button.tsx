@@ -1,6 +1,7 @@
 import DiaryFormButton from '@/features/diary/components/diary-form-button'
 import { DIARY_STATUS, type DiaryStatus } from '@/features/diary/types/diary.type'
 import { MESSAGES } from '@/shared/constants/messages'
+import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import ClientButton from '@/shared/ui/client-button'
 import { ModalBody, ModalFooter, ModalHeader } from '@/shared/ui/modal/modal'
 import { modalStore } from '@/store/modal-store'
@@ -27,11 +28,10 @@ export default function DiaryCancelButton({ status }: { status: DiaryStatus }) {
             onClick={(e) => {
               e.preventDefault()
               close()
-              console.log(status)
               if (status === DIARY_STATUS.NEW || status === DIARY_STATUS.PUBLISHED) {
-                router.push('/')
+                router.push(URL_CONSTANTS.HOME)
               } else {
-                router.push('/draft')
+                router.push(URL_CONSTANTS.DRAFT)
               }
             }}
             label={MESSAGES.COMMON.CONFIRM}
@@ -39,7 +39,7 @@ export default function DiaryCancelButton({ status }: { status: DiaryStatus }) {
         </ModalFooter>
       </>
     ))
-  }, [router])
+  }, [router, status])
 
   return (
     <DiaryFormButton label={MESSAGES.COMMON.CANCEL_BUTTON} type="button" onClick={handleCancel} />
