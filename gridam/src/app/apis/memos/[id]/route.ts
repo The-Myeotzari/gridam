@@ -123,3 +123,5 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ ok: false, message: 'Internal Server Error' }, { status: 500 })
   }
 }
+
+export { OPTIONS } from '@/app/apis/_lib/http'

@@ -178,3 +178,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, message: MESSAGES.DIARY.ERROR.CREATE }, { status: 500 })
   }
 }
+
+export { OPTIONS } from '@/app/apis/_lib/http'

@@ -1,7 +1,6 @@
 'use client'
 import { useDiaryStatusStore } from '@/features/feed/store/diary-status-store'
 import { MESSAGES } from '@/shared/constants/messages'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import ClientButton from '@/shared/ui/client-button'
 import { toast } from '@/store/toast-store'
 import { Plus } from 'lucide-react'
@@ -19,11 +18,11 @@ export default function FeedWriteBtn() {
 
     if (status === 'draft') {
       toast.error(MESSAGES.DIARY.ERROR.DRAFT)
-      router.push(URL_CONSTANTS.DRAFT)
+      router.push(`/draft`)
       return
     }
 
-    router.push(URL_CONSTANTS.DIARY.WRITE)
+    router.push('/write')
   }
 
   return (

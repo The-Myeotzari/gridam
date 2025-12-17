@@ -1,17 +1,16 @@
-import MemoDeleteTrigger from '@/app/(main)/memo/[id]/memo-delete-trigger'
-import MemoEditTrigger from '@/app/(main)/memo/[id]/memo-edit-trigger'
 import { getMemoDetailAction } from '@/features/memo/api/memo.action'
-import { markdownComponents } from '@/features/memo/components/markdown-components'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { Card, CardBody } from '@/shared/ui/card'
-import TagBadge from '@/shared/ui/tagbadge'
 import { getFormatDate } from '@/shared/utils/date'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
-import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
+import MemoDeleteTrigger from './memo-delete-trigger'
+import MemoEditTrigger from './memo-edit-trigger'
+import TagBadge from '@/shared/ui/tagbadge'
+import remarkBreaks from 'remark-breaks'
+import { markdownComponents } from '@/features/memo/components/markdown-components'
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -32,7 +31,7 @@ export default async function Page({ params }: PageProps) {
     <main className="min-h-screen">
       <div className="mx-auto max-w-4xl px-6 py-10">
         <header className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href={URL_CONSTANTS.MEMO.BASE} className="flex items-center gap-1 hover:underline">
+          <Link href="/memo" className="flex items-center gap-1 hover:underline">
             <ArrowLeft className="h-4 w-4" />
             목록으로
           </Link>

@@ -1,6 +1,5 @@
 import { MESSAGES } from '@/shared/constants/messages'
 import { QUERY_KEYS } from '@/shared/constants/query-key'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { toast } from '@/store/toast-store'
 import { QueryClient } from '@tanstack/react-query'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
@@ -20,7 +19,7 @@ export default function registerAction({ queryClient, router, reset }: deps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...QUERY_KEYS.AUTH.ME] })
       toast.success(MESSAGES.AUTH.SUCCESS.REGISTER_AND_EMAIL)
-      router.push(URL_CONSTANTS.AUTH.LOGIN)
+      router.push('/login')
       reset()
     },
     onError: (error: unknown) => {

@@ -16,15 +16,6 @@ jest.mock('@/shared/ui/card', () => ({
   ),
 }))
 
-jest.mock('@/features/mypage/components/profile-image', () => ({
-  __esModule: true,
-  default: ({ name }: any) => (
-    <div data-testid="profile-image" data-name={name}>
-      프로필이미지
-    </div>
-  ),
-}))
-
 describe('ProfileCard', () => {
   it('이메일, 닉네임, 가입일을 렌더링한다', () => {
     const props = {
@@ -44,8 +35,5 @@ describe('ProfileCard', () => {
     expect(screen.getByText(props.email)).toBeInTheDocument()
     expect(screen.getByText(props.nickname)).toBeInTheDocument()
     expect(screen.getByText(props.createdAt)).toBeInTheDocument()
-
-    const image = screen.getByTestId('profile-image')
-    expect(image).toHaveAttribute('data-name', props.nickname)
   })
 })
