@@ -1,17 +1,16 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-import { loginAction } from '@/features/auth/login/api/login.action'
+import { loginAction } from '@/app/(auth)/login/login.action'
 import Button from '@/shared/ui/button'
 import Input from '@/shared/ui/input'
 import { toast } from '@/store/toast-store'
 import SocialLoginButtons from './login-button'
 
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
-import { useSmoothProgress } from '@/shared/hooks/use-smooth-progress'
 import LoadingOverlay from '@/shared/ui/three/loading-overlay'
+import { useSmoothProgress } from '@/shared/hooks/use-smooth-progress'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -28,7 +27,7 @@ export default function LoginForm() {
 
     if (result.ok) {
       toast.success(result.message)
-      router.replace(URL_CONSTANTS.HOME)
+      router.push('/')
     } else {
       toast.error(result.message)
     }

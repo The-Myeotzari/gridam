@@ -1,11 +1,9 @@
-import { ApiResponse } from '@/features/mypage/types/mypage'
-import { API_ENDPOINTS } from '@/shared/constants/api.endpoints'
-import { MESSAGES } from '@/shared/constants/messages'
-import { api } from '@/shared/lib/fetch-api'
+import { MESSAGES } from "@/shared/constants/messages"
+import { ApiResponse } from "@/features/mypage/types/mypage"
 
 export async function logoutAction(): Promise<ApiResponse> {
   try {
-    const res = await api(`${API_ENDPOINTS.AUTH.LOGOUT}`, {
+    const res = await fetch('/apis/auth/logout', {
       method: 'POST',
     })
 
@@ -20,6 +18,7 @@ export async function logoutAction(): Promise<ApiResponse> {
 
     return json
   } catch {
+
     return {
       ok: false,
       message: MESSAGES.AUTH.ERROR.LOGOUT,

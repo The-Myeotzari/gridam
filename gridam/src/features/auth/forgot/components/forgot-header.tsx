@@ -1,4 +1,3 @@
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
 import { ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,11 +9,7 @@ interface AuthHeaderProps {
   logoSrc?: string
 }
 
-export function AuthHeader({
-  title,
-  subtitle,
-  backHref = URL_CONSTANTS.AUTH.LOGIN,
-}: AuthHeaderProps) {
+export function AuthHeader({ title, subtitle, backHref = '/login' }: AuthHeaderProps) {
   return (
     <div className="mb-8">
       <div className="mb-6">

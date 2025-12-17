@@ -1,12 +1,11 @@
 'use client'
 
-import { deleteMemoAction } from '@/features/memo/api/memo.action'
-import { MESSAGES } from '@/shared/constants/messages'
-import { URL_CONSTANTS } from '@/shared/constants/url.constants'
-import Button from '@/shared/ui/button'
-import { toast } from '@/store/toast-store'
-import { Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { Trash2 } from 'lucide-react'
+import Button from '@/shared/ui/button'
+import { deleteMemoAction } from '@/features/memo/api/memo.action'
+import { toast } from '@/store/toast-store'
+import { MESSAGES } from '@/shared/constants/messages'
 
 export default function MemoDeleteTrigger({ id }: { id: string }) {
   const router = useRouter()
@@ -20,7 +19,7 @@ export default function MemoDeleteTrigger({ id }: { id: string }) {
     }
 
     toast.success(MESSAGES.MEMO.SUCCESS.DELETE)
-    router.push(URL_CONSTANTS.MEMO.BASE)
+    router.push('/memo')
   }
 
   return (

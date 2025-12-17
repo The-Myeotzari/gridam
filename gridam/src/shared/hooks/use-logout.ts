@@ -1,11 +1,10 @@
 'use client'
 
-import { logoutAction } from '@/features/mypage/api/logout-action'
-import { toast } from '@/store/toast-store'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { MESSAGES } from '../constants/messages'
-import { URL_CONSTANTS } from '../constants/url.constants'
+import { logoutAction } from "@/features/mypage/api/logout-action"
+import { toast } from "@/store/toast-store"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { MESSAGES } from "../constants/messages"
 
 interface UseLogoutOptions {
   redirectTo?: string
@@ -14,7 +13,7 @@ interface UseLogoutOptions {
 }
 
 export function useLogout(options: UseLogoutOptions = {}) {
-  const { redirectTo = URL_CONSTANTS.AUTH.LOGIN, onSuccess, onError } = options
+  const { redirectTo = '/login', onSuccess, onError } = options
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 

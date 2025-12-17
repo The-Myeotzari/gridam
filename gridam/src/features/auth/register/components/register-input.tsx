@@ -1,11 +1,6 @@
 import Input from '@/shared/ui/input'
 import { FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
 
-type FormValues = {
-  password: string
-  confirmPassword: string
-}
-
 interface RegisterInputProps<TFormValues extends FieldValues> {
   label: string
   type?: string
