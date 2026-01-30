@@ -3,10 +3,10 @@
 > 구름 프론트엔드 5회차 TEAM 2조 '못자리'의 첫 번째 프로젝트입니다.
 [👉 프로젝트 노션 보기](https://www.notion.so/2a088ff5dc04818391f8db6cd342cd00?source=copy_link)
 
-<img src="gridam/public/readme/1.png" alt="소개 1" />
-<img src="gridam/public/readme/2.png" alt="소개 2" />
-<img src="gridam/public/readme/3.png" alt="소개 3" />
 <img src="gridam/public/readme/4.png" alt="소개 4" />
+<img src="gridam/public/readme/3.png" alt="소개 3" />
+<img src="gridam/public/readme/2.png" alt="소개 2" />
+<img src="gridam/public/readme/1.png" alt="소개 1" />
 
 ### 👥 팀원 소개 (TEAM 못자리)
 - 이민제, 이승헌, 최지인, 홍성준
