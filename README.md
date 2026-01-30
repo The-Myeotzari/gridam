@@ -3,31 +3,22 @@
 > 구름 프론트엔드 5회차 TEAM 2조 '못자리'의 첫 번째 프로젝트입니다.
 [👉 프로젝트 노션 보기](https://www.notion.so/2a088ff5dc04818391f8db6cd342cd00?source=copy_link)
 
+<img src="gridam/public/readme/1.png" alt="소개 1" />
+<img src="gridam/public/readme/2.png" alt="소개 2" />
+<img src="gridam/public/readme/3.png" alt="소개 3" />
+<img src="gridam/public/readme/4.png" alt="소개 4" />
+
 ### 👥 팀원 소개 (TEAM 못자리)
-- 이민제
-- 이승헌
-- 최지인
-- 홍성준
-
----
-
-## 📺 프로젝트 시연 영상
-
-<div align="center">
-  <video src="https://github.com/The-Myeotzari/gridam/raw/main/gridam/griam_video.mp4" width="100%" controls autoplay muted loop>
-    사용자의 브라우저가 비디오 태그를 지원하지 않습니다.
-  </video>
-</div>
+- 이민제, 이승헌, 최지인, 홍성준
 
 ## 📝 프로젝트 개요
 
 현대 사회에서 일기 작성은 단순한 기록을 넘어 정서적 회복과 자기 성찰의 수단이 되고 있습니다. 
 기존의 텍스트 중심 일기 앱에서 벗어나, **'그림'과 '텍스트'를 결합**하여 사용자의 감정 변화를 직관적으로 표현하고 회고할 수 있는 플랫폼을 기획하게 되었습니다.
+<img src="gridam/public/readme/6.png" alt="프로젝트 개요" />
 
 ### ✨ 주요 목표
-- **시각적 회고**: 데이터를 감성적인 형태로 저장하여 직관적인 회고 지원
-- **기록의 연속성**: 기록을 단순한 '끝'이 아닌 삶의 과정으로 인식하도록 유도
-- **부담 완화**: 그림 중심의 기록 경험을 통해 작성에 대한 심리적 부담 최소화
+<img src="gridam/public/readme/8.png" alt="프로젝트 목표" />
 
 ### ✨ 주요 기능
 - **일기 CRUD**: 그림과 글을 함께 기록하는 기본적인 일기 관리 기능
@@ -37,11 +28,28 @@
 - **컬러 팔레트**: 사용자 지정 컬러를 활용한 자유로운 그림일기 작성
 
 ### 🛠 기술적 개선 사항
-| 이슈 내용 | 개선 결과 |
-|---|---|
-|**날짜 불일치 문제**|내부 API와 프론트엔드 간 월 기준(1~12)을 통일하고 캘린더 로직을 수정하여 데이터 매칭 오류를 해결했습니다.|
-|**그림 인식 및 수정 오류**|일기 수정 시 그림 데이터 존재 여부를 판단하는 예외 처리 로직을 보강하여 수정 기능을 정상화했습니다.|
-|**표현의 한계**|기존 5가지 제한된 색상에서 사용자 지정 컬러 팔레트를 추가하여 작성의 자유도를 높였습니다.|
+<img src="gridam/public/readme/10.png" alt="QA 리포트 기반 개선" />
+<img src="gridam/public/readme/11.png" alt="주요 이슈 및 개선 사례 1" />
+<img src="gridam/public/readme/12.png" alt="주요 이슈 및 개선 사례 2" />
+<img src="gridam/public/readme/13.png" alt="주요 이슈 및 개선 사례 3" />
+<img src="gridam/public/readme/14.png" alt="주요 이슈 및 개선 사례 4" />
+
+---
+
+## 📷 프로젝트 결과
+<img src="gridam/public/readme/16.png" alt="프로젝트 결과 1" />
+<img src="gridam/public/readme/17.png" alt="프로젝트 결과 2" />
+<img src="gridam/public/readme/18.png" alt="프로젝트 결과 3" />
+<img src="gridam/public/readme/19.png" alt="프로젝트 결과 4" />
+<img src="gridam/public/readme/20.png" alt="프로젝트 결과 5" />
+<img src="gridam/public/readme/21.png" alt="프로젝트 결과 6" />
+<img src="gridam/public/readme/22.png" alt="프로젝트 결과 7" />
+<img src="gridam/public/readme/23.png" alt="프로젝트 결과 8" />
+<img src="gridam/public/readme/24.png" alt="프로젝트 결과 9" />
+<img src="gridam/public/readme/25.png" alt="프로젝트 결과 10" />
+<img src="gridam/public/readme/26.png" alt="프로젝트 결과 11" />
+<img src="gridam/public/readme/27.png" alt="프로젝트 결과 12" />
+<img src="gridam/public/readme/28.png" alt="프로젝트 결과 13" />
 
 ---
 
@@ -55,6 +63,8 @@
 | **Testing** | Jest |
 
 ---
+
+<img src="gridam/public/readme/30" alt="프로젝트 결과 30" />
 
 > 삶의 흔적을 남기는 기록자들, 묫자리입니다.  
 > 당신의 하루가, 오늘도 새겨집니다.
